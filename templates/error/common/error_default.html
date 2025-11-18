@@ -11,11 +11,11 @@
         <div class="card">
             <div class="card-content">
                 <div class="main-content">
-                    <div style="margin: 20px 0; text-align: center; "  th:with="title=#{global.route.back.home.name},
-                                               linkHtml='&lt;a href=&quot;/&quot; aria-label=&quot;' + ${title} + '&quot; title=&quot;' + ${title} + '&quot;&gt;' + ${title} + '&lt;/a&gt;',
-                                               finalMessage=${#messages.msg('error.default.e404.tip', linkHtml)}">
+                    <div style="margin: 20px 0; text-align: center; "  th:with="homeName=#{global.route.back.home.name},
+                                               linkHtml='&lt;a href=&quot;/&quot; aria-label=&quot;' + ${homeName} + '&quot; title=&quot;' + ${homeName} + '&quot;&gt;' + ${homeName} + '&lt;/a&gt;',
+                                               finalMessage=${#messages.msgWithParams('error.default.e404.tip', {linkHtml})}">
                         <i style="font-size: 7rem" th:text="${error.status}"></i>
-                        <p th:if="${error.status == 404}" style="font-size: 1.4em;text-indent: 2em;">[(${finalMessage})}</p>
+                        <p th:if="${error.status == 404}" style="font-size: 1.4em;text-indent: 2em;" th:utext="${finalMessage}"></p>
                         <p th:unless="${error.status == 404}" style="font-size: 1.4em;text-indent: 2em;">[[#{error.default.other.tip}]]</p>
                     </div>
                 </div>
