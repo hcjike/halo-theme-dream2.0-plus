@@ -182,8 +182,8 @@ const Utils = {
           const errMsg = err
             ? err.responseJSON
               ? err.responseJSON.title
-              : '请求失败'
-            : '请求失败'
+              : DreamConfig.global_request_fail
+            : DreamConfig.global_request_fail
           if (!noErrorTip) {
             Qmsg.error(errMsg)
           }
@@ -240,7 +240,7 @@ const Utils = {
           localStorage.setItem(name, val)
           // $this.off('click');
           likeNumFunc($this).html(likes)
-          Qmsg.success('点赞成功')
+          Qmsg.success(DreamConfig.global_like_success)
         })
     })
   },

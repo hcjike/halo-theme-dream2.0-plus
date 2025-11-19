@@ -73,6 +73,7 @@
     DreamConfig["site_title"] = [[${site.title}]];
     /** 灰色模式 */
     DreamConfig["gray_mode"] = [[${theme.config.enhance.gray_mode_group.enable_gray_mode}]];
+    /** 定义多语言资源 */
     DreamConfig["site_time_expression"]=[[#{footer.site_time.desc}]];
     DreamConfig['love_time_template'] = [[#{widget.love.time.template}]];
     DreamConfig["love_time_template_year"] = [[#{widget.love.time.template_year}]];
@@ -102,6 +103,68 @@
         percent: '0%',
       },
     ]
+    /** 禁止debug资源 */
+    DreamConfig["ban_debug_tips"] = [[#{js.ban_debug.tips}]];
+    DreamConfig["ban_debug_back_home"] = [[#{js.ban_debug.back_home}]];
+    /** 分享 */
+    DreamConfig["dshare_qq_name"] = [[#{js.dshare.qq.name}]];
+    DreamConfig["dshare_qzone_name"] = [[#{js.dshare.qzone.name}]];
+    DreamConfig["dshare_wechat_name"] = [[#{js.dshare.wechat.name}]];
+    DreamConfig["dshare_wechat_qr_title"] = [[#{js.dshare.wechat.qr.title}]];
+    DreamConfig["dshare_weibo_name"] = [[#{js.dshare.weibo.name}]];
+    DreamConfig["dshare_douban_name"] = [[#{js.dshare.douban.name}]];
+    DreamConfig["dshare_linkedin_name"] = [[#{js.dshare.linkedin.name}]];
+    DreamConfig["dshare_facebook_name"] = [[#{js.dshare.facebook.name}]];
+    DreamConfig["dshare_twitter_name"] = [[#{js.dshare.twitter.name}]];
+    DreamConfig["dshare_google_name"] = [[#{js.dshare.google.name}]];
+    DreamConfig["dshare_link_name"] = [[#{js.dshare.link.name}]];
+    DreamConfig["dshare_poster_name"] = [[#{js.dshare.poster.name}]];
+    DreamConfig["dshare_poster_title"] = [[#{js.dshare.poster.title}]];
+    DreamConfig["dshare_poster_tip"] = [[#{js.dshare.poster.tip}]];
+    DreamConfig["dshare_poster_button_name"] = [[#{js.dshare.poster.button.name}]];
+    /** 瞬间分享标题 */
+    DreamConfig["journals_share_title"] = [[#{js.journals.share.title}]];
+    /** 主题扩展组件的资源 */
+    DreamConfig["mew_subtitle_default_title"] = [[#{js.mew_subtitle.default.title}]];
+    DreamConfig["mew_music_not_enabled_tip"] = [[#{js.mew_music.not_enabled.tip}]];
+    DreamConfig["mew_music_default_name"] = [[#{js.mew_music.default.name}]];
+    DreamConfig["mew_music_default_artist"] = [[#{js.mew_music.default.artist}]];
+    DreamConfig["mew_music_not_music_tip"] = [[#{js.mew_music.not_music.tip}]];
+    DreamConfig["mew_bilibili_not_bvid_tip"] = [[#{js.mew_bilibili.not_bvid.tip}]];
+    DreamConfig["mew_tabs_not_tab_tip"] = [[#{js.mew_tabs.not_tab.tip}]];
+    DreamConfig["mew_tabs_default_title"] = [[#{js.mew_tabs.default.title}]];
+    DreamConfig["mew_cloud_title"] = [[#{js.mew_cloud.title}]];
+    DreamConfig["mew_cloud_default_name"] = [[#{js.mew_cloud.default.name}]];
+    DreamConfig["mew_cloud_360_name"] = [[#{js.mew_cloud.360.name}]];
+    DreamConfig["mew_cloud_115_name"] = [[#{js.mew_cloud.115.name}]];
+    DreamConfig["mew_cloud_123_name"] = [[#{js.mew_cloud.123.name}]];
+    DreamConfig["mew_cloud_kk_name"] = [[#{js.mew_cloud.kk.name}]];
+    DreamConfig["mew_cloud_xl_name"] = [[#{js.mew_cloud.xl.name}]];
+    DreamConfig["mew_cloud_onedrive_name"] = [[#{js.mew_cloud.onedrive.name}]];
+    DreamConfig["mew_cloud_yd_name"] = [[#{js.mew_cloud.yd.name}]];
+    DreamConfig["mew_cloud_ty_name"] = [[#{js.mew_cloud.ty.name}]];
+    DreamConfig["mew_cloud_lt_name"] = [[#{js.mew_cloud.lt.name}]];
+    DreamConfig["mew_cloud_uc_name"] = [[#{js.mew_cloud.uc.name}]];
+    DreamConfig["mew_cloud_pan_name"] = [[#{js.mew_cloud.pan.name}]];
+    DreamConfig["mew_cloud_oss_name"] = [[#{js.mew_cloud.oss.name}]];
+    DreamConfig["mew_cloud_bd_name"] = [[#{js.mew_cloud.bd.name}]];
+    DreamConfig["mew_cloud_wy_name"] = [[#{js.mew_cloud.wy.name}]];
+    DreamConfig["mew_cloud_ali_name"] = [[#{js.mew_cloud.ali.name}]];
+    DreamConfig["mew_cloud_github_name"] = [[#{js.mew_cloud.github.name}]];
+    DreamConfig["mew_cloud_gitee_name"] = [[#{js.mew_cloud.gitee.name}]];
+    DreamConfig["mew_cloud_gitlab_name"] = [[#{js.mew_cloud.gitlab.name}]];
+    DreamConfig["mew_cloud_gitea_name"] = [[#{js.mew_cloud.gitea.name}]];
+    DreamConfig["mew_cloud_git_name"] = [[#{js.mew_cloud.git.name}]];
+    DreamConfig["mew_cloud_lz_name"] = [[#{js.mew_cloud.lz.name}]];
+    DreamConfig["mew_cloud_source"] = [[#{js.mew_cloud.source}]];
+    DreamConfig["mew_cloud_extraction"] = [[#{js.mew_cloud.extraction}]];
+
+    /** 一些通用多语言变量 */
+    DreamConfig["global_copy_name"] = [[#{global.copy.name}]];
+    DreamConfig["global_copy_success"] = [[#{global.copy.success}]];
+    DreamConfig["global_browser_not_supported"] = [[#{global.browser.not_supported}]];
+    DreamConfig["global_request_fail"] = [[#{global.request.fail}]];
+    DreamConfig["global_like_success"] = [[#{global.like.success}]];
     /** 配置自定义灰色模式时段 */
     let gray_mode_time_list = []
     let custom_gray_mode_time_list = [[${theme.config.enhance.gray_mode_group.gray_mode_time_list}]];

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'mew-subtitle',
     class MewSubtitle extends MewElement {
       init() {
-        this.innerHTML = `<span>${this.innerText || '默认标题'}</span>`
+        this.innerHTML = `<span>${this.innerText || DreamConfig.mew_subtitle_default_title}</span>`
         this.drawComplete()
       }
     }
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       render() {
         if (!('APlayer' in window)) {
-          this.innerHTML = '未开启音乐播放器！'
+          this.innerHTML = DreamConfig.mew_music_not_enabled_tip
           return
         }
         // eslint-disable-next-line no-async-promise-executor
@@ -125,9 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ).then((response) => response.json())
           } else if (this.hasAttribute('url')) {
             this.options.audio = [{
-              name: this.getAttribute('name') || '音乐',
+              name: this.getAttribute('name') || DreamConfig.mew_music_default_name,
               url: this.getAttribute('url'),
-              artist: this.getAttribute('artist') || '未知歌手',
+              artist: this.getAttribute('artist') || DreamConfig.mew_music_default_artist,
               cover: this.getAttribute('cover'),
               lrc: this.getAttribute('lrc') || (this.options.lrcType = undefined),
             }]
@@ -135,13 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
             var musicList = JSON.parse(this.getAttribute('music-list'))
             musicList.forEach((item) => {
               item.lrc = item.lrc || ''
-              item.name = item.name || '音乐'
-              item.artist = item.artist || '未知歌手'
+              item.name = item.name || DreamConfig.mew_music_default_name
+              item.artist = item.artist || DreamConfig.mew_music_default_artist
               item.cover = item.cover || '/themes/theme-dream2-plus/assets/img/music.webp'
             })
             this.options.audio = musicList
           } else {
-            this.innerHTML = '未指定播放的音乐！'
+            this.innerHTML = DreamConfig.mew_music_not_music_tip
             return resolve()
           }
           this.aplayer = new APlayer(this.options)
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (this.options.bvid) {
           this.style.padding = `calc(${this.options.width} * 0.3) 0`
           this.innerHTML = `<iframe allowfullscreen="true" src="//player.bilibili.com/player.html?bvid=${this.options.bvid}&page=1" style="width: ${this.options.width};"></iframe>`
-        } else this.innerHTML = 'bvid未填写！'
+        } else this.innerHTML = DreamConfig.mew_bilibili_not_bvid_tip
         this.drawComplete()
       }
     }
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       init() {
         const $tabPage = $(this).children('mew-tab-page')
         if ($tabPage.length === 0) {
-          this.innerHTML = '没有标签页！'
+          this.innerHTML = DreamConfig.mew_tabs_not_tab_tip
           this.drawComplete()
           return
         }
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let contents = ''
         let active = false
         $tabPage.each((index, elem) => {
-          let title = elem.getAttribute('title') || '默认标签'
+          let title = elem.getAttribute('title') || DreamConfig.mew_tabs_default_title
           let id = `${index}-${new Date().getTime()}`
           if (!active && elem.hasAttribute('active')) {
             active = true
@@ -227,39 +227,39 @@ document.addEventListener('DOMContentLoaded', () => {
       init() {
         this.options = {
           type: this.getAttribute('type') || 'default',
-          title: this.innerText || '资源文件分享',
+          title: this.innerText || DreamConfig.mew_cloud_title,
           url: this.getAttribute('url'),
           password: this.getAttribute('password'),
         }
         const type = {
-          default: '网络来源',
-          360: '360云盘',
-          115: '115网盘',
-          123: '123云盘',
-          kk: '夸克网盘',
-          xl: '迅雷云盘',
-          onedrive: 'OneDrive',
-          yd: '中国移动云盘',
-          ty: '天翼云盘',
-          lt: '联通云盘',
-          uc: 'UC网盘',
-          pan: '网络云盘',
-          oss: '对象存储',
-          bd: '百度网盘',
-          wy: '微云',
-          ali: '阿里云盘',
-          github: 'Github仓库',
-          gitee: 'Gitee仓库',
-          gitlab: 'Gitlab仓库',
-          gitea: 'Gitea仓库',
-          git: 'Git仓库',
-          lz: '蓝奏云网盘',
+          default: DreamConfig.mew_cloud_default_name,
+          360: DreamConfig.mew_cloud_360_name,
+          115: DreamConfig.mew_cloud_115_name,
+          123: DreamConfig.mew_cloud_123_name,
+          kk: DreamConfig.mew_cloud_kk_name,
+          xl: DreamConfig.mew_cloud_xl_name,
+          onedrive: DreamConfig.mew_cloud_onedrive_name,
+          yd: DreamConfig.mew_cloud_yd_name,
+          ty: DreamConfig.mew_cloud_ty_name,
+          lt: DreamConfig.mew_cloud_lt_name,
+          uc: DreamConfig.mew_cloud_uc_name,
+          pan: DreamConfig.mew_cloud_pan_name,
+          oss: DreamConfig.mew_cloud_oss_name,
+          bd: DreamConfig.mew_cloud_bd_name,
+          wy: DreamConfig.mew_cloud_wy_name,
+          ali: DreamConfig.mew_cloud_ali_name,
+          github: DreamConfig.mew_cloud_github_name,
+          gitee: DreamConfig.mew_cloud_gitee_name,
+          gitlab: DreamConfig.mew_cloud_gitlab_name,
+          gitea: DreamConfig.mew_cloud_gitea_name,
+          git: DreamConfig.mew_cloud_git_name,
+          lz: DreamConfig.mew_cloud_lz_name,
         }
         this.innerHTML = `
 					<div class="mew-cloud-logo type-${type[this.options.type] ? this.options.type : 'default'}"></div>
 					<div class="mew-cloud-desc">
 						<div class="mew-cloud-desc-title">${this.options.title}</div>
-						<div class="mew-cloud-desc-type">来源：${type[this.options.type] || '网络来源'}${this.options.password ? ' | 提取码：' + this.options.password : ''}</div>
+						<div class="mew-cloud-desc-type">${DreamConfig.mew_cloud_source + (type[this.options.type] || DreamConfig.mew_cloud_default_name)}${this.options.password ? ' | ' + DreamConfig.mew_cloud_extraction + this.options.password : ''}</div>
 					</div>
 					<a class="mew-cloud-link" href="${this.options.url}" target="_blank" aria-label="${this.options.title}" title="${this.options.title}" rel="noopener noreferrer nofollow">
 						<i class="ri-download-line"></i>
@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
           )
             ? this.getAttribute('type')
             : 'info',
-          content: this.innerHTML || '消息内容',
+          content: this.innerHTML || '',
         }
         this.innerHTML = this.options.content
         this.setAttribute('type', this.options.type)
@@ -389,40 +389,40 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     })
 
-  customElements.define(
-    'mew-link',
-    class MewLink extends MewElement {
-      async init() {
-        this.options = {
-          img: this.getAttribute('img'),
-          href: this.getAttribute('href') || '',
-          title: this.getAttribute('title'),
-          slug: this.getAttribute('slug'),
-          id: this.getAttribute('id'),
-          type: this.getAttribute('type') || 'post',
-          desc: this.innerHTML
-        }
-        if (this.options.id || this.options.slug) {
-          await Utils.request({
-            url: this.options.id ? `/api/content/${this.options.type}s/${this.options.id}` : `/api/content/${this.options.type}s/slug?slug=${this.options.slug}`,
-            method: 'GET',
-          })
-            .then(res => {
-              this.options.img = this.options.img || res.thumbnail
-              this.options.href = this.options.title || res.fullPath
-              this.options.title = this.options.title || res.title
-              this.options.desc = this.options.desc || res.summary
-            })
-            .catch(error => {
-              this.options.desc = `Error: ${error}`
-            })
-        }
-        const imageElem = this.options.img ? `<span class="mew-link-image"><img class="link-image not-gallery" src="${this.options.img}"/></span>` : ''
-        const descElem = this.options.desc ? `<span class="info-desc">${this.options.desc}</span>` : `<span class="mew-link-href info-desc">${this.options.href}</span>`
-        this.innerHTML = `<a class="mew-link" target="_blank" href="${this.options.href}" aria-label="${this.options.title || '我分享了一个网站'}" title="${this.options.title || '我分享了一个网站'}"><span class="mew-link-info"><p class="info-title">${this.options.title || '我分享了一个网站'}</p>${descElem}</span>${imageElem}</a>`
-        this.drawComplete()
-      }
-    })
+  // customElements.define(
+  //   'mew-link',
+  //   class MewLink extends MewElement {
+  //     async init() {
+  //       this.options = {
+  //         img: this.getAttribute('img'),
+  //         href: this.getAttribute('href') || '',
+  //         title: this.getAttribute('title'),
+  //         slug: this.getAttribute('slug'),
+  //         id: this.getAttribute('id'),
+  //         type: this.getAttribute('type') || 'post',
+  //         desc: this.innerHTML
+  //       }
+  //       if (this.options.id || this.options.slug) {
+  //         await Utils.request({
+  //           url: this.options.id ? `/api/content/${this.options.type}s/${this.options.id}` : `/api/content/${this.options.type}s/slug?slug=${this.options.slug}`,
+  //           method: 'GET',
+  //         })
+  //           .then(res => {
+  //             this.options.img = this.options.img || res.thumbnail
+  //             this.options.href = this.options.title || res.fullPath
+  //             this.options.title = this.options.title || res.title
+  //             this.options.desc = this.options.desc || res.summary
+  //           })
+  //           .catch(error => {
+  //             this.options.desc = `Error: ${error}`
+  //           })
+  //       }
+  //       const imageElem = this.options.img ? `<span class="mew-link-image"><img class="link-image not-gallery" src="${this.options.img}"/></span>` : ''
+  //       const descElem = this.options.desc ? `<span class="info-desc">${this.options.desc}</span>` : `<span class="mew-link-href info-desc">${this.options.href}</span>`
+  //       this.innerHTML = `<a class="mew-link" target="_blank" href="${this.options.href}" aria-label="${this.options.title || '我分享了一个网站'}" title="${this.options.title || '我分享了一个网站'}"><span class="mew-link-info"><p class="info-title">${this.options.title || '我分享了一个网站'}</p>${descElem}</span>${imageElem}</a>`
+  //       this.drawComplete()
+  //     }
+  //   })
 
   customElements.define(
     'mew-video',
@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? this.getAttribute('width')
             : '100%',
         }
-        this.innerHTML = `<video width="${this.options.width}" ${this.options.poster ? `poster="${this.options.poster}"` : ''}${this.options.autoplay ? ' autoplay' : ''}${this.options.controls ? ' controls' : ''}${this.options.loop ? ' loop' : ''}${this.options.muted ? ' muted' : ''}${this.options.preload ? ' preload' : ''}><source src="${this.options.src}" ${this.options.type ? `type="${this.options.type}"` : ''}>不支持视频播放器！</video>`
+        this.innerHTML = `<video width="${this.options.width}" ${this.options.poster ? `poster="${this.options.poster}"` : ''}${this.options.autoplay ? ' autoplay' : ''}${this.options.controls ? ' controls' : ''}${this.options.loop ? ' loop' : ''}${this.options.muted ? ' muted' : ''}${this.options.preload ? ' preload' : ''}><source src="${this.options.src}" ${this.options.type ? `type="${this.options.type}"` : ''}>${DreamConfig.global_browser_not_supported}</video>`
         this.drawComplete()
       }
     })
