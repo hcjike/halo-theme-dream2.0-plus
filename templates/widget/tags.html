@@ -3,7 +3,7 @@
      th:class="'card widget tags ' + ${sidebar.hide}"
      th:with="num = ${#strings.isEmpty(theme.config.sidebar.tags_num)? 18 : T(java.lang.Integer).parseInt(theme.config.sidebar.tags_num)},
      tags = ${tagFinder.list(1,num)},
-     isEmpty = ${#lists.isEmpty(tags)},
+     isEmpty = ${#lists.isEmpty(tags.items)},
      enableTagsColor = ${theme.config.sidebar.enable_tag_color}">
     <div class="card-title" th:with="defaultTitle=#{widget.tag.title}">
         <i th:class="${#strings.defaultString(sidebar.icon, 'ri-price-tag-3-line') + ' card-title-label'}"></i><span
@@ -13,7 +13,7 @@
     <div th:if="${isEmpty}" class="card-empty">[[#{widget.tag.empty.tip}]]</div>
     <div th:unless="${isEmpty}" class="card-content">
         <a th:aria-label="${tag.spec.displayName}" th:title="${tag.spec.displayName}"
-           th:each="tag : ${tags}"
+           th:each="tag : ${tags.items}"
            th:href="@{${tag.status.permalink}}"
            th:text="${tag.spec.displayName}"
            th:style="${(enableTagsColor && tag.spec.color != '#ffffff')? 'color: ' + tag.spec.color +'; border-color: ' + tag.spec.color +'; background: ' + tag.spec.color +'20;' : ''}"></a>

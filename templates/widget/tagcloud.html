@@ -3,7 +3,7 @@
      th:class="'card widget tagcloud ' + ${sidebar.hide}"
      th:with="num = ${#strings.isEmpty(theme.config.sidebar.tags_num)? 32 : T(java.lang.Integer).parseInt(theme.config.sidebar.tags_num)},
       tags = ${tagFinder.list(1,num)},
-      isEmpty = ${#lists.isEmpty(tags)},
+      isEmpty = ${#lists.isEmpty(tags.items)},
       enableTagsColor = ${theme.config.sidebar.enable_tagcloud_color}">
 
     <div class="card-title" th:with="defaultTitle=#{widget.tagcloud.title}">
@@ -15,7 +15,7 @@
     <div th:if="${isEmpty}" class="card-empty">[[#{widget.tag.empty.tip}]]</div>
     <div th:unless="${isEmpty}" class="card-content">
         <a th:aria-label="${tag.spec.displayName}" th:title="${tag.spec.displayName}"
-           th:each="tag : ${tags}"
+           th:each="tag : ${tags.items}"
            th:href="@{${tag.status.permalink}}"
            th:text="${tag.spec.displayName}"
            th:with="size = ${#strings.length(tag.spec.displayName) + #strings.length(tag.spec.slug) + (tag.postCount != null ? tag.postCount : 0)}"
