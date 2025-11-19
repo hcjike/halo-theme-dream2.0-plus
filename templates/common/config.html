@@ -73,6 +73,7 @@
     DreamConfig["site_title"] = [[${site.title}]];
     /** 灰色模式 */
     DreamConfig["gray_mode"] = [[${theme.config.enhance.gray_mode_group.enable_gray_mode}]];
+    /** 定义多语言资源 */
     DreamConfig["site_time_expression"]=[[#{footer.site_time.desc}]];
     DreamConfig['love_time_template'] = [[#{widget.love.time.template}]];
     DreamConfig["love_time_template_year"] = [[#{widget.love.time.template_year}]];
@@ -102,6 +103,33 @@
         percent: '0%',
       },
     ]
+    /** 禁止debug资源 */
+    DreamConfig["ban_debug_tips"] = [[#{js.ban_debug.tips}]];
+    DreamConfig["ban_debug_back_home"] = [[#{js.ban_debug.back_home}]];
+    /** 分享 */
+    DreamConfig["dshare_qq_name"] = [[#{js.dshare.qq.name}]];
+    DreamConfig["dshare_qzone_name"] = [[#{js.dshare.qzone.name}]];
+    DreamConfig["dshare_wechat_name"] = [[#{js.dshare.wechat.name}]];
+    DreamConfig["dshare_wechat_qr_title"] = [[#{js.dshare.wechat.qr.title}]];
+    DreamConfig["dshare_weibo_name"] = [[#{js.dshare.weibo.name}]];
+    DreamConfig["dshare_douban_name"] = [[#{js.dshare.douban.name}]];
+    DreamConfig["dshare_linkedin_name"] = [[#{js.dshare.linkedin.name}]];
+    DreamConfig["dshare_facebook_name"] = [[#{js.dshare.facebook.name}]];
+    DreamConfig["dshare_twitter_name"] = [[#{js.dshare.twitter.name}]];
+    DreamConfig["dshare_google_name"] = [[#{js.dshare.google.name}]];
+    DreamConfig["dshare_link_name"] = [[#{js.dshare.link.name}]];
+    DreamConfig["dshare_poster_name"] = [[#{js.dshare.poster.name}]];
+    DreamConfig["dshare_poster_title"] = [[#{js.dshare.poster.title}]];
+    DreamConfig["dshare_poster_tip"] = [[#{js.dshare.poster.tip}]];
+    DreamConfig["dshare_poster_button_name"] = [[#{js.dshare.poster.button.name}]];
+    /** 瞬间分享标题 */
+    DreamConfig["journals_share_title"] = [[#{js.journals.share.title}]];
+    /** 一些通用多语言变量 */
+    DreamConfig["global_copy_name"] = [[#{global.copy.name}]];
+    DreamConfig["global_copy_success"] = [[#{global.copy.success}]];
+    DreamConfig["global_browser_not_supported"] = [[#{global.browser.not_supported}]];
+    DreamConfig["global_request_fail"] = [[#{global.request.fail}]];
+    DreamConfig["global_like_success"] = [[#{global.like.success}]];
     /** 配置自定义灰色模式时段 */
     let gray_mode_time_list = []
     let custom_gray_mode_time_list = [[${theme.config.enhance.gray_mode_group.gray_mode_time_list}]];

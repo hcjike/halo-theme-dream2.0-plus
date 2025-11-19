@@ -3,45 +3,45 @@ import html2canvas from 'html2canvas'
 
 const channels = {
   qq: {
-    name: 'QQ',
+    name: DreamConfig.dshare_qq_name,
     template: 'http://connect.qq.com/widget/shareqq/index.html?url={{URL}}&title={{TITLE}}&source={{SOURCE}}&desc={{DESCRIPTION}}&pics={{IMAGE}}&summary={{SUMMARY}}'
   },
   qzone: {
-    name: 'QQ空间',
+    name: DreamConfig.dshare_qzone_name,
     template: 'http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url={{URL}}&title={{TITLE}}&desc={{DESCRIPTION}}&summary={{SUMMARY}}&site={{SOURCE}}&pics={{IMAGE}}'
   },
   wechat: {
-    name: '微信'
+    name: DreamConfig.dshare_wechat_name
   },
   weibo: {
-    name: '新浪微博',
+    name: DreamConfig.dshare_weibo_name,
     template: 'https://service.weibo.com/share/share.php?url={{URL}}&title={{TITLE}}&pic={{IMAGE}}&appkey={{KEY}}'
   },
   douban: {
-    name: '豆瓣',
+    name: DreamConfig.dshare_douban_name,
     template: 'http://shuo.douban.com/!service/share?href={{URL}}&name={{TITLE}}&text={{DESCRIPTION}}&image={{IMAGE}}&starid=0&aid=0&style=11'
   },
   linkedin: {
-    name: 'Linkedin',
+    name: DreamConfig.dshare_linkedin_name,
     template: 'http://www.linkedin.com/shareArticle?mini=true&ro=true&title={{TITLE}}&url={{URL}}&summary={{SUMMARY}}&source={{SOURCE}}&armin=armin'
   },
   facebook: {
-    name: 'FaceBook',
+    name: DreamConfig.dshare_facebook_name,
     template: 'https://www.facebook.com/sharer/sharer.php?u={{URL}}'
   },
   twitter: {
-    name: 'Twitter',
+    name: DreamConfig.dshare_twitter_name,
     template: 'https://twitter.com/intent/tweet?text={{TITLE}}&url={{URL}}&via={{ORIGIN}}'
   },
   google: {
-    name: 'Google',
+    name: DreamConfig.dshare_google_name,
     template: 'https://plus.google.com/share?url={{URL}}'
   },
   link: {
-    name: '复制链接'
+    name: DreamConfig.dshare_link_name
   },
   poster: {
-    name: '海报'
+    name: DreamConfig.dshare_poster_name
   }
 }
 
@@ -78,8 +78,8 @@ window.DShare = {
     config.sites.indexOf('wechat') !== -1 && createWechatShare(config, element)
     if(config.sites.indexOf('link') !== -1){
       linkCopy = new ClipboardJS('.icon-link', {text: () => config.url})
-        .on('error', () => Qmsg.error('您的浏览器不支持复制'))
-        .on('success', () => Qmsg.success('链接复制成功'))
+        .on('error', () => Qmsg.error(DreamConfig.global_browser_not_supported))
+        .on('success', () => Qmsg.success(DreamConfig.global_copy_success))
     }
     config.sites.indexOf('poster') !== -1 && $body.on('click', '.icon-poster', () => triggerPosterShare(config))
   },
@@ -100,7 +100,7 @@ window.DShare = {
 function createWechatShare(config, element) {
   QRCode.toDataURL(config.url, { width: 140})
     .then(data => {
-      element.find('.icon-wechat').append(`<div class="wechat-qrcode"><h4>微信扫一扫：分享</h4><img alt="微信分享" src="${data}"/></div>`)
+      element.find('.icon-wechat').append(`<div class="wechat-qrcode"><h4>${DreamConfig.dshare_wechat_qr_title}</h4><img alt="${DreamConfig.dshare_wechat_qr_title}" src="${data}"/></div>`)
     })
 }
 
@@ -114,19 +114,19 @@ function triggerPosterShare(config) {
             <div class="dshare-poster click-animation-close pjax-close">
             <div class="dshare-poster-container">
               <div class="dshare-poster-crad">
-                  ${config.image ? `<div class="dshare-poster-cover"><img alt="封面" src="${config.image}"/></div>` : ''}
+                  ${config.image ? `<div class="dshare-poster-cover"><img alt="${DreamConfig.dshare_poster_title}" src="${config.image}"/></div>` : ''}
                   ${config.title ? '<div class="dshare-poster-content"><p class="dshare-poster-title"></p>' : ''}
                     <p class="dshare-poster-desc"></p>
                     <div class="dshare-poster-footer">
-                      <img class="dshare-poster-qrcode" src="${data}" alt="分享海报"/>
+                      <img class="dshare-poster-qrcode" src="${data}" alt="${DreamConfig.dshare_poster_title}"/>
                       <div class="dshare-poster-qrcode-info">
                         <p class="dshare-poster-qrcode-site"></p>
-                        <p class="dshare-poster-qrcode-msg">手机扫描二维码查看</p>
+                        <p class="dshare-poster-qrcode-msg">${DreamConfig.dshare_poster_tip}</p>
                       </div>
                     </div>
                   ${config.title ? '</div>' : ''}
               </div>
-              <i title="点击下载封面" class="dshare-poster-download ri-download-line"></i>
+              <i title="${DreamConfig.dshare_poster_button_name}" class="dshare-poster-download ri-download-line"></i>
             </div>
           </div>
         `)

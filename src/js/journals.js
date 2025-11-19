@@ -14,7 +14,7 @@ const journalContext = {
     })
     $body.on('click', '.journal-operation-item>.share', function () {
       let $journal = $(this).parents('.journal')
-      let title = '动态: ' + $journal.find('.journal-date>em').text()
+      let title = DreamConfig.journals_share_title + $journal.find('.journal-date>em').text()
       let desc = $journal.children('.journal-content').children('.main-content').text()
       DShare.sharePoster({
         image: DreamConfig.journals_share_image,

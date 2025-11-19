@@ -26,14 +26,10 @@
   function showBlockMessage() {
     document.body.innerHTML = '<div style="position: fixed; width: 100%; height: 100%;top: 0;left: 0;display: flex;justify-content: center;align-items: center;font-size: 1.5rem;">\n' +
       '<div>' +
-      '<div style="text-align: center;">' +
-      '系统已关闭调试功能！<br/>' +
-      '如有需要，请联系技术支持团队获取帮助。' +
-      '<br/>' +
-      '感谢您的理解与配合！' +
+      '<div style="text-align: center;">' + DreamConfig.ban_debug_tips +
       '</div>' +
       '<br/>' +
-      '<a style="display: flex; justify-content: center;" data-not-pjax href="/">返回首页</a>' +
+      '<a style="display: flex; justify-content: center;" data-not-pjax href="/">'+DreamConfig.ban_debug_back_home+'</a>' +
       '</div>' +
       '</div>'
   }

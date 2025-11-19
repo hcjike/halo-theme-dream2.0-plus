@@ -64,7 +64,7 @@ const postContext = {
         $(this).parent().hide()
       }
       // 生成标题栏的按钮
-      let titleButton = `<div><i class="ri-arrow-down-s-line${close}" data-code='#${id}'></i><i class="ri-file-copy-2-line btn-clipboard" title="复制代码" data-clipboard-target='#${id}'></i></div>`
+      let titleButton = `<div><i class="ri-arrow-down-s-line${close}" data-code='#${id}'></i><i class="ri-file-copy-2-line btn-clipboard" title="${DreamConfig.global_copy_name}" data-clipboard-target='#${id}'></i></div>`
 
       // 组装代码块
       $(this).attr('id', id)
@@ -118,10 +118,10 @@ const postContext = {
     window.clipboard = new ClipboardJS('.btn-clipboard')
     clipboard.on('error', function (e) {
       e.clearSelection()
-      Qmsg.error('您的浏览器不支持复制')
+      Qmsg.error(DreamConfig.global_browser_not_supported)
     })
     clipboard.on('success', function () {
-      Qmsg.success('复制成功')
+      Qmsg.success(DreamConfig.global_copy_success)
     })
   },
   /* 初始化图片折叠 */
