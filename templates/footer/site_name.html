@@ -1,8 +1,11 @@
 <a xmlns:th="https://www.thymeleaf.org"
    th:fragment="footer (footer)" class="record"
    th:with="mobileLine = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'mobile_line')},
-               hideSeparator = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hide_separator')}"
-   th:classappend="|${mobileLine ? 'footer-truncation' : ''}${mobileLine and hideSeparator ? ' ' : ''}${hideSeparator ? 'exclusive' : ''}|"
+               hideSeparator = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hide_separator')},
+               hideMobile = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hidden_mobile')},
+               hideNotMobile = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hidden_not_mobile')},
+               classStr = ${#strings.trim(#strings.arrayJoin({(mobileLine ? 'footer-truncation' : ''), (hideSeparator ? 'exclusive' : ''), (hideMobile ? 'is-hidden-mobile' : ''), (hideNotMobile ? 'is-hidden-not-mobile' : '')},' '))}"
+   th:classappend="${classStr}"
    href="/" rel="noopener noreferrer nofollow" th:aria-label="${site.title}" th:title="${site.title}"
    th:text="${site.title}">
 </a>
