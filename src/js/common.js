@@ -709,7 +709,7 @@ const commonContext = {
   },
   /* 显示主题版本信息 */
   showThemeVersion() {
-    window.logger(`%c页面加载耗时：${Math.round(performance.now())}ms | Theme By Dream2 Plus ${DreamConfig.theme_version}`,
+    window.logger(`%c页面加载耗时：${Math.round(performance.now())}ms | Theme By Dream2 Plus ${DreamConfig.theme_version} | https://github.com/hcjike/halo-theme-dream2.0-plus`,
       'color:#fff; background: linear-gradient(270deg, #986fee, #8695e6, #68b7dd, #18d7d3); padding: 8px 15px; border-radius: 0 15px 0 15px')
   },
   /* 控制是否显示Banner */

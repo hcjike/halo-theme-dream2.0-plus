@@ -4,7 +4,10 @@
       th:if="${!#strings.isEmpty(theme.config.basic_info.website_time)}"
       th:with="mobileLine = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'mobile_line')},
                hideSeparator = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hide_separator')},
+               hideMobile = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hidden_mobile')},
+               hideNotMobile = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hidden_not_mobile')},
+               classStr = ${#strings.trim(#strings.arrayJoin({(mobileLine ? 'footer-truncation' : ''), (hideSeparator ? 'exclusive' : ''), (hideMobile ? 'is-hidden-mobile' : ''), (hideNotMobile ? 'is-hidden-not-mobile' : '')},' '))},
                html='&lt;span class=&quot;stand&quot;&gt;0&lt;/span&gt;'"
-      th:classappend="|${mobileLine ? 'footer-truncation' : ''}${mobileLine and hideSeparator ? ' ' : ''}${hideSeparator ? 'exclusive' : ''}|"
+      th:classappend="${classStr}"
       th:utext="${#messages.msgWithParams('footer.site_time.desc', {html, html, html, html})}">
 </span>

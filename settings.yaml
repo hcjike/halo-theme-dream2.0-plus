@@ -133,12 +133,16 @@ spec:
                   clearable: true
                   searchable: false
                   label: 显示风格
-                  help: 手机端独占一行：该组件在移动端独占一行，其后的内容将置于下行位置。隐藏间隔符：该组件将隐藏间隔符，与前一组件更紧凑。
+                  help: 移动设备独占一行：该组件在移动端独占一行，其后的内容将置于下行位置。隐藏间隔符：该组件将隐藏间隔符，与前一组件更紧凑。
                   options:
                     - value: 'mobile_line'
-                      label: 手机端独占一行
+                      label: 移动设备独占一行
                     - value: 'hide_separator'
                       label: 隐藏间隔符
+                    - value: 'hidden_mobile'
+                      label: 移动设备隐藏
+                    - value: 'hidden_not_mobile'
+                      label: 非移动设备隐藏
                 - $formkit: code
                   name: content
                   if: $value.type === 'custom'
