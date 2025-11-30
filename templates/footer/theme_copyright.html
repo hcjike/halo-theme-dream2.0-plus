@@ -1,10 +1,6 @@
 <span xmlns:th="https://www.thymeleaf.org"
       th:fragment="footer (footer)"
-      th:with="mobileLine = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'mobile_line')},
-               hideSeparator = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hide_separator')},
-               hideMobile = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hidden_mobile')},
-               hideNotMobile = ${footer != null and not #lists.isEmpty(footer.show_style) and #lists.contains(footer.show_style, 'hidden_not_mobile')},
-               classStr = ${#strings.trim(#strings.arrayJoin({(mobileLine ? 'footer-truncation' : ''), (hideSeparator ? 'exclusive' : ''), (hideMobile ? 'is-hidden-mobile' : ''), (hideNotMobile ? 'is-hidden-not-mobile' : '')},' '))}"
+      th:with="classStr = ${footer != null and not #lists.isEmpty(footer.show_style) ? #strings.trim(#strings.listJoin(footer.show_style,' ')) : ''}"
       th:classappend="${classStr}">
     Powered by <span class="footer-copyright"><a class="powered footer-copyright-halo"
                                                  href="https://halo.run/"

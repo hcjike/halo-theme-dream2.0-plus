@@ -4238,7 +4238,8 @@ details[open] > summary::before {
         vertical-align: 0.2em;
       }
 
-      & > .exclusive::before {
+      & > .exclusive::before,
+      & > .hide_separator::before {
         display: none !important;
       }
 
@@ -4474,7 +4475,8 @@ details[open] > summary::before {
     display: none !important;
   }
 
-  .is-hidden-mobile {
+  .is-hidden-mobile,
+  .hidden_mobile {
     display: none !important;
   }
 
@@ -4536,7 +4538,8 @@ details[open] > summary::before {
         float: none;
       }
 
-      .footer-truncation {
+      .footer-truncation,
+      .mobile_line {
         display: block;
 
         &:before {
@@ -4606,7 +4609,8 @@ details[open] > summary::before {
       order: 3;
     }
 
-    .is-hidden-not-mobile {
+    .is-hidden-not-mobile,
+    .hidden_not_mobile {
       display: none !important;
     }
   }
