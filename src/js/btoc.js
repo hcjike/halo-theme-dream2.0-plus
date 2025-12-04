@@ -101,7 +101,7 @@ function register($toc) {
     if ($heading) {
       headingToMenu.set($heading, $menu)
 
-      // 在这里集成展开逻辑
+      // 展开逻辑
       const menuList = $menu.nextElementSibling
       if (menuList && menuList.classList.contains('menu-list')) {
         $menu.addEventListener('click', function (e) {
@@ -116,7 +116,6 @@ function register($toc) {
             e.stopPropagation()
             // 切换展开状态
             this.classList.toggle('is-expand')
-            console.log('✅ 展开状态切换，阻止锚点定位')
           } else {
             // 执行原有的平滑滚动逻辑
             handleSmoothScrolling($menu, e)
@@ -138,7 +137,7 @@ function register($toc) {
     var element = document.getElementById(that.getAttribute('data-id').substring(1))
     if (element) {
       let rect = element.getBoundingClientRect()
-      let currentY = window.pageYOffset
+      let currentY = window.scrollY
       let targetY = currentY + rect.top - headingsOffset
       let speed = (targetY - currentY) / time
       let offset = currentY > targetY ? -1 : 1
