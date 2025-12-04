@@ -5,11 +5,11 @@ function Btoc(tocList, contentElement) {
   this.eIndex = 0
 
   /**
-     * 递归读取目标标签中所有的符合要求的标签
-     * @param element
-     * @param tocList
-     * @returns {any[]|null}
-     */
+   * 递归读取目标标签中所有的符合要求的标签
+   * @param element
+   * @param tocList
+   * @returns {any[]|null}
+   */
   function getChild(element, tocList) {
     if (element == null) {
       return null
@@ -31,8 +31,8 @@ function Btoc(tocList, contentElement) {
   }
 
   /**
-     * 生成目录
-     */
+   * 生成目录
+   */
   this.build = function () {
     if (this.elementList == null || this.elementList.length === 0) {
       return ''
@@ -43,11 +43,11 @@ function Btoc(tocList, contentElement) {
   }
 
   /**
-     * 解析目录
-     * @param last 最小的标签（即上级目录的标签）
-     * @param depth 当前标签
-     * @returns {string} 解析的目录内容
-     */
+   * 解析目录
+   * @param last 最小的标签（即上级目录的标签）
+   * @param depth 当前标签
+   * @returns {string} 解析的目录内容
+   */
   this.analysis = function (last, depth) {
     var tocStr = '<ul class=\'menu-list\'>'
     while (this.eIndex < this.elementList.length) {
@@ -84,7 +84,9 @@ function Btoc(tocList, contentElement) {
     return tocStr + '</ul>'
   }
 }
+
 const observers = []
+
 function register($toc) {
   // toc滚动时间和偏移量
   const time = 20
@@ -98,11 +100,66 @@ function register($toc) {
     const $heading = document.getElementById(elementId)
     if ($heading) {
       headingToMenu.set($heading, $menu)
+
+      // 在这里集成展开逻辑
+      const menuList = $menu.nextElementSibling
+      if (menuList && menuList.classList.contains('menu-list')) {
+        $menu.addEventListener('click', function (e) {
+          // 计算点击位置是否在图标区域内
+          const rect = this.getBoundingClientRect()
+          const fontSize = parseFloat(getComputedStyle(this).fontSize)
+          const iconAreaStart = rect.right - (2.5 * fontSize)
+          const isIconClick = e.clientX > iconAreaStart
+
+          if (isIconClick && !$menu.classList.contains('is-active')) {
+            e.preventDefault()
+            e.stopPropagation()
+            // 切换展开状态
+            this.classList.toggle('is-expand')
+            console.log('✅ 展开状态切换，阻止锚点定位')
+          } else {
+            // 执行原有的平滑滚动逻辑
+            handleSmoothScrolling($menu, e)
+          }
+        })
+      } else {
+        // 没有子菜单的项，只执行平滑滚动
+        $menu.addEventListener('click', function (e) {
+          handleSmoothScrolling($menu, e)
+        })
+      }
+    }
+    if (headingToMenu.has($heading)) {
+      $heading.style.scrollMargin = '1em'
     }
   }
 
-  const $headings = Array.from(headingToMenu.keys())
+  function handleSmoothScrolling(that, e) {
+    var element = document.getElementById(that.getAttribute('data-id').substring(1))
+    if (element) {
+      let rect = element.getBoundingClientRect()
+      let currentY = window.pageYOffset
+      let targetY = currentY + rect.top - headingsOffset
+      let speed = (targetY - currentY) / time
+      let offset = currentY > targetY ? -1 : 1
+      let requestId
 
+      function step(timestamp) {
+        currentY += speed
+        if (currentY * offset < targetY * offset) {
+          window.scrollTo(0, currentY)
+          requestId = window.requestAnimationFrame(step)
+        } else {
+          window.scrollTo(0, targetY)
+          window.cancelAnimationFrame(requestId)
+        }
+      }
+
+      window.requestAnimationFrame(step)
+    }
+  }
+
+  // 原有的 IntersectionObserver 逻辑保持不变
   const callback = (entries) => {
     for (const entry of entries) {
       if (entry.isIntersecting) {
@@ -113,10 +170,8 @@ function register($toc) {
     }
     let $heading
     if (currentInView.size) {
-      // heading is the first in-view heading
       $heading = [...currentInView].sort(($el1, $el2) => $el1.offsetTop - $el2.offsetTop)[0]
     } else if ($headings.length) {
-      // heading is the closest heading above the viewport top
       $heading = $headings
         .filter(($heading) => $heading.offsetTop < window.scrollY)
         .sort(($el1, $el2) => $el2.offsetTop - $el1.offsetTop)[0]
@@ -126,50 +181,26 @@ function register($toc) {
 
       const $menu = headingToMenu.get($heading)
       $menu.classList.add('is-active')
+      $menu.classList.remove('is-expand')
       let $menuList = $menu.parentElement.parentElement
       while (
         $menuList.classList.contains('menu-list') &&
-                $menuList.parentElement.tagName.toLowerCase() === 'li'
-      ) {
+        $menuList.parentElement.tagName.toLowerCase() === 'li') {
         $menuList.parentElement.children[0].classList.add('is-active')
+        $menuList.parentElement.children[0].classList.remove('is-expand')
         $menuList = $menuList.parentElement.parentElement
       }
     }
   }
-  const observer = new IntersectionObserver(callback, { threshold: 0 })
+  const observer = new IntersectionObserver(callback, {threshold: 0})
 
+  const $headings = Array.from(headingToMenu.keys())
   for (const $heading of $headings) {
     observer.observe($heading)
-    // smooth scroll to the heading
-    if (headingToMenu.has($heading)) {
-      const $menu = headingToMenu.get($heading)
-      $menu.addEventListener('click', () => {
-        var element = document.getElementById($menu.getAttribute('data-id').substring(1))
-        let rect = element.getBoundingClientRect()
-        let currentY = window.pageYOffset
-        let targetY = currentY + rect.top - headingsOffset
-        let speed = (targetY - currentY) / time
-        let offset = currentY > targetY ? -1 : 1
-        let requestId
-        function step(timestamp) {
-          currentY+=speed
-          if(currentY * offset < targetY * offset){
-            window.scrollTo(0,currentY)
-            requestId=window.requestAnimationFrame(step)
-          }else{
-            window.scrollTo(0,targetY)
-            window.cancelAnimationFrame(requestId)
-          }
-        }
-        window.requestAnimationFrame(step)
-      })
-    }
-    if (headingToMenu.has($heading)) {
-      $heading.style.scrollMargin = '1em'
-    }
   }
   observers.push(observer)
 }
+
 Btoc.init = function (params) {
   const tocList = params['tocList']
   const contentElement = params['contentElement']
