@@ -715,8 +715,38 @@ table td, table th {
     border-left: 1px solid var(--light-d);
   }
 
-  & > li > a:not(.is-active) + .menu-list {
+  & > li > a:not(.is-active):not(.is-expand) + .menu-list {
     display: none;
+  }
+
+  & > li > a {
+    position: relative;
+    display: block;
+
+    &:has(+ .menu-list) {
+      padding-right: 2em;
+    }
+
+    &:has(+ .menu-list)::after {
+      content: "\ea6e";
+      font-family: 'remixicon';
+      position: absolute;
+      width: 1.5em;
+      right: 0.5em;
+      top: 50%; // 垂直居中
+      transform: translateY(-50%); // 精确垂直居中
+      transition: transform 0.3s ease;
+      transform-origin: center center; // 确保围绕中心点旋转
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 展开状态 */
+    &.is-expand::after,
+    &.is-active::after {
+      transform: translateY(-50%) rotate(90deg); // 保持垂直居中同时旋转
+    }
   }
 }
 
@@ -1397,9 +1427,9 @@ table td, table th {
         display: none;
       }
 
-      .menu-list > li > a:not(.is-active) + .menu-list {
-        display: block;
-      }
+      //.menu-list > li > a:not(.is-active):not(.is-expand) + .menu-list {
+      //  display: block;
+      //}
 
       .item {
         display: flex;
