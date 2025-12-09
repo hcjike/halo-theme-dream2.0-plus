@@ -32,6 +32,11 @@
             filter: grayscale(1) !important;
         }
 
+        .others-end a:active {
+            transform: scale(0.95) translateZ(0);
+            opacity: 0.8;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -75,13 +80,6 @@
             -webkit-backdrop-filter: blur(10px);
         }
 
-        html .others-tip {
-            background: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-
         html.night .loading {
             background: rgba(57, 62, 70, 0.6);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -90,38 +88,26 @@
             -webkit-backdrop-filter: blur(10px);
         }
 
-        html.night .others-tip {
-            background: rgba(51, 51, 51, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-
-
-        .others-end a {
-            background: rgba(63, 193, 201, 0.8);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(63, 193, 201, 0.2);
-            line-height: 20px;
-        }
-
         .others-end a:hover {
-            background: rgba(63, 193, 201, 1);
-            box-shadow: 0 6px 20px rgba(63, 193, 201, 0.3);
+            background: var(--theme);
+            box-shadow: 0 3px 8px var(--theme);
         }
 
         .progress-bar {
+            width: 100%;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 10px;
+            margin-top: 20px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .progress {
-            box-shadow: 0 0 10px rgba(171, 237, 216, 0.5);
-        }
+        /*.progress {*/
+        /*    box-shadow: 0 0 10px rgba(171, 237, 216, 0.5);*/
+        /*}*/
 
         @keyframes fadein {
             from { opacity: 0; transform: translateY(20px); }
@@ -132,21 +118,6 @@
             animation: fadein 0.3s ease-out;
         }
 
-        html .others-topic,
-        html .others-tip,
-        html .content-title span {
-            color: #333;
-        }
-
-        html .others-tip {
-            border: 1px solid #ccc;
-            background-color: #F7F9FE;
-        }
-
-        html .progress {
-            background-color: #abedd8;
-        }
-
         .font-color {
             color: #abedd8;
         }
@@ -154,25 +125,6 @@
         html.night .loading {
             background: #393e46;
             box-shadow: 0 4px 8px rgba(100, 100, 100, 0.1);
-        }
-
-        html.night .others-topic,
-        html.night .others-tip,
-        html.night .content-title span {
-            color: #EFEFEF;
-        }
-
-        html.night .others-tip {
-            border: 1px solid #777;
-            background-color: #333;
-        }
-
-        html.night .progress {
-            background-color: #888;
-        }
-
-        html.night .progress-bar {
-            background-color: #444;
         }
 
         @media (max-width: 768px) {
@@ -195,6 +147,8 @@
             -webkit-backdrop-filter: blur(25px);
             box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
             position: relative;
+            z-index: 2;
+            isolation: isolate;
         }
 
         .loading::before {
@@ -238,28 +192,21 @@
         }
 
         .others-tip {
-            font-size: 18px;
+            border: 1px solid var(--light-b);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 20px;
             display: block;
             margin-top: 5px;
             margin-bottom: 25px;
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: #333;
-        }
-
-        html.night .others-tip {
-            border-color: rgba(255, 255, 255, 0.15);
-            background: rgba(51, 51, 51, 0.6);
-            color: #EFEFEF;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #F7F9FE;
+            color: var(--dark-a);
         }
 
         .others-end a {
-            box-shadow: 0 4px 15px rgba(63, 193, 201, 0.3);
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px var(--theme);
             will-change: transform, opacity;
             padding: 10px 20px;
             border-radius: 16px;
@@ -269,14 +216,21 @@
             height: 20px;
             text-align: center;
             text-decoration: none;
-            background: #3fc1c9 linear-gradient(135deg, #3fc1c9, #45b7d1);
-            color: white;
+            color: #eeeeee;
+            background: var(--theme);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            line-height: 20px;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
 
         .content-title {
             margin-bottom: 20px;
             font-size: 20px;
             font-weight: bold;
+            color: var(--title);
         }
 
         .content-title img {
@@ -292,22 +246,10 @@
             line-height: 1.2rem;
             font-size: 16px;
             letter-spacing: 1px;
-            color: #333;
+            color: var(--main);
             word-wrap: break-word;
             white-space: pre-wrap;
             overflow: hidden;
-        }
-
-        .others-tip {
-            font-size: 20px;
-            display: block;
-            margin-top: 5px;
-            margin-bottom: 25px;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            background-color: #F7F9FE;
-            color: #333;
         }
 
         .others-end {
@@ -317,18 +259,10 @@
             margin-top: 20px;
         }
 
-        .progress-bar {
-            width: 100%;
-            border-radius: 5px;
-            overflow: hidden;
-            height: 10px;
-            margin-top: 20px;
-        }
-
         .progress {
             width: 0;
             height: 100%;
-            background-color: #abedd8;
+            background-color: var(--theme);
             transition: width [[${theme.config.security_link_config.security_link_auto_jump_time}]]s linear;
         }
 
@@ -340,7 +274,7 @@
         .countdown-text {
             margin-top: 12px;
             font-size: 12px;
-            color: #333;
+            color: var(--main);
             text-align: center;
             white-space: normal;
             word-wrap: break-word;
@@ -353,20 +287,9 @@
             color: #FF9800;
         }
 
-        html.night .countdown-text {
-            color: #EFEFEF;
-        }
-
         #countdown {
-          font-weight: bold;
-        }
-
-        html.night #countdown {
-            color: #3fc1c9;
-        }
-
-        html #countdown {
-            color: #26a1a6;
+            font-weight: bold;
+            color: var(--theme);
         }
 
     </style>
@@ -392,7 +315,7 @@
                 </div>
                 <div class="countdown-text" th:with="linkHtml='&lt;span id=&quot;countdown&quot;&gt;' + ${theme.config.security_link_config.security_link_auto_jump_time} + '&lt;/span&gt;',
                     finalMessage=${#messages.msg('page.security_link.countdown_tip', linkHtml)}">
-                    <i class="ri-flashlight-fill"></i>[(${finalMessage})]
+                    <i class="ri-flashlight-fill"></i><span id="countdown_text_tip" th:utext="${finalMessage}"></span>
                 </div>
                 <div class="others-end">
                     <a target="_self" href="/" th:aria-label="#{page.security_link.button.continue}" th:title="#{page.security_link.button.continue}">[[#{page.security_link.button.continue}]]</a>
@@ -438,6 +361,7 @@
         // 倒计时
         let timer
         let countdownElement
+        let countdownTextElement = document.getElementById('countdown_text_tip')
         let countdown = [[${theme.config.security_link_config.security_link_auto_jump_time}]]
         if (countdown > 0) {
           const progress = document.querySelector('.progress');
@@ -449,6 +373,7 @@
             countdown--
             countdownElement.textContent = countdown
             if (countdown <= 0) {
+              countdownTextElement.textContent = '[[#{page.security_link.countdown_tip_jump}]]'
               clearInterval(timer)
               window.location.replace(targetUrl);
             }
@@ -467,6 +392,7 @@
           if (countdownElement) {
             countdownElement.textContent = 0
           }
+          countdownTextElement.textContent = '[[#{page.security_link.countdown_tip_jump}]]'
           document.querySelector('.progress-bar > .progress').classList.add('progress-end')
         })
       });
