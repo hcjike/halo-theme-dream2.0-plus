@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <th:block
-  th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.friends.browser.title', title, site.title)}, canonical = @{/friends}, content = ~{::content}, isPost = true)}"
+  th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.friends.browser.title', title, site.title)}, canonical = @{/friends}, content = ~{::content}, isPost = true, hideSidebar = false)}"
   th:with="isJournals = true, enableShare = false, baseEnableComment = false"
   xmlns:th="https://www.thymeleaf.org">
   <th:block th:fragment="content">

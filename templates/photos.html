@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <th:block xmlns:th="https://www.thymeleaf.org"
-          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.moments.browser.title', title, site.title)}, canonical = @{/photos}, content = ~{::content}, isPost = false)}"
+          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.moments.browser.title', title, site.title)}, canonical = @{/photos}, content = ~{::content}, isPost = false, hideSidebar = false)}"
           th:with="isPhotos = true">
     <th:block th:fragment="content">
         <div class="card card-content photos">

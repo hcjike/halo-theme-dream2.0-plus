@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <th:block xmlns:th="https://www.thymeleaf.org"
           th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.tag.browser.title', tag.spec.displayName, site.title)},
-       canonical = ${tag.status.permalink}, content = ~{::content}, isPost = false)}">
+       canonical = ${tag.status.permalink}, content = ~{::content}, isPost = false, hideSidebar = false)}">
   <th:block th:fragment="content" th:with="isEmpty = ${#lists.isEmpty(posts?.items)}">
     <th:block th:if="${isEmpty}">
       <div class="card card-content main-title">

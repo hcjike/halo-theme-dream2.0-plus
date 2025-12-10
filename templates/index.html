@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <th:block xmlns:th="https://www.thymeleaf.org"
-          th:insert="~{common/layout :: layout (showTitle = ${site.title}, canonical = ${site.url}, content = ~{::content}, isPost = false)}"
+          th:insert="~{common/layout :: layout (showTitle = ${site.title}, canonical = ${site.url}, content = ~{::content}, isPost = false, hideSidebar = false)}"
           th:with="isFirstIndex = ${posts.first}">
   <th:block th:fragment="content" th:with="isEmpty = ${#lists.isEmpty(posts.items)}">
     <div th:if="${isEmpty}" class="card card-empty">
