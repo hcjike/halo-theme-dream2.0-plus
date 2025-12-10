@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <th:block xmlns:th="https://www.thymeleaf.org"
-          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.moments.browser.title', singlePage.spec.title, site.title)}, canonical = ${singlePage.status.permalink}, content = ~{main/article :: article (${singlePage}, 'SinglePage')}, isPost = true)}"
+          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.moments.browser.title', singlePage.spec.title, site.title)}, canonical = ${singlePage.status.permalink}, content = ~{main/article :: article (${singlePage}, 'SinglePage')}, isPost = true, hideSidebar = false)}"
           th:with="enableKatex = ${!#strings.isEmpty(singlePage.metadata.annotations.get('enable_katex'))? singlePage.metadata.annotations.get('enable_katex') : theme.config.post.enable_katex},
       enableShare = ${!#strings.isEmpty(singlePage.metadata.annotations.get('enable_share'))? singlePage.metadata.annotations.get('enable_share') : theme.config.post.enable_post_share},
       enableCopyright = ${!#strings.isEmpty(singlePage.metadata.annotations.get('enable_copyright'))? singlePage.metadata.annotations.get('enable_copyright') : theme.config.post.enable_copyright},

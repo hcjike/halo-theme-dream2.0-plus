@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <th:block xmlns:th="https://www.thymeleaf.org"
-          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.links.browser.title', linksTitle, site.title)}, canonical = @{/links}, content = ~{::content}, isPost = false)}"
+          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.links.browser.title', linksTitle, site.title)}, canonical = @{/links}, content = ~{::content}, isPost = false, hideSidebar = false)}"
           th:with="baseEnableComment = ${theme.config.page_config.link_enable_comment == true || (!#strings.isEmpty(theme.config.page_config.link_comment_id) && theme.config.page_config.link_enable_comment == 'custom')}">
     <th:block th:fragment="content"
               th:with="defaultAvatar = ${#strings.defaultString(theme.config.page_config.links_default_avatar, #theme.assets('/img/avatar.svg'))}">

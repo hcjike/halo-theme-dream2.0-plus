@@ -494,6 +494,21 @@ table td, table th {
   width: auto;
 }
 
+.section {
+  .container {
+    &.hide-sidebar {
+      width: 100vw !important;
+
+      .column {
+        &-main {
+          flex: none;
+          width: 100vw !important
+        }
+      }
+    }
+  }
+}
+
 .canvas_effects {
   position: fixed;
   margin: 0;
@@ -743,6 +758,7 @@ table td, table th {
     }
 
     /* 展开状态 */
+
     &.is-expand::after,
     &.is-active::after {
       transform: translateY(-50%) rotate(90deg); // 保持垂直居中同时旋转
@@ -4406,14 +4422,14 @@ details[open] > summary::before {
       height: 23px;
       background: none;
 
-      &>i {
+      & > i {
         font-size: 23px !important;
         color: var(--main);
       }
     }
 
     .navbar-logon-head {
-      &>img {
+      & > img {
         width: 23px;
         height: 23px;
       }
@@ -4422,6 +4438,7 @@ details[open] > summary::before {
     .navbar-logon-group {
       left: -100% !important;
       top: 46px !important;
+
       &::before {
         left: 82.5% !important;
       }
@@ -4487,7 +4504,7 @@ details[open] > summary::before {
       text-align: left;
       padding: 0;
 
-      &>a{
+      & > a {
         font-size: inherit;
         color: var(--main);
 
@@ -5266,7 +5283,7 @@ text-diagram[data-type="mermaid"] {
           width: 4px;
           height: 4px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.4);
+          background: rgba(255, 255, 255, 0.4);
         }
       }
 
