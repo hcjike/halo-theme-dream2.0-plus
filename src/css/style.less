@@ -3937,7 +3937,11 @@ details[open] > summary::before {
     overflow: hidden;
     position: relative;
 
-    & > figcaption {
+    video, img {
+      margin: 5px 0;
+    }
+
+    &:not([data-content-type]) > figcaption {
       display: flex;
       background: rgb(153 153 153 / 8%);
       padding: 0;
@@ -4052,11 +4056,15 @@ details[open] > summary::before {
 
   .gallery-item {
     text-align: center;
+    width: 100%;
+    height: 100%;
 
     & > div {
       position: relative;
       overflow: hidden;
       display: inline-block;
+      width: 100%;
+      height: 100%;
     }
 
     & > p {
