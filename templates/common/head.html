@@ -10,8 +10,8 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta name="description" th:content="${description}">
   <meta name="author" th:content="${site.title}">
   <meta name="site" th:content="${site.url}">
-  <meta name="referrer" th:content="${theme.config.basic_info.referrer_policy}">
-  <meta http-equiv="Referrer-Policy" th:content="${theme.config.basic_info.referrer_policy}">
+  <meta name="referrer" th:attr="content=${theme.config.basic_info.referrer_policy}">
+  <meta http-equiv="Referrer-Policy" th:attr="content=${theme.config.basic_info.referrer_policy}">
   <meta property="og:type" content="website">
   <meta property="og:title" th:content="${showTitle}">
   <meta property="og:url" th:content="${#strings.isEmpty(canonical) ? '' : #strings.startsWith(canonical, 'http') ? canonical : (site.url + canonical).replaceAll('(?<!:)//', '/')}">
@@ -23,6 +23,7 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta name="twitter:title" th:content="${showTitle}">
   <meta name="twitter:description" th:content="${description}">
   <meta name="twitter:image" th:content="@{${#strings.isEmpty(site.favicon) ? '' : #strings.startsWith(site.favicon,'http') ? site.favicon : (site.url + site.favicon).replaceAll('(?<!:)//', '/')}}">
+  <meta name="twitter:url" th:content="${#strings.isEmpty(canonical) ? '' : #strings.startsWith(canonical, 'http') ? canonical : (site.url + canonical).replaceAll('(?<!:)//', '/')}">
 
   <th:block th:if="${theme.config.pwa.enable_pwa}">
     <link rel="manifest" th:href="${theme.config.pwa.manifest_file}"/>
