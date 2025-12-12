@@ -23,6 +23,7 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta name="twitter:title" th:content="${showTitle}">
   <meta name="twitter:description" th:content="${description}">
   <meta name="twitter:image" th:content="@{${#strings.isEmpty(site.favicon) ? '' : #strings.startsWith(site.favicon,'http') ? site.favicon : (site.url + site.favicon).replaceAll('(?<!:)//', '/')}}">
+  <meta name="twitter:url" th:content="${#strings.isEmpty(canonical) ? '' : #strings.startsWith(canonical, 'http') ? canonical : (site.url + canonical).replaceAll('(?<!:)//', '/')}">
 
   <th:block th:if="${theme.config.pwa.enable_pwa}">
     <link rel="manifest" th:href="${theme.config.pwa.manifest_file}"/>
