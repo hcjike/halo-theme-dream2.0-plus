@@ -59,11 +59,15 @@ spec:
               value: 'yyyy年MM月dd日'
             - label: yyyy年MM月dd日 HH时mm分
               value: 'yyyy年MM月dd日 HH时mm分'
-        - $formkit: repeater
+        - $formkit: array
           name: footer_layout
           validation: required
           label: 页脚内容布局
           help: 配置页脚内容区域的布局。
+          emptyText: '请配置页脚内容区域的布局'
+          itemLabels:
+            - type: text
+              label: $value.line_name
           value:
             - line:
                 - type: 'copyright'
@@ -73,30 +77,44 @@ spec:
                 - type: 'theme_copyright'
                   show_style:
                     - 'mobile_line'
+              line_name: '版权'
             - line:
                 - type: 'icp'
                   show_style:
                 - type: 'security'
                   show_style:
                     - 'mobile_line'
+              line_name: '备案'
             - line:
                 - type: 'site_time'
                   show_style:
                 - type: 'busuanzi'
                   show_style:
                     - 'mobile_line'
+              line_name: '站点时间与统计'
             - line:
                 - type: 'cloud'
                   show_style:
                 - type: 'speed'
                   show_style:
                     - 'mobile_line'
+              line_name: '服务器提供商'
           children:
-            - $formkit: repeater
+            - $formkit: text
+              name: line_name
+              label: 标识名称
+              validation: required
+              help: 用于显示当前布局的标识名称。
+              value: '标识名称'
+            - $formkit: array
               name: line
               validation: required
               label: 内容画布
               help: '当前画布将会显示在一行。注意：不建议一行显示过多内容。'
+              emptyText: '请配置当前行页脚内容区域的布局'
+              itemLabels:
+                - type: text
+                  label: $value.type
               children:
                 - $formkit: select
                   name: type
@@ -519,9 +537,15 @@ spec:
           if: $get(web_font).value == 'custom'
           placeholder: '请输入/选择字体路径'
           help: '自定义博客字体，在博客字体选项为自定义时生效。支持woff2/woff/ttf/eot/svg格式的字体文件链接，建议使用woff2格式。'
-        - $formkit: repeater
+        - $formkit: array
           name: carousel_options
           label: 首页大图轮播选项
+          emptyText: '配置首页大图轮播'
+          itemLabels:
+            - type: image
+              label: $value.image
+            - type: text
+              label: $value.title
           children:
             - $formkit: text
               name: title
@@ -762,20 +786,35 @@ spec:
     - group: sidebar
       label: '侧边栏配置'
       formSchema:
-        - $formkit: repeater
+        - $formkit: array
           name: sidebar_show
           label: 侧边栏展示
-          help: 配置侧边栏展示方式，三列布局时不能在右侧显示音乐模块。
+          help: '配置侧边栏展示方式，名称含义：模块名 + 模块位置 + 隐藏方式 + 侧边栏标题(为空时不显示)。'
           value:
-            - type: notice
-              position: left
-              hide: is-not-hidden
+            - type: 'notice'
+              position: 'left'
+              hide: 'is-not-hidden'
+              title: ''
+              icon: ''
+              content: ''
+              show_ad_tag: true
+              ad_tag_close: true
+          emptyText: '配置侧边栏内容'
+          itemLabels:
+            - type: text
+              label: $value.type
+            - type: text
+              label: $value.position
+            - type: text
+              label: $value.hide
+            - type: text
+              label: $value.title
           children:
             - $formkit: select
               name: type
               id: type
               label: 模块类型
-              value: "profile"
+              value: 'profile'
               options:
                 - value: 'profile'
                   label: 信息模块
@@ -808,18 +847,18 @@ spec:
             - $formkit: select
               name: position
               label: 模块位置
-              value: "none"
+              value: 'none'
               options:
-                - value: left
+                - value: 'left'
                   label: 左侧
-                - value: right
+                - value: 'right'
                   label: 右侧
-                - value: none
+                - value: 'none'
                   label: 关闭
             - $formkit: select
               name: hide
               label: 隐藏方式
-              value: "is-not-hidden"
+              value: 'is-not-hidden'
               options:
                 - value: 'is-hidden-mobile'
                   label: 移动设备隐藏
@@ -851,7 +890,6 @@ spec:
               name: show_ad_tag
               if: $value.type === 'ad_piece'
               label: 侧边栏广告-显示“广告”标签
-              value: true
               options:
                 - value: true
                   label: 显示
@@ -861,7 +899,6 @@ spec:
               name: ad_tag_close
               if: $value.type === 'ad_piece'
               label: 侧边栏广告-点击“广告”标签可关闭广告
-              value: true
               options:
                 - value: true
                   label: 是
@@ -917,10 +954,15 @@ spec:
           label: 侧边栏信息-主题按钮
           placeholder: '按钮名称|按钮地址'
           help: '需要按钮名称和按钮地址两个参数，参数间用 “|” 分隔，放空则不显示主题按钮。'
-        - $formkit: repeater
+        - $formkit: array
           name: custom_options
           label: 社交渠道
           help: 图标支持 RemixIcon。
+          itemLabels:
+            - type: text
+              label: $value.name
+            - type: text
+              label: $value.icon
           value:
             - name: QQ聊天
               icon: 'ri-qq-fill'
@@ -1602,12 +1644,17 @@ spec:
                   label: 自定义
                 - value: false
                   label: 关闭
-            - $formkit: repeater
+            - $formkit: array
               name: gray_mode_time_list
               if: $get(enable_gray_mode).value == 'custom'
               label: 灰色模式时间段
               validation: required
               help: '请按格式输入时间段（如：“01/01|01/07、1/1|1/7” 或 “01/01、1/1”），表示从起始日00:00:00至结束日23:59:59（或单日全天）。'
+              itemLabels:
+                - type: text
+                  label: $value.time_span
+                - type: text
+                  label: $value.time_span_desc
               children:
                 - $formkit: text
                   name: time_span
@@ -1683,7 +1730,7 @@ spec:
         - $formkit: singlePageSelect
           name: security_link_single_page
           label: 安全链接页面
-          clearable:  true
+          clearable: true
           help: '请选择一个“安全链接页面模版”创建的页面以启用功能。若已配置页面被删除，需重选新页面保存，否则会引起主题异常。'
         - $formkit: attachment
           name: security_link_site_img
