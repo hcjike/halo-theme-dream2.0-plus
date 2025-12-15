@@ -23,14 +23,25 @@
             <div class="details">
                 <h1 class="title" th:text="${post.spec.title}"></h1>
                 <ul class="breadcrumb">
-                    <li th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></li>
-                    <li th:if="${theme.config.basic_info.show_visit}"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
-                    <li th:if="${post.spec.allowComment && site.comment.enable}" class="is-hidden-mobile"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
-                    </li>
-                    <li th:if="${theme.config.basic_info.show_upvote && isPost}"><i class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]</li>
-                    <li><i class="ri-time-line"></i>[[${wordCountTimeStr}]]</li>
-                    <li sec:authorize="hasRole('ROLE_super-role')" th:if="${theme.config.post.show_edit_content}" class="is-hidden-laptop">
-                        <a target="_blank" th:title="#{main.article.button.edit}" th:aria-label="#{main.article.button.edit}" th:href="@{|/console/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a></li>
+                    <th:block th:each="item,sindex :${theme.config.post.breadcrumb_list}" th:switch="${item}">
+                        <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime,
+                            theme.config.basic_info.global_time_format)}]]
+                        </li>
+                        <li th:case="visit"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
+                        <li th:case="comment" th:if="${post.spec.allowComment && site.comment.enable}"><i
+                                class="ri-question-answer-line"></i>[[${post.stats.comment}]]
+                        </li>
+                        <li th:case="upvote" th:if="${isPost}"><i
+                                class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]
+                        </li>
+                        <li th:case="read_time"><i class="ri-time-line"></i>[[${wordCountTimeStr}]]</li>
+                        <li sec:authorize="hasRole('ROLE_super-role')" th:case="edit">
+                            <a target="_blank" th:title="#{main.article.button.edit}"
+                               th:aria-label="#{main.article.button.edit}"
+                               th:href="@{|/console/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i
+                                    class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a>
+                        </li>
+                    </th:block>
                 </ul>
             </div>
         </div>
@@ -52,14 +63,25 @@
                 <h1 class="title" th:text="${post.spec.title}"></h1>
                 <div class="meta">
                     <ul class="breadcrumb">
-                        <li th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></li>
-                        <li th:if="${theme.config.basic_info.show_visit}"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
-                        <li th:if="${post.spec.allowComment && site.comment.enable}" class="is-hidden-mobile"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
-                        </li>
-                        <li th:if="${theme.config.basic_info.show_upvote && isPost}"><i class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]</li>
-                        <li><i class="ri-time-line"></i>[[${wordCountTimeStr}]]</li>
-                        <li sec:authorize="hasRole('ROLE_super-role')" th:if="${theme.config.post.show_edit_content}" class="is-hidden-laptop">
-                            <a target="_blank" th:title="#{main.article.button.edit}" th:aria-label="#{main.article.button.edit}" th:href="@{|/console/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a></li>
+                        <th:block th:each="item,sindex :${theme.config.post.breadcrumb_list}" th:switch="${item}">
+                            <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime,
+                                theme.config.basic_info.global_time_format)}]]
+                            </li>
+                            <li th:case="visit"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
+                            <li th:case="comment" th:if="${post.spec.allowComment && site.comment.enable}"><i
+                                    class="ri-question-answer-line"></i>[[${post.stats.comment}]]
+                            </li>
+                            <li th:case="upvote" th:if="${isPost}"><i
+                                    class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]
+                            </li>
+                            <li th:case="read_time"><i class="ri-time-line"></i>[[${wordCountTimeStr}]]</li>
+                            <li sec:authorize="hasRole('ROLE_super-role')" th:case="edit">
+                                <a target="_blank" th:title="#{main.article.button.edit}"
+                                   th:aria-label="#{main.article.button.edit}"
+                                   th:href="@{|/console/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i
+                                        class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a>
+                            </li>
+                        </th:block>
                     </ul>
                     <div th:if="${isPost && !#lists.isEmpty(post.categories)}" class="level-item">
                         <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}"

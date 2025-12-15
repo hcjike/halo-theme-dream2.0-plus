@@ -198,26 +198,6 @@ spec:
           name: cdn_by_url
           label: 'CDN提供商 URL'
           placeholder: '请输入链接地址'
-        - $formkit: radio
-          name: show_visit
-          label: 文章阅读量数据
-          value: true
-          help: 控制文章阅读量数据的显示与隐藏。
-          options:
-            - label: 显示
-              value: true
-            - label: 隐藏
-              value: false
-        - $formkit: radio
-          name: show_upvote
-          label: 点赞量数据
-          value: true
-          help: 控制点赞量数据的显示与隐藏。
-          options:
-            - label: 显示
-              value: true
-            - label: 隐藏
-              value: false
         - $formkit: select
           name: referrer_policy
           label: 全局 Referrer 策略
@@ -644,16 +624,37 @@ spec:
               label: 小图模式（交替）
             - value: grid
               label: 网格模式（强优先）
-        - $formkit: radio
-          name: show_edit_content
-          label: 显示文章/页面编辑按键
-          value: true
-          help: '当登录用户为超级管理员时，是否显示文章/页面编辑按键，未登录用户始终不显示此按键。'
+        - $formkit: select
+          name: breadcrumb_list
+          label: 文章/页面元信息显示
+          sortable: true
+          multiple: true
+          clearable: true
+          searchable: false
+          value:
+            - 'publish_time'
+            - 'visit'
+            - 'comment'
+            - 'upvote'
+            - 'heat'
+            - 'read_time'
+            - 'edit'
+          help: '支持拖拽排序。评论数量：全站关评论时始终隐藏；点赞数量：仅文章显示；热度：仅在列表页面显示；阅读时间：仅在详情页内显示；编辑：详情页内，仅对超级管理员登录时显示“编辑”入口。'
           options:
-            - value: true
-              label: 显示
-            - value: false
-              label: 不显示
+            - value: 'publish_time'
+              label: 发布时间
+            - value: 'visit'
+              label: 访问量
+            - value: 'comment'
+              label: 评论数量
+            - value: 'upvote'
+              label: 点赞数量
+            - value: 'heat'
+              label: 热度
+            - value: 'read_time'
+              label: 阅读时间
+            - value: 'edit'
+              label: 编辑
         - $formkit: radio
           name: show_ai_summary
           label: 文章摘要显示“AI 总结”
