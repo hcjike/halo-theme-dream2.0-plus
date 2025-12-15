@@ -20,15 +20,19 @@
         <div class="details">
           <h2 class="title"><span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span>[[${post.spec.title}]]</h2>
           <ul class="breadcrumb">
-            <li th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></li>
-            <li th:if="${theme.config.basic_info.show_visit}"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
-            <li th:if="${post.spec.allowComment && site.comment.enable}" class="is-hidden-mobile"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
-            </li>
-            <li th:if="${theme.config.basic_info.show_upvote}"><i class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]</li>
-            <li
-              th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
-              th:style="'color: ' + ${heatColor}">[[${#numbers.formatDecimal(heat,0,1)}]]℃
-            </li>
+            <th:block th:each="item,sindex :${theme.config.post.breadcrumb_list}" th:switch="${item}">
+              <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}]]</li>
+              <li th:case="visit"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
+              <li th:case="comment" th:if="${post.spec.allowComment && site.comment.enable}"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
+              </li>
+              <li th:case="upvote"><i
+                      class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]
+              </li>
+              <li th:case="heat"
+                  th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
+                  th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
+              </li>
+            </th:block>
           </ul>
         </div>
       </a>
@@ -38,8 +42,8 @@
     </div>
 
     <div
-      th:if="${!#strings.isEmpty(thumbnail_img) && (thumbnail_mode == 'small' || (thumbnail_mode == 'small-alter' && postStat.index % 2 == 0))}"
-      class="card widget card-small">
+            th:if="${!#strings.isEmpty(thumbnail_img) && (thumbnail_mode == 'small' || (thumbnail_mode == 'small-alter' && postStat.index % 2 == 0))}"
+            class="card widget card-small">
       <a th:href="${post.status.permalink}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}">
         <img class="small-image" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
              th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
@@ -57,21 +61,25 @@
       <div class="card-content main">
         <h2 class="title">
           <span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span><a th:aria-label="${post.spec.title}" th:title="${post.spec.title}"
-          th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
+                                                                                           th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
         </h2>
         <div class="main-content" th:text="${post.status.excerpt}"></div>
         <hr/>
         <div class="meta">
           <ul class="breadcrumb">
-            <li th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></li>
-            <li th:if="${theme.config.basic_info.show_visit}"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
-            <li th:if="${post.spec.allowComment && site.comment.enable}" class="is-hidden-mobile"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
-            </li>
-            <li th:if="${theme.config.basic_info.show_upvote}"><i class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]</li>
-            <li
-              th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
-              th:style="'color: ' + ${heatColor}">[[${#numbers.formatDecimal(heat,0,1)}]]℃
-            </li>
+            <th:block th:each="item,sindex :${theme.config.post.breadcrumb_list}" th:switch="${item}">
+              <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}]]</li>
+              <li th:case="visit"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
+              <li th:case="comment" th:if="${post.spec.allowComment && site.comment.enable}"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
+              </li>
+              <li th:case="upvote"><i
+                      class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]
+              </li>
+              <li th:case="heat"
+                  th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
+                  th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
+              </li>
+            </th:block>
           </ul>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item is-hidden-mobile">
             <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}" th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}" th:text="${cy.spec.displayName}"></a>&nbsp;
@@ -81,26 +89,30 @@
     </div>
 
     <div
-      th:if="${!#strings.isEmpty(thumbnail_img) && (thumbnail_mode == 'small-right' || (thumbnail_mode == 'small-alter' && postStat.index % 2 == 1))}"
-      class="card widget card-small">
+            th:if="${!#strings.isEmpty(thumbnail_img) && (thumbnail_mode == 'small-right' || (thumbnail_mode == 'small-alter' && postStat.index % 2 == 1))}"
+            class="card widget card-small">
       <div class="card-content main">
         <h2 class="title">
           <span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span><a th:aria-label="${post.spec.title}" th:title="${post.spec.title}"
-          th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
+                                                                                           th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
         </h2>
         <div class="main-content" th:text="${post.status.excerpt}"></div>
         <hr/>
         <div class="meta">
           <ul class="breadcrumb">
-            <li th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></li>
-            <li th:if="${theme.config.basic_info.show_visit}"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
-            <li th:if="${post.spec.allowComment && site.comment.enable}" class="is-hidden-mobile"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
-            </li>
-            <li th:if="${theme.config.basic_info.show_upvote}"><i class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]</li>
-            <li
-              th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
-              th:style="'color: ' + ${heatColor}">[[${#numbers.formatDecimal(heat,0,1)}]]℃
-            </li>
+            <th:block th:each="item,sindex :${theme.config.post.breadcrumb_list}" th:switch="${item}">
+              <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}]]</li>
+              <li th:case="visit"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
+              <li th:case="comment" th:if="${post.spec.allowComment && site.comment.enable}"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
+              </li>
+              <li th:case="upvote"><i
+                      class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]
+              </li>
+              <li th:case="heat"
+                  th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
+                  th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
+              </li>
+            </th:block>
           </ul>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item is-hidden-mobile">
             <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}" th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}" th:text="${cy.spec.displayName}"></a>&nbsp;
@@ -132,7 +144,7 @@
     </a>
 
     <div th:if="${(#strings.isEmpty(thumbnail_img) && thumbnail_mode != 'fold' && thumbnail_mode != 'grid') || thumbnail_mode == 'default'}"
-      class="card widget">
+         class="card widget">
       <a th:if="${!#strings.isEmpty(thumbnail_img)}" class="thumbnail"
          th:aria-label="${post.spec.title}" th:title="${post.spec.title}"
          th:href="${post.status.permalink}">
@@ -152,19 +164,23 @@
       <div class="card-content main">
         <h2 class="title">
           <span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span><a th:aria-label="${post.spec.title}" th:title="${post.spec.title}"
-          th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
+                                                                                           th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
         </h2>
         <div class="meta">
           <ul class="breadcrumb">
-            <li th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></li>
-            <li th:if="${theme.config.basic_info.show_visit}"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
-            <li th:if="${post.spec.allowComment && site.comment.enable}" class="is-hidden-mobile"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
-            </li>
-            <li th:if="${theme.config.basic_info.show_upvote}" class="is-hidden-mobile"><i class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]</li>
-            <li
-              th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
-              th:style="'color: ' + ${heatColor}">[[${#numbers.formatDecimal(heat,0,1)}]]℃
-            </li>
+            <th:block th:each="item,sindex :${theme.config.post.breadcrumb_list}" th:switch="${item}">
+              <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}]]</li>
+              <li th:case="visit"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
+              <li th:case="comment" th:if="${post.spec.allowComment && site.comment.enable}"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
+              </li>
+              <li th:case="upvote"><i
+                      class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]
+              </li>
+              <li th:case="heat"
+                  th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
+                  th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
+              </li>
+            </th:block>
           </ul>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item">
             <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}" th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}"
@@ -181,8 +197,8 @@
     <th:block th:each="post : ${posts}"
               th:with="thumbnail_img = ${#strings.isEmpty(post.spec.cover) ? #strings.isEmpty(theme.config.post.default_thumbnail) ? '' : theme.config.post.default_thumbnail + (#strings.contains(theme.config.post.default_thumbnail, '?') ? '&' : '?') + 'id=' + post.metadata.name : post.spec.cover}">
       <div
-        th:if="${(theme.config.post.top_thumbnail_mode == 'grid' || (!post.spec.pinned && theme.config.post.thumbnail_mode == 'grid'))}"
-        class="card widget">
+              th:if="${(theme.config.post.top_thumbnail_mode == 'grid' || (!post.spec.pinned && theme.config.post.thumbnail_mode == 'grid'))}"
+              class="card widget">
         <a class="thumbnail" th:href="${post.status.permalink}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}">
           <img class="thumbnail-image" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
                th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
@@ -198,20 +214,24 @@
                th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
         </a>
         <ul class="breadcrumb">
-          <li th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></li>
-          <li th:if="${theme.config.basic_info.show_visit}"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
-          <li th:if="${post.spec.allowComment && site.comment.enable}" class="is-hidden-mobile"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
-          </li>
-          <li th:if="${theme.config.basic_info.show_upvote}" class="is-hidden-mobile"><i class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]</li>
-          <li
-            th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
-            th:style="'color: ' + ${heatColor}">[[${#numbers.formatDecimal(heat,0,1)}]]℃
-          </li>
+          <th:block th:each="item,sindex :${theme.config.post.breadcrumb_list}" th:switch="${item}">
+            <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}]]</li>
+            <li th:case="visit"><i class="ri-eye-line"></i>[[${post.stats.visit}]]</li>
+            <li th:case="comment" th:if="${post.spec.allowComment && site.comment.enable}"><i class="ri-question-answer-line"></i>[[${post.stats.comment}]]
+            </li>
+            <li th:case="upvote"><i
+                    class="ri-thumb-up-line"></i>[[${post.stats.upvote}]]
+            </li>
+            <li th:case="heat"
+                th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
+                th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
+            </li>
+          </th:block>
         </ul>
         <h2 class="title">
           <span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span>
           <a th:aria-label="${post.spec.title}" th:title="${post.spec.title}"
-            th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
+             th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
         </h2>
       </div>
     </th:block>
