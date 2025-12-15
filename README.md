@@ -1,7 +1,7 @@
 <h1 align="center">halo-theme-dream2.0-plus</h1>
 
 <p align="center">
-<a href="https://github.com/halo-dev/halo"><img alt="Halo version" src="https://img.shields.io/badge/halo-2.21.0%2B-brightgreen?style=flat-square" /></a>
+<a href="https://github.com/halo-dev/halo"><img alt="Halo version" src="https://img.shields.io/badge/halo-2.22.0%2B-brightgreen?style=flat-square" /></a>
 <a href="https://github.com/hcjike/halo-theme-dream2.0-plus/releases"><img alt="releases" src="https://img.shields.io/github/release/hcjike/halo-theme-dream2.0-plus.svg?style=flat-square"/></a>
 <a href="https://github.com/hcjike/halo-theme-dream2.0-plus/blob/master/LICENSE"><img alt="license" src="https://img.shields.io/github/license/hcjike/halo-theme-dream2.0-plus?style=flat-square"/></a>
 <a href="https://github.com/hcjike/halo-theme-dream2.0-plus/releases"><img alt="downloads" src="https://img.shields.io/github/downloads/hcjike/halo-theme-dream2.0-plus/total.svg?style=flat-square"/></a>
