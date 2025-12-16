@@ -1,12 +1,13 @@
 <div xmlns:th="https://www.thymeleaf.org"
      th:fragment="widget (sidebar)"
      th:class="'card widget toc ' + ${sidebar.hide} + ' is-hidden-all'">
-    <div class="card-title" th:with="defaultTitle=#{widget.toc.title}">
+    <div class="card-title" th:with="defaultTitle=#{widget.toc.title},
+                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-book-2-line')},
+                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
-           th:with="iconContent = ${#strings.defaultString(sidebar.icon, 'ri-book-2-line')},
-                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}"
-           th:classappend="${iconSvg ? '' : iconContent}"
-           th:utext="${iconSvg ? iconContent : ''}"></i>
+           th:unless="${iconSvg}"
+           th:classappend="${iconContent}"></i>
+        <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
         <span th:text="${#strings.defaultString(sidebar.title, defaultTitle)}"></span>
     </div>
     <div class="card-content toc-content">

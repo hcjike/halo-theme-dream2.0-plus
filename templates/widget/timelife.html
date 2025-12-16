@@ -2,12 +2,13 @@
      th:fragment="widget (sidebar)"
      th:class="'card widget timelife ' + ${sidebar.hide}">
 
-    <div class="card-title" th:with="defaultTitle=#{widget.timelife.title}">
+    <div class="card-title" th:with="defaultTitle=#{widget.timelife.title},
+                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-hourglass-line')},
+                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
-           th:with="iconContent = ${#strings.defaultString(sidebar.icon, 'ri-hourglass-line')},
-                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}"
-           th:classappend="${iconSvg ? '' : iconContent}"
-           th:utext="${iconSvg ? iconContent : ''}"></i>
+           th:unless="${iconSvg}"
+           th:classappend="${iconContent}"></i>
+        <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
         <span th:text="${#strings.defaultString(sidebar.title, defaultTitle)}"></span>
     </div>
     <div class="card-content aside-timelife"></div>

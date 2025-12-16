@@ -914,7 +914,8 @@ table td, table th {
         color: var(--title);
         transition: color 0.35s;
 
-        > i {
+        > i,
+        > svg {
           display: inline-block;
           margin-right: 4px;
           font-size: 18px;
@@ -974,7 +975,8 @@ table td, table th {
       }
 
       &.active-animate {
-        .item:hover .m-icon {
+        .item:hover .m-icon,
+        .item:hover svg {
           animation: dung 0.3s 0.12s ease;
         }
       }
@@ -1109,7 +1111,8 @@ table td, table th {
       justify-content: center;
       display: flex;
 
-      & > i {
+      & > i,
+      & > svg {
         font-size: 18px;
         color: #fff;
       }
@@ -2565,7 +2568,8 @@ details[open] > summary::before {
       padding: 0 15px;
       display: flex;
 
-      .card-title-label {
+      .card-title-label,
+      & > svg {
         margin-right: 5px;
         font-size: 1.2em;
         color: var(--theme);
@@ -4382,7 +4386,8 @@ details[open] > summary::before {
 }
 
 @media (max-width: (@desktop-min-width - 1)) {
-  .navbar-above .navbar-nav .item .m-icon {
+  .navbar-above .navbar-nav .item .m-icon,
+  .navbar-above .navbar-nav .item svg {
     display: none !important;
   }
 }
@@ -4438,7 +4443,8 @@ details[open] > summary::before {
       height: 23px;
       background: none;
 
-      & > i {
+      & > i,
+      & > svg {
         font-size: 23px !important;
         color: var(--main);
       }
@@ -4511,7 +4517,8 @@ details[open] > summary::before {
   .navbar .navbar-slideout {
 
     .navbar-console {
-      display: block !important;
+      display: flex;
+      align-items: center;
       width: 100%;
       color: var(--main);
     }
@@ -4526,10 +4533,11 @@ details[open] > summary::before {
         gap: 5px;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        justify-content: left;
         line-height: 1;
 
-        i {
+        i,
+        svg {
           font-size: 16px;
         }
       }
@@ -5777,9 +5785,11 @@ text-diagram[data-type="mermaid"] {
         color: var(--title);
         font-size: 15px;
         width: 100%;
-        display: block;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-        i {
+        i, svg {
           color: var(--title);
           font-size: 18px;
           margin-right: 4px;
