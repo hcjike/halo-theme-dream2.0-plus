@@ -67,8 +67,12 @@
                th:title="${option.name}"
                th:href="${option.url}"
                rel="nofollow noopener noreferrer">
-                <i th:class="${#strings.startsWith(#strings.trim(option.icon), '<svg') ? '' : option.icon}"
-                   th:utext="${#strings.startsWith(#strings.trim(option.icon), '<svg') ? option.icon : ''}"></i>
+                <th:block th:with="iconContent = ${option.icon},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                    <i th:unless="${iconSvg}"
+                       th:classappend="${iconContent}"></i>
+                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                </th:block>
             </a>
         </div>
     </div>
