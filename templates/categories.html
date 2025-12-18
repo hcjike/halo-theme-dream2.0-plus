@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <th:block xmlns:th="https://www.thymeleaf.org"
-          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.categories.browser.title', site.title)}, canonical = @{/categories}, content = ~{::content},
+          th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.categories.browser.title', site.title)}, canonical = @{${site.routes.categoriesUri}}, content = ~{::content},
           isPost = false, hideSidebar = false)}">
   <th:block th:fragment="content" th:with="isEmpty = ${#lists.isEmpty(categories)}">
     <div th:if="${isEmpty}" class="card card-empty" th:with="title=#{global.route.back.home.name},

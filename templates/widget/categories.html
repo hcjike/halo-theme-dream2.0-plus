@@ -12,7 +12,7 @@
            th:classappend="${iconContent}"></i>
         <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
         <span th:text="${#strings.defaultString(sidebar.title, defaultTile)}"></span>
-        <a th:if="${theme.config.sidebar.categories_more}" class="card-more" th:href="@{/categories}"
+        <a th:if="${theme.config.sidebar.categories_more}" class="card-more" th:href="@{${site.routes.categoriesUri}}"
            th:aria-label="#{global.more.name}" th:title="#{global.more.name}">[[#{global.more.name}]]<i
                 class="ri-arrow-right-double-line"></i></a>
     </div>

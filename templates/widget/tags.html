@@ -14,7 +14,7 @@
         <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
         <span
             th:text="${#strings.defaultString(sidebar.title, defaultTitle)}"></span>
-        <a th:if="${theme.config.sidebar.tags_more}" class="card-more" th:href="@{/tags}"  th:aria-label="#{global.more.name}" th:title="#{global.more.name}">[[#{global.more.name}]]<i class="ri-arrow-right-double-line"></i></a>
+        <a th:if="${theme.config.sidebar.tags_more}" class="card-more" th:href="@{${site.routes.tagsUri}}"  th:aria-label="#{global.more.name}" th:title="#{global.more.name}">[[#{global.more.name}]]<i class="ri-arrow-right-double-line"></i></a>
     </div>
     <div th:if="${isEmpty}" class="card-empty">[[#{widget.tag.empty.tip}]]</div>
     <div th:unless="${isEmpty}" class="card-content">

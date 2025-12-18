@@ -13,7 +13,7 @@
            th:classappend="${iconContent}"></i>
         <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
         <span th:text="${#strings.defaultString(sidebar.title, defaultTitle)}"></span>
-        <a th:if="${theme.config.sidebar.recent_posts_more}" class="card-more" th:href="@{/archives}" th:aria-label="#{global.more.name}" th:title="#{global.more.name}">[[#{global.more.name}]]<i class="ri-arrow-right-double-line"></i></a>
+        <a th:if="${theme.config.sidebar.recent_posts_more}" class="card-more" th:href="@{${site.routes.archivesUri}}" th:aria-label="#{global.more.name}" th:title="#{global.more.name}">[[#{global.more.name}]]<i class="ri-arrow-right-double-line"></i></a>
     </div>
     <div th:if="${isEmpty}" class="card-empty">[[#{widget.recent_posts.empty.tip}]]</div>
     <div th:unless="${isEmpty}" class="card-content">

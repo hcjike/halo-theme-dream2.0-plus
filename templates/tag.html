@@ -6,7 +6,7 @@
     <th:block th:if="${isEmpty}">
       <div class="card card-content main-title">
         <ul class="breadcrumb">
-          <li><a th:href="@{/tags}" th:aria-label="#{page.tag.name}" th:title="#{page.tag.name}"><i class="ri-price-tag-3-line"></i>[[#{page.tag.name}]]</a></li>
+          <li><a th:href="@{${site.routes.tagsUri}}" th:aria-label="#{page.tag.name}" th:title="#{page.tag.name}"><i class="ri-price-tag-3-line"></i>[[#{page.tag.name}]]</a></li>
           <li th:text="${tag.spec.displayName}"></li>
         </ul>
         <div class="card-empty" th:with="title=#{global.route.back.home.name},
@@ -20,7 +20,7 @@
     <th:block th:unless="${isEmpty}">
       <div class="card card-content main-title">
         <ul class="breadcrumb">
-          <li><a th:href="@{/tags}" th:aria-label="#{page.tag.name}" th:title="#{page.tag.name}"><i class="ri-price-tag-3-line"></i>[[#{page.tag.name}]]</a></li>
+          <li><a th:href="@{${site.routes.tagsUri}}" th:aria-label="#{page.tag.name}" th:title="#{page.tag.name}"><i class="ri-price-tag-3-line"></i>[[#{page.tag.name}]]</a></li>
           <li th:text="${tag.spec.displayName}"></li>
         </ul>
       </div>

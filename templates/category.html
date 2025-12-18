@@ -6,7 +6,7 @@
     <th:block th:if="${isEmpty}">
       <div class="card card-content main-title">
         <ul class="breadcrumb">
-          <li><a th:href="@{/categories}" th:aria-label="#{page.category.title}" th:title="#{page.category.title}"><i class="ri-apps-line"></i>[[#{page.category.title}]]</a></li>
+          <li><a th:href="@{${site.routes.categoriesUri}}" th:aria-label="#{page.category.title}" th:title="#{page.category.title}"><i class="ri-apps-line"></i>[[#{page.category.title}]]</a></li>
           <li th:text="${category.spec.displayName}"></li>
         </ul>
         <div class="card-empty" th:with="title=#{global.route.back.home.name},
@@ -20,7 +20,7 @@
     <th:block th:unless="${isEmpty}">
       <div class="card card-content main-title">
         <ul class="breadcrumb">
-          <li><a th:href="@{/categories}" th:aria-label="#{page.category.title}" th:title="#{page.category.title}"><i class="ri-apps-line"></i>[[#{page.category.title}]]</a></li>
+          <li><a th:href="@{${site.routes.categoriesUri}}" th:aria-label="#{page.category.title}" th:title="#{page.category.title}"><i class="ri-apps-line"></i>[[#{page.category.title}]]</a></li>
           <li th:text="${category.spec.displayName}"></li>
         </ul>
       </div>
