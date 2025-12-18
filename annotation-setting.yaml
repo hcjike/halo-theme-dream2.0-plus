@@ -135,10 +135,12 @@ spec:
     group: ""
     kind: MenuItem
   formSchema:
-    - $formkit: "text"
+    - $formkit: "iconify"
+      format: "svg"
+      value-only: true
       name: "icon"
       label: "图标"
-      placeholder: '请输入图标 class 内容'
+      placeholder: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容'
     - $formkit: "text"
       name: "desc"
       label: "描述"

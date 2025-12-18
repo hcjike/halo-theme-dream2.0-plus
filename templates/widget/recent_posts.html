@@ -5,8 +5,14 @@
      sortCondition = ${theme.config.sidebar.recent_posts_pinned ? {'spec.pinned,desc', 'spec.publishTime,desc', 'metadata.creationTimestamp,desc'} : {'spec.publishTime,desc', 'metadata.creationTimestamp,desc'}},
      posts = ${postFinder.list({page: 1, size: num, sort: sortCondition})},
      isEmpty = ${#lists.isEmpty(posts.items)}">
-    <div class="card-title" th:with="defaultTitle=#{widget.recent_posts.title}">
-        <i th:class="${#strings.defaultString(sidebar.icon, 'ri-history-line') + ' card-title-label'}"></i><span th:text="${#strings.defaultString(sidebar.title, defaultTitle)}"></span>
+    <div class="card-title" th:with="defaultTitle=#{widget.recent_posts.title},
+                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-history-line')},
+                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+        <i class="card-title-label"
+           th:unless="${iconSvg}"
+           th:classappend="${iconContent}"></i>
+        <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+        <span th:text="${#strings.defaultString(sidebar.title, defaultTitle)}"></span>
         <a th:if="${theme.config.sidebar.recent_posts_more}" class="card-more" th:href="@{/archives}" th:aria-label="#{global.more.name}" th:title="#{global.more.name}">[[#{global.more.name}]]<i class="ri-arrow-right-double-line"></i></a>
     </div>
     <div th:if="${isEmpty}" class="card-empty">[[#{widget.recent_posts.empty.tip}]]</div>

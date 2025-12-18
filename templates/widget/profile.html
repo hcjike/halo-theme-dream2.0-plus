@@ -1,67 +1,79 @@
 <div xmlns:th="https://www.thymeleaf.org"
      th:fragment="widget (sidebar)"
      th:class="'card widget profile ' + ${sidebar.hide}">
-  <div class="card-content">
-    <nav class="level">
-      <div class="level-item" style="flex-direction: column;">
-        <figure class="image">
-          <img class="avatar" height="100%" width="100%" th:src="${contributor.avatar}" th:alt="${contributor.displayName}">
-        </figure>
-        <p class="nickname" th:text="${contributor.displayName}"></p>
-        <p class="motto spark-input" th:text="${contributor.bio}"></p>
-        <p th:if="${!#strings.isEmpty(theme.config.sidebar.profile_location)}" class="address">
-          <i class="ri-map-pin-line"></i>
-          <span th:text="${theme.config.sidebar.profile_location}"></span>
-        </p>
-      </div>
-    </nav>
-    <nav class="level" th:if="${!#lists.isEmpty(theme.config.sidebar.custom_stats)}"
-         th:with="unitW = 1000,
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item" style="flex-direction: column;">
+                <figure class="image">
+                    <img class="avatar" height="100%" width="100%" th:src="${contributor.avatar}"
+                         th:alt="${contributor.displayName}">
+                </figure>
+                <p class="nickname" th:text="${contributor.displayName}"></p>
+                <p class="motto spark-input" th:text="${contributor.bio}"></p>
+                <p th:if="${!#strings.isEmpty(theme.config.sidebar.profile_location)}" class="address">
+                    <i class="ri-map-pin-line"></i>
+                    <span th:text="${theme.config.sidebar.profile_location}"></span>
+                </p>
+            </div>
+        </nav>
+        <nav class="level" th:if="${!#lists.isEmpty(theme.config.sidebar.custom_stats)}"
+             th:with="unitW = 1000,
                   unitBw = 1000000,
                   unitB = 1000000000">
-      <div th:each="item,sindex :${theme.config.sidebar.custom_stats}" class="level-item" th:switch="${item}">
-        <div th:case="visit" th:with="visit = ${stats.visit}">
-          <p class="heading" th:text="${#messages.msg('widget.profile.stats.visit')}"></p>
-          <p class="value" th:title="${visit / unitW > 0} ? ${visit}" th:text="${visit / unitB > 0} ? (${#numbers.formatDecimal(visit / (unitB * 1.0),1,1)} + 'B') : (${visit / unitBw > 0} ? (${#numbers.formatDecimal(visit / (unitBw * 1.0),1,1)} + 'M') : (${visit / unitW > 0} ? (${#numbers.formatDecimal(visit / (unitW * 1.0),1,1)} + 'K') : ${visit}))"></p>
+            <div th:each="item,sindex :${theme.config.sidebar.custom_stats}" class="level-item" th:switch="${item}">
+                <div th:case="visit" th:with="visit = ${stats.visit}">
+                    <p class="heading" th:text="${#messages.msg('widget.profile.stats.visit')}"></p>
+                    <p class="value" th:title="${visit / unitW > 0} ? ${visit}"
+                       th:text="${visit / unitB > 0} ? (${#numbers.formatDecimal(visit / (unitB * 1.0),1,1)} + 'B') : (${visit / unitBw > 0} ? (${#numbers.formatDecimal(visit / (unitBw * 1.0),1,1)} + 'M') : (${visit / unitW > 0} ? (${#numbers.formatDecimal(visit / (unitW * 1.0),1,1)} + 'K') : ${visit}))"></p>
+                </div>
+                <div th:case="upvote" th:with="upvote = ${stats.upvote}">
+                    <p class="heading" th:text="${#messages.msg('widget.profile.stats.upvote')}"></p>
+                    <p class="value" th:title="${upvote / unitW > 0} ? ${upvote}"
+                       th:text="${upvote / unitB > 0} ? (${#numbers.formatDecimal(upvote / (unitB * 1.0),1,1)} + 'B') : (${upvote / unitBw > 0} ? (${#numbers.formatDecimal(upvote / (unitBw * 1.0),1,1)} + 'M') : (${upvote / unitW > 0} ? (${#numbers.formatDecimal(upvote / (unitW * 1.0),1,1)} + 'K') : ${upvote}))"></p>
+                </div>
+                <div th:case="comment" th:with="comment = ${stats.comment}">
+                    <p class="heading" th:text="${#messages.msg('widget.profile.stats.comment')}"></p>
+                    <p class="value" th:title="${comment / unitW > 0} ? ${comment}"
+                       th:text="${comment / unitB > 0} ? (${#numbers.formatDecimal(comment / (unitB * 1.0),1,1)} + 'B') : (${comment / unitBw > 0} ? (${#numbers.formatDecimal(comment / (unitBw * 1.0),1,1)} + 'M') : (${comment / unitW > 0} ? (${#numbers.formatDecimal(comment / (unitW * 1.0),1,1)} + 'K') : ${comment}))"></p>
+                </div>
+                <div th:case="category" th:with="category = ${stats.category}">
+                    <p class="heading" th:text="${#messages.msg('widget.profile.stats.category')}"></p>
+                    <p class="value" th:title="${category / unitW > 0} ? ${category}"
+                       th:text="${category / unitB > 0} ? (${#numbers.formatDecimal(category / (unitB * 1.0),1,1)} + 'B') : (${category / unitBw > 0} ? (${#numbers.formatDecimal(category / (unitBw * 1.0),1,1)} + 'M') : (${category / unitW > 0} ? (${#numbers.formatDecimal(category / (unitW * 1.0),1,1)} + 'K') : ${category}))"></p>
+                </div>
+                <div th:case="tag" th:with="tagsList = ${tagFinder.listAll()}, tags = ${#lists.size(tagsList)}">
+                    <p class="heading" th:text="${#messages.msg('widget.profile.stats.tag')}"></p>
+                    <p class="value" th:title="${tags / unitW > 0} ? ${tags}"
+                       th:text="${tags / unitB > 0} ? (${#numbers.formatDecimal(tags / (unitB * 1.0),1,1)} + 'B') : (${tags / unitBw > 0} ? (${#numbers.formatDecimal(tags / (unitBw * 1.0),1,1)} + 'M') : (${tags / unitW > 0} ? (${#numbers.formatDecimal(tags / (unitW * 1.0),1,1)} + 'K') : ${tags}))"></p>
+                </div>
+                <div th:case="*" th:with="post = ${stats.post}">
+                    <p class="heading" th:text="${#messages.msg('widget.profile.stats.post')}"></p>
+                    <p class="value" th:title="${post / unitW > 0} ? ${post}"
+                       th:text="${post / unitB > 0} ? (${#numbers.formatDecimal(post / (unitB * 1.0),1,1)} + 'B') : (${post / unitBw > 0} ? (${#numbers.formatDecimal(post / (unitBw * 1.0),1,1)} + 'M') : (${post / unitW > 0} ? (${#numbers.formatDecimal(post / (unitW * 1.0),1,1)} + 'K') : ${post}))"></p>
+                </div>
+            </div>
+        </nav>
+        <div th:if="${!#strings.isEmpty(theme.config.sidebar.profile_theme_button)}" class="level"
+             th:with="content = ${#strings.arraySplit(theme.config.sidebar.profile_theme_button,'|')}">
+            <a class="level-item button is-link is-rounded" th:aria-label="${content[0]}" th:title="${content[0]}"
+               th:href="${content.length>=2?content[1]:''}" target="_blank" rel="nofollow noopener noreferrer"
+               th:text="${content[0]}"></a>
         </div>
-        <div th:case="upvote" th:with="upvote = ${stats.upvote}">
-          <p class="heading" th:text="${#messages.msg('widget.profile.stats.upvote')}"></p>
-          <p class="value" th:title="${upvote / unitW > 0} ? ${upvote}" th:text="${upvote / unitB > 0} ? (${#numbers.formatDecimal(upvote / (unitB * 1.0),1,1)} + 'B') : (${upvote / unitBw > 0} ? (${#numbers.formatDecimal(upvote / (unitBw * 1.0),1,1)} + 'M') : (${upvote / unitW > 0} ? (${#numbers.formatDecimal(upvote / (unitW * 1.0),1,1)} + 'K') : ${upvote}))"></p>
+        <div th:if="${!#lists.isEmpty(theme.config.sidebar.custom_options)}" class="level">
+            <a th:each="option :${theme.config.sidebar.custom_options}"
+               class="level-item button is-transparent"
+               target="_blank"
+               th:aria-label="${option.name}"
+               th:title="${option.name}"
+               th:href="${option.url}"
+               rel="nofollow noopener noreferrer">
+                <th:block th:with="iconContent = ${option.icon},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                    <i th:unless="${iconSvg}"
+                       th:classappend="${iconContent}"></i>
+                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                </th:block>
+            </a>
         </div>
-        <div th:case="comment" th:with="comment = ${stats.comment}">
-          <p class="heading" th:text="${#messages.msg('widget.profile.stats.comment')}"></p>
-          <p class="value" th:title="${comment / unitW > 0} ? ${comment}" th:text="${comment / unitB > 0} ? (${#numbers.formatDecimal(comment / (unitB * 1.0),1,1)} + 'B') : (${comment / unitBw > 0} ? (${#numbers.formatDecimal(comment / (unitBw * 1.0),1,1)} + 'M') : (${comment / unitW > 0} ? (${#numbers.formatDecimal(comment / (unitW * 1.0),1,1)} + 'K') : ${comment}))"></p>
-        </div>
-        <div th:case="category" th:with="category = ${stats.category}">
-          <p class="heading" th:text="${#messages.msg('widget.profile.stats.category')}"></p>
-          <p class="value" th:title="${category / unitW > 0} ? ${category}" th:text="${category / unitB > 0} ? (${#numbers.formatDecimal(category / (unitB * 1.0),1,1)} + 'B') : (${category / unitBw > 0} ? (${#numbers.formatDecimal(category / (unitBw * 1.0),1,1)} + 'M') : (${category / unitW > 0} ? (${#numbers.formatDecimal(category / (unitW * 1.0),1,1)} + 'K') : ${category}))"></p>
-        </div>
-        <div th:case="tag" th:with="tagsList = ${tagFinder.listAll()}, tags = ${#lists.size(tagsList)}">
-          <p class="heading" th:text="${#messages.msg('widget.profile.stats.tag')}"></p>
-          <p class="value" th:title="${tags / unitW > 0} ? ${tags}" th:text="${tags / unitB > 0} ? (${#numbers.formatDecimal(tags / (unitB * 1.0),1,1)} + 'B') : (${tags / unitBw > 0} ? (${#numbers.formatDecimal(tags / (unitBw * 1.0),1,1)} + 'M') : (${tags / unitW > 0} ? (${#numbers.formatDecimal(tags / (unitW * 1.0),1,1)} + 'K') : ${tags}))"></p>
-        </div>
-        <div th:case="*" th:with="post = ${stats.post}">
-          <p class="heading" th:text="${#messages.msg('widget.profile.stats.post')}"></p>
-          <p class="value" th:title="${post / unitW > 0} ? ${post}" th:text="${post / unitB > 0} ? (${#numbers.formatDecimal(post / (unitB * 1.0),1,1)} + 'B') : (${post / unitBw > 0} ? (${#numbers.formatDecimal(post / (unitBw * 1.0),1,1)} + 'M') : (${post / unitW > 0} ? (${#numbers.formatDecimal(post / (unitW * 1.0),1,1)} + 'K') : ${post}))"></p>
-        </div>
-      </div>
-    </nav>
-    <div th:if="${!#strings.isEmpty(theme.config.sidebar.profile_theme_button)}" class="level"
-         th:with="content = ${#strings.arraySplit(theme.config.sidebar.profile_theme_button,'|')}">
-      <a class="level-item button is-link is-rounded" th:aria-label="${content[0]}" th:title="${content[0]}"
-         th:href="${content.length>=2?content[1]:''}" target="_blank" rel="nofollow noopener noreferrer"
-         th:text="${content[0]}"></a>
     </div>
-    <div th:if="${!#lists.isEmpty(theme.config.sidebar.custom_options)}" class="level">
-      <a th:each="option :${theme.config.sidebar.custom_options}"
-         class="level-item button is-transparent"
-         target="_blank"
-         th:aria-label="${option.name}"
-         th:title="${option.name}"
-         th:href="${option.url}"
-         rel="nofollow noopener noreferrer">
-        <i th:class="${option.icon}"></i>
-      </a>
-    </div>
-  </div>
 </div>

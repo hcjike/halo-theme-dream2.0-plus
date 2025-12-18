@@ -23,9 +23,14 @@
                        th:target="${menuItem.spec.target?.value}"
                        th:with="desc = ${#annotations.getOrDefault(menuItem, 'desc', menuItem.status.displayName)}"
                        th:title="${#strings.isEmpty(desc) ? menuItem.status.displayName : desc}">
-                        <i th:if="${!#strings.isEmpty(#annotations.getOrDefault(menuItem, 'icon', ''))}"
-                           th:class="${'m-icon ' + #annotations.getOrDefault(menuItem, 'icon', '')}"></i>
-                        [[${menuItem.status.displayName}]]
+                        <th:block th:if="${!#strings.isEmpty(#annotations.getOrDefault(menuItem, 'icon', ''))}"
+                                  th:with="iconContent = ${#annotations.getOrDefault(menuItem, 'icon', '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                            <i class="m-icon"
+                               th:unless="${iconSvg}"
+                               th:classappend="${iconContent}"></i>
+                            <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                        </th:block>[[${menuItem.status.displayName}]]
                     </a>
                     <div th:unless="${#lists.isEmpty(menuItem.children)}" class="item-dropdown" trigger="hover"
                          placement="60px">
@@ -37,9 +42,14 @@
                                th:aria-label="${menuItem.status.displayName}"
                                th:with="desc = ${#annotations.getOrDefault(menuItem, 'desc', menuItem.status.displayName)}"
                                th:title="${#strings.isEmpty(desc) ? menuItem.status.displayName : desc}">
-                                <i th:if="${!#strings.isEmpty(#annotations.getOrDefault(menuItem, 'icon', ''))}"
-                                   th:class="${'m-icon ' + #annotations.getOrDefault(menuItem, 'icon', '')}"></i>
-                                [[${menuItem.status.displayName}]]
+                                <th:block th:if="${!#strings.isEmpty(#annotations.getOrDefault(menuItem, 'icon', ''))}"
+                                          th:with="iconContent = ${#annotations.getOrDefault(menuItem, 'icon', '')},
+                                                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i class="m-icon"
+                                       th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[${menuItem.status.displayName}]]
                             </a>
                             <i class="ri-arrow-down-s-line item-dropdown-link-icon" style="color:var(--main)"></i>
                         </div>
@@ -52,9 +62,14 @@
                                    th:aria-label="${dropdown.status.displayName}"
                                    th:with="desc = ${#annotations.getOrDefault(dropdown, 'desc', dropdown.status.displayName)}"
                                    th:title="${#strings.isEmpty(desc) ? dropdown.status.displayName : desc}">
-                                    <i th:if="${!#strings.isEmpty(#annotations.getOrDefault(dropdown, 'icon', ''))}"
-                                       th:class="${'m-icon ' + #annotations.getOrDefault(dropdown, 'icon', '')}"></i>
-                                    [[${dropdown.status.displayName}]]
+                                    <th:block th:if="${!#strings.isEmpty(#annotations.getOrDefault(dropdown, 'icon', ''))}"
+                                              th:with="iconContent = ${#annotations.getOrDefault(dropdown, 'icon', '')},
+                                                        iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                        <i class="m-icon"
+                                           th:unless="${iconSvg}"
+                                           th:classappend="${iconContent}"></i>
+                                        <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                    </th:block>[[${dropdown.status.displayName}]]
                                 </a>
                                 <ol class="item-sub" th:if="${!#lists.isEmpty(dropdown.children)}">
                                     <li th:each="dropdownChild : ${dropdown.children}">
@@ -65,9 +80,14 @@
                                            th:aria-label="${dropdownChild.status.displayName}"
                                            th:with="desc = ${#annotations.getOrDefault(dropdownChild, 'desc', dropdownChild.status.displayName)}"
                                            th:title="${#strings.isEmpty(desc) ? dropdownChild.status.displayName : desc}">
-                                            <i th:if="${!#strings.isEmpty(#annotations.getOrDefault(dropdownChild, 'icon', ''))}"
-                                               th:class="${'m-icon ' + #annotations.getOrDefault(dropdownChild, 'icon', '')}"></i>
-                                            [[${dropdownChild.status.displayName}]]
+                                            <th:block th:if="${!#strings.isEmpty(#annotations.getOrDefault(dropdownChild, 'icon', ''))}"
+                                                      th:with="iconContent = ${#annotations.getOrDefault(dropdownChild, 'icon', '')},
+                                                                iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                                <i class="m-icon"
+                                                   th:unless="${iconSvg}"
+                                                   th:classappend="${iconContent}"></i>
+                                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                            </th:block>[[${dropdownChild.status.displayName}]]
                                         </a>
                                     </li>
                                 </ol>
@@ -114,7 +134,12 @@
                th:target="${!#strings.isEmpty(logonUserName) ? theme.config.basic_style.console.console_logon_target : theme.config.basic_style.console.console_target}"
                th:title="${theme.config.basic_style.console.console_title}"
                th:aria-label="${theme.config.basic_style.console.console_title}">
-                <i th:class="${#strings.defaultString(theme.config.basic_style.console.console_icon, 'ri-equalizer-line')}"></i>
+                <th:block th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.console.console_icon, 'ri-equalizer-line')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                    <i th:unless="${iconSvg}"
+                       th:classappend="${iconContent}"></i>
+                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                </th:block>
             </a>
             <div th:if="${theme.config.basic_style.show_console == 'logon'}" class="navbar-logon" trigger="hover"
                  th:with="currentUser = ${contributorFinder.getContributor(#authentication.name)}">
@@ -126,44 +151,79 @@
                 <ul class="navbar-logon-group">
                     <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
                         <a href="/console/posts/editor" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.new_post}"
-                           th:title="#{common.navbar.logon.new_post}"><i
-                                th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_post_class)}"
-                                th:class="${theme.config.basic_style.logon.console_post_class}"></i>[[#{common.navbar.logon.new_post}]]</a>
+                           th:title="#{common.navbar.logon.new_post}">
+                            <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_post_class)}"
+                                    th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_post_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                <i th:unless="${iconSvg}"
+                                   th:classappend="${iconContent}"></i>
+                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                            </th:block>[[#{common.navbar.logon.new_post}]]</a>
                     </li>
                     <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
                         <a href="/console/single-pages/editor" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.new_single}"
-                           th:title="#{common.navbar.logon.new_single}"><i
-                                th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_single_pages_class)}"
-                                th:class="${theme.config.basic_style.logon.console_single_pages_class}"></i>[[#{common.navbar.logon.new_single}]]</a>
+                           th:title="#{common.navbar.logon.new_single}">
+                            <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_single_pages_class)}"
+                                      th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_single_pages_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                <i th:unless="${iconSvg}"
+                                   th:classappend="${iconContent}"></i>
+                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                            </th:block>[[#{common.navbar.logon.new_single}]]</a>
                     </li>
                     <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
-                        <a href="/console/moments" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.moments}" th:title="#{common.navbar.logon.moments}"><i
-                                th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_moment_class)}"
-                                th:class="${theme.config.basic_style.logon.console_moment_class}"></i>[[#{common.navbar.logon.moments}]]</a>
+                        <a href="/console/moments" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.moments}" th:title="#{common.navbar.logon.moments}">
+                            <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_moment_class)}"
+                                      th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_moment_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                <i th:unless="${iconSvg}"
+                                   th:classappend="${iconContent}"></i>
+                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                            </th:block>[[#{common.navbar.logon.moments}]]</a>
                     </li>
                     <li th:if="${!#strings.isEmpty(logonUserName)}" class="navbar-logon-group-menu">
-                        <a href="/uc" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.uc}" th:title="#{common.navbar.logon.uc}"><i
-                                th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_person_class)}"
-                                th:class="${theme.config.basic_style.logon.console_person_class}"></i>[[#{common.navbar.logon.uc}]]</a>
+                        <a href="/uc" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.uc}" th:title="#{common.navbar.logon.uc}">
+                            <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_person_class)}"
+                                      th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_person_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                <i th:unless="${iconSvg}"
+                                   th:classappend="${iconContent}"></i>
+                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                            </th:block>[[#{common.navbar.logon.uc}]]</a>
                     </li>
                     <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
-                        <a href="/console" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.console}" th:title="#{common.navbar.logon.console}"><i
-                                th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_manage_class)}"
-                                th:class="${theme.config.basic_style.logon.console_manage_class}"></i>[[#{common.navbar.logon.console}]]</a>
+                        <a href="/console" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.console}" th:title="#{common.navbar.logon.console}">
+                            <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_manage_class)}"
+                                      th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_manage_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                <i th:unless="${iconSvg}"
+                                   th:classappend="${iconContent}"></i>
+                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                            </th:block>[[#{common.navbar.logon.console}]]</a>
                     </li>
                     <li th:if="${!#strings.isEmpty(logonUserName)}" class="navbar-logon-group-menu">
                         <a href="/logout" data-not-pjax
                            onclick="this.href = '/logout?redirect_uri=' + encodeURIComponent(window.location.href)"
-                           th:aria-label="#{common.navbar.logon.logout}" th:title="#{common.navbar.logon.logout}"><i
-                                th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_logout_class)}"
-                                th:class="${theme.config.basic_style.logon.console_logout_class}"></i>[[#{common.navbar.logon.logout}]]</a>
+                           th:aria-label="#{common.navbar.logon.logout}" th:title="#{common.navbar.logon.logout}">
+                            <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_logout_class)}"
+                                      th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_logout_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                <i th:unless="${iconSvg}"
+                                   th:classappend="${iconContent}"></i>
+                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                            </th:block>[[#{common.navbar.logon.logout}]]</a>
                     </li>
                     <li th:if="${#strings.isEmpty(logonUserName)}" class="navbar-logon-group-menu">
                         <a href="/login" data-not-pjax
                            onclick="this.href = '/login?redirect_uri=' + encodeURIComponent(window.location.href)"
-                           th:aria-label="#{common.navbar.logon.login}" th:title="#{common.navbar.logon.login}"><i
-                                th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_login_class)}"
-                                th:class="${theme.config.basic_style.logon.console_login_class}"></i>[[#{common.navbar.logon.login}]]</a>
+                           th:aria-label="#{common.navbar.logon.login}" th:title="#{common.navbar.logon.login}">
+                            <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_login_class)}"
+                                      th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_login_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                <i th:unless="${iconSvg}"
+                                   th:classappend="${iconContent}"></i>
+                                <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                            </th:block>[[#{common.navbar.logon.login}]]</a>
                     </li>
                 </ul>
             </div>
@@ -287,7 +347,12 @@
                    th:target="${!#strings.isEmpty(logonUserName) ? theme.config.basic_style.console.console_logon_target : theme.config.basic_style.console.console_target}"
                    th:title="${theme.config.basic_style.console.console_title}"
                    th:aria-label="${theme.config.basic_style.console.console_title}">
-                    <i th:class="${#strings.defaultString(theme.config.basic_style.console.console_icon, 'ri-equalizer-line')}"></i>
+                    <th:block th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.console.console_icon, 'ri-equalizer-line')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                        <i th:unless="${iconSvg}"
+                           th:classappend="${iconContent}"></i>
+                        <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                    </th:block>
                     <span style="margin-left: 5px;" th:text="${theme.config.basic_style.console.console_title}"></span>
                 </a>
             </ul>
@@ -306,49 +371,84 @@
                     <ul class="slides panel-body panel-side-menu">
                         <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
                             <a href="/console/posts/editor" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.new_post}"
-                               th:title="#{common.navbar.logon.new_post}"><i
-                                    th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_post_class)}"
-                                    th:class="${theme.config.basic_style.logon.console_post_class}"></i>[[#{common.navbar.logon.new_post}]]</a>
+                               th:title="#{common.navbar.logon.new_post}">
+                                <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_post_class)}"
+                                          th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_post_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[#{common.navbar.logon.new_post}]]</a>
                         </li>
                         <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
                             <a href="/console/single-pages/editor" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.new_single}"
-                               th:title="#{common.navbar.logon.new_single}"><i
-                                    th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_single_pages_class)}"
-                                    th:class="${theme.config.basic_style.logon.console_single_pages_class}"></i>[[#{common.navbar.logon.new_single}]]</a>
+                               th:title="#{common.navbar.logon.new_single}">
+                                <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_single_pages_class)}"
+                                          th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_single_pages_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[#{common.navbar.logon.new_single}]]</a>
                         </li>
                         <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
                             <a href="/console/moments" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.moments}"
-                               th:title="#{common.navbar.logon.moments}"><i
-                                    th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_moment_class)}"
-                                    th:class="${theme.config.basic_style.logon.console_moment_class}"></i>[[#{common.navbar.logon.moments}]]</a>
+                               th:title="#{common.navbar.logon.moments}">
+                                <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_moment_class)}"
+                                          th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_moment_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[#{common.navbar.logon.moments}]]</a>
                         </li>
                         <li th:if="${!#strings.isEmpty(logonUserName)}" class="navbar-logon-group-menu">
                             <a href="/uc" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.uc}"
-                               th:title="#{common.navbar.logon.uc}"><i
-                                    th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_person_class)}"
-                                    th:class="${theme.config.basic_style.logon.console_person_class}"></i>[[#{common.navbar.logon.uc}]]</a>
+                               th:title="#{common.navbar.logon.uc}">
+                                <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_person_class)}"
+                                          th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_person_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[#{common.navbar.logon.uc}]]</a>
                         </li>
                         <li sec:authorize="hasRole('ROLE_super-role')" class="navbar-logon-group-menu">
                             <a href="/console" data-not-pjax target="_blank" th:aria-label="#{common.navbar.logon.console}"
-                               th:title="#{common.navbar.logon.console}"><i
-                                    th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_manage_class)}"
-                                    th:class="${theme.config.basic_style.logon.console_manage_class}"></i>[[#{common.navbar.logon.console}]]</a>
+                               th:title="#{common.navbar.logon.console}">
+                                <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_manage_class)}"
+                                          th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_manage_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[#{common.navbar.logon.console}]]</a>
                         </li>
                         <li th:if="${!#strings.isEmpty(logonUserName)}" class="navbar-logon-group-menu">
                             <a href="/logout" data-not-pjax
                                onclick="this.href = '/logout?redirect_uri=' + encodeURIComponent(window.location.href)"
                                th:aria-label="#{common.navbar.logon.logout}"
-                               th:title="#{common.navbar.logon.logout}"><i
-                                    th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_logout_class)}"
-                                    th:class="${theme.config.basic_style.logon.console_logout_class}"></i>[[#{common.navbar.logon.logout}]]</a>
+                               th:title="#{common.navbar.logon.logout}">
+                                <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_logout_class)}"
+                                          th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_logout_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[#{common.navbar.logon.logout}]]</a>
                         </li>
                         <li th:if="${#strings.isEmpty(logonUserName)}" class="navbar-logon-group-menu">
                             <a href="/login" data-not-pjax
                                onclick="this.href = '/login?redirect_uri=' + encodeURIComponent(window.location.href)"
                                th:aria-label="#{common.navbar.logon.login}"
-                               th:title="#{common.navbar.logon.login}"><i
-                                    th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_login_class)}"
-                                    th:class="${theme.config.basic_style.logon.console_login_class}"></i>[[#{common.navbar.logon.login}]]</a>
+                               th:title="#{common.navbar.logon.login}">
+                                <th:block th:if="${!#strings.isEmpty(theme.config.basic_style.logon.console_login_class)}"
+                                          th:with="iconContent = ${#strings.defaultString(theme.config.basic_style.logon.console_login_class, '')},
+                                         iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+                                    <i th:unless="${iconSvg}"
+                                       th:classappend="${iconContent}"></i>
+                                    <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+                                </th:block>[[#{common.navbar.logon.login}]]</a>
                         </li>
                     </ul>
                 </li>
