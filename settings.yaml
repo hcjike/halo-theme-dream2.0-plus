@@ -268,7 +268,7 @@ spec:
           id: show_console
           label: 控制台按钮
           help: 在网站右上角显示用于登录或进入后台管理的按钮。
-          value: 'false'
+          value: 'logon'
           options:
             - label: 登录组件样式
               value: 'logon'
