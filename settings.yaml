@@ -780,15 +780,15 @@ spec:
               label: 默认开启
             - value: false
               label: 默认关闭
-        - $formkit: radio
+        - $formkit: select
           name: post_donate_style
           label: 文章打赏样式
-          value: donate_style_poster
+          value: 'donate_style_poster'
           help: '支持海报样式和二维码样式。'
           options:
-            - value: donate_style_poster
+            - value: 'donate_style_poster'
               label: 海报
-            - value: donate_style_qr
+            - value: 'donate_style_qr'
               label: 二维码
         - $formkit: attachment
           name: donate_wechat
