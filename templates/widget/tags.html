@@ -6,7 +6,7 @@
      isEmpty = ${#lists.isEmpty(tags.items)},
      enableTagsColor = ${theme.config.sidebar.enable_tag_color}">
     <div class="card-title" th:with="defaultTitle=#{widget.tag.title},
-                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-price-tag-3-line')},
+                    iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-price-tag-3-line')},
                     iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
            th:unless="${iconSvg}"

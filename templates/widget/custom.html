@@ -1,8 +1,8 @@
 <div xmlns:th="https://www.thymeleaf.org"
      th:fragment="widget (sidebar)"
      th:class="'card widget ' + ${sidebar.hide}">
-    <div class="card-title" th:if="${!#strings.isEmpty(sidebar.title) && !#strings.isEmpty(sidebar.icon)}"
-         th:with="iconContent = ${#strings.defaultString(sidebar.icon, '')},
+    <div class="card-title" th:if="${!#strings.isEmpty(sidebar.title) && null != sidebar.icon_new &&!#strings.isEmpty(sidebar.icon_new.value)}"
+         th:with="iconContent = ${#strings.defaultString(sidebar.icon_new?.value, '')},
                     iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
            th:unless="${iconSvg}"

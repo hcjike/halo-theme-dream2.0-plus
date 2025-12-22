@@ -2,7 +2,7 @@
      th:fragment="widget (sidebar)"
      th:class="'card widget toc ' + ${sidebar.hide} + ' is-hidden-all'">
     <div class="card-title" th:with="defaultTitle=#{widget.toc.title},
-                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-book-2-line')},
+                    iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-book-2-line')},
                     iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
            th:unless="${iconSvg}"

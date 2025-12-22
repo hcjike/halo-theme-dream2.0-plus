@@ -290,61 +290,62 @@ spec:
           name: logon
           label: 登录组件样式
           value:
-            console_post_class: 'ri-book-read-line'
-            console_single_pages_class: 'ri-pages-line'
-            console_moment_class: 'ri-camera-lens-line'
-            console_login_class: 'ri-fingerprint-line'
-            console_person_class: 'ri-account-circle-line'
-            console_manage_class: 'ri-settings-3-line'
-            console_logout_class: 'ri-logout-circle-line'
+            console_post_icon:
+              value: 'ri-book-read-line'
+            console_single_pages_icon:
+              value: 'ri-pages-line'
+            console_moment_icon:
+              value: 'ri-camera-lens-line'
+            console_login_icon:
+              value: 'ri-fingerprint-line'
+            console_person_icon:
+              value: 'ri-account-circle-line'
+            console_manage_icon:
+              value: 'ri-settings-3-line'
+            console_logout_icon:
+              value: 'ri-logout-circle-line'
           children:
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_post_class
+              name: console_post_icon
               label: 新建文章图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_single_pages_class
+              name: console_single_pages_icon
               label: 新建页面图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_moment_class
+              name: console_moment_icon
               label: 发布瞬间图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_login_class
+              name: console_login_icon
               label: 登录按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_person_class
+              name: console_person_icon
               label: 个人中心按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_manage_class
+              name: console_manage_icon
               label: 后台管理按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。此菜单仅限管理员可见。'
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_logout_class
+              name: console_logout_icon
               label: 退出登录按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
         - $formkit: group
           name: console
           label: 控制台按钮样式
           value:
-            console_icon: 'ri-equalizer-line'
+            console_icon_new:
+              value: 'ri-equalizer-line'
             console_title: '控制台'
             console_url: '/console'
             console_target: '_blank'
@@ -353,8 +354,7 @@ spec:
           children:
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: console_icon
+              name: console_icon_new
               label: 控制台图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，留空显示默认图标。'
             - $formkit: text
@@ -812,7 +812,8 @@ spec:
               position: 'left'
               hide: 'is-not-hidden'
               title: ''
-              icon: ''
+              icon_new:
+                value: ''
               content: ''
               show_ad_tag: true
               ad_tag_close: true
@@ -892,8 +893,7 @@ spec:
               help: '非必填，可覆盖默认侧边栏标题。'
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: icon
+              name: icon_new
               label: 侧边栏图标
               placeholder: '请输入图标 class 内容'
               help: '非必填，选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，可覆盖默认侧边栏图标。'
@@ -982,10 +982,12 @@ spec:
               label: $value.name
           value:
             - name: QQ聊天
-              icon: 'ri-qq-fill'
+              icon_new:
+                value: 'ri-qq-fill'
               url: tencent://message/?uin=${qq}&Site=&Menu=yes
             - name: 给我发邮件
-              icon: 'ri-mail-fill'
+              icon_new:
+                value: 'ri-mail-fill'
               url: mailto:邮箱地址
           children:
             - $formkit: text
@@ -995,8 +997,7 @@ spec:
               value: ""
             - $formkit: iconify
               format: svg
-              value-only: true
-              name: icon
+              name: icon_new
               validation: required
               label: 图标
               help: "选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容"

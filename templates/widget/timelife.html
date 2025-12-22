@@ -3,7 +3,7 @@
      th:class="'card widget timelife ' + ${sidebar.hide}">
 
     <div class="card-title" th:with="defaultTitle=#{widget.timelife.title},
-                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-hourglass-line')},
+                    iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-hourglass-line')},
                     iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
            th:unless="${iconSvg}"

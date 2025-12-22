@@ -67,7 +67,7 @@
                th:title="${option.name}"
                th:href="${option.url}"
                rel="nofollow noopener noreferrer">
-                <th:block th:with="iconContent = ${option.icon},
+                <th:block th:with="iconContent = ${#strings.defaultString(option.icon_new?.value, '')},
                                          iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
                     <i th:unless="${iconSvg}"
                        th:classappend="${iconContent}"></i>

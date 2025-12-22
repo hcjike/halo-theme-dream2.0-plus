@@ -5,7 +5,7 @@
      categoriesNames = ${theme.config.sidebar.categories_names},
      isEmpty = ${#lists.isEmpty(categories)}">
     <div class="card-title" th:with="defaultTile = #{widget.category.title},
-                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-apps-line')},
+                    iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-apps-line')},
                     iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
            th:unless="${iconSvg}"

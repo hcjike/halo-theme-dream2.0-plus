@@ -5,9 +5,8 @@
       tags = ${tagFinder.list(1,num)},
       isEmpty = ${#lists.isEmpty(tags.items)},
       enableTagsColor = ${theme.config.sidebar.enable_tagcloud_color}">
-
     <div class="card-title" th:with="defaultTitle=#{widget.tagcloud.title},
-                    iconContent = ${#strings.defaultString(sidebar.icon, 'ri-cloud-line')},
+                    iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-cloud-line')},
                     iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
         <i class="card-title-label"
            th:unless="${iconSvg}"
