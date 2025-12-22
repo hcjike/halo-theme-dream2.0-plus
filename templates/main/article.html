@@ -106,13 +106,13 @@
                        th:text="${tag.spec.displayName}"></a>&nbsp;
                 </div>
             </div>
-            <th:bolck th:if="${enableCopyright || enableShare}">
+            <th:block th:if="${enableCopyright || enableShare}">
                 <hr/>
                 <th:block th:if="${enableCopyright}">
                     <th:block th:replace="~{main/copyright}"/>
                 </th:block>
                 <div th:if="${enableShare}" class="dshare"></div>
-            </th:bolck>
+            </th:block>
         </div>
     </div>
 
