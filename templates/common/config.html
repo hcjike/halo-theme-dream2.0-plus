@@ -202,7 +202,7 @@
     DreamConfig["lazy_enable"] = [[${theme.config.basic_info.lazy_enable}]];
     /** 安全链接配置 */
     DreamConfig["enable_security_link"] = [[${theme.config.security_link_config.enable_security_link}]];
-    DreamConfig['security_link_url'] = [[${null != theme.config.security_link_config.security_link_single_page && !#strings.isEmpty(theme.config.security_link_config.security_link_single_page) ? singlePageFinder.getByName(theme.config.security_link_config.security_link_single_page)?.status?.permalink : ''}]]
+    DreamConfig['security_link_url'] = [[${theme.config.security_link_config.enable_security_link ? singlePageFinder.getByName(theme.config.security_link_config.security_link_single_page)?.status?.permalink : ''}]]
     let whitelistStr = [[${theme.config.security_link_config.whitelist_domains}]]
     let hostname = window.location.hostname
     if (whitelistStr) {
