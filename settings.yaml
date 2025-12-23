@@ -35,6 +35,10 @@ spec:
           help: '当用户拷贝文本时，自动将该文本内容追加到最后面。'
         - $formkit: attachment
           name: night_logo
+          aspectRatio: 8/3
+          width: 160px
+          accepts:
+            - "image/*"
           label: '黑暗模式 Logo'
           placeholder: '请输入/选择 Logo 路径'
           help: '在黑暗模式时显示的 Logo，放空默认为网站 Logo。'
@@ -184,6 +188,9 @@ spec:
           help: '请选择建站时间，未选择时不显示。'
         - $formkit: attachment
           name: cloud_by_logo
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: '云服务提供商 Logo'
           placeholder: '请输入/选择 Logo 路径'
         - $formkit: text
@@ -192,6 +199,9 @@ spec:
           placeholder: '请输入链接地址'
         - $formkit: attachment
           name: cdn_by_logo
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: 'CDN提供商 Logo'
           placeholder: '请输入/选择 Logo 路径'
         - $formkit: text
@@ -422,18 +432,32 @@ spec:
               value: false
         - $formkit: attachment
           name: background_pc
+          aspectRatio: 16/9
+          width: 160px
+          accepts:
+            - "image/*"
           label: '明亮模式 PC 端背景图'
           placeholder: '请输入/选择图片路径'
         - $formkit: attachment
           name: background_mobile
+          aspectRatio: 9/16
+          accepts:
+            - "image/*"
           label: 明亮模式移动端背景图
           placeholder: '请输入/选择图片路径'
         - $formkit: attachment
           name: night_background_pc
+          aspectRatio: 16/9
+          width: 160px
+          accepts:
+            - "image/*"
           label: '黑暗模式 PC 端背景图'
           placeholder: '请输入/选择图片路径'
         - $formkit: attachment
           name: night_background_mobile
+          aspectRatio: 9/16
+          accepts:
+            - "image/*"
           label: 黑暗模式移动端背景图
           placeholder: '请输入/选择图片路径'
         - $formkit: select
@@ -450,6 +474,8 @@ spec:
         - $formkit: attachment
           name: banner_image
           label: 横幅背景图
+          aspectRatio: 16/9
+          width: 160px
           accepts:
             - "image/*"
           placeholder: '请输入/选择图片路径'
@@ -457,6 +483,8 @@ spec:
         - $formkit: attachment
           name: banner_video
           label: 横幅背景视频
+          aspectRatio: 16/9
+          width: 160px
           accepts:
             - "video/*"
           placeholder: '请输入/选择视频路径'
@@ -526,9 +554,18 @@ spec:
               label: 默认字体
             - value: 'custom'
               label: 自定义
-        - $formkit: attachment
+        - $formkit: attachmentInput
           name: custom_font
           label: 自定义博客字体
+          accepts:
+            - "font/woff2"
+            - "font/woff"
+            - "font/ttf"
+            - "application/font-woff2"
+            - "application/font-woff"
+            - "application/x-font-ttf"
+            - "application/vnd.ms-fontobject"
+            - "image/svg+xml"
           validation: required
           if: $get(web_font).value == 'custom'
           placeholder: '请输入/选择字体路径'
@@ -551,6 +588,10 @@ spec:
               label: 地址
             - $formkit: attachment
               name: image
+              aspectRatio: 16/9
+              width: 160px
+              accepts:
+                - "image/*"
               label: 背景图
             - $formkit: select
               name: target
@@ -600,6 +641,10 @@ spec:
         - $formkit: attachment
           name: default_thumbnail
           label: 默认文章封面图
+          aspectRatio: 16/9
+          width: 160px
+          accepts:
+            - "image/*"
           placeholder: '请输入/选择图片路径'
           help: "如果文章没有指定封面图，则默认显示当前封面图。"
         - $formkit: select
@@ -792,11 +837,17 @@ spec:
               label: 二维码
         - $formkit: attachment
           name: donate_wechat
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: 微信捐赠二维码
           placeholder: '请输入/选择图片路径'
           help: '请输入/选择微信捐赠海报样式/仅二维码的图片。'
         - $formkit: attachment
           name: donate_alipay
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: 支付宝捐赠二维码
           placeholder: '请输入/选择图片路径'
           help: '请输入/选择支付宝捐赠海报样式/仅二维码的图片。'
@@ -1028,11 +1079,15 @@ spec:
             wechat_img_face:
             wechat_img_back:
           children:
-            - $formkit: attachment
+            - $formkit: attachmentInput
               name: wechat_url
               label: 跳转链接
               placeholder: '请输入网址/选择附件作为点击时的链接'
             - $formkit: attachment
+              aspectRatio: 16/9
+              width: 160px
+              accepts:
+                - "image/*"
               name: wechat_img_face
               label: 公众号正面图
               placeholder: '请输入/选择公众号正面图路径'
@@ -1043,6 +1098,10 @@ spec:
               value: '#07c261'
             - $formkit: attachment
               name: wechat_img_back
+              aspectRatio: 16/9
+              width: 160px
+              accepts:
+                - "image/*"
               label: 公众号背面图
               placeholder: '请输入/选择公众号背面图路径'
             - $formkit: color
@@ -1052,6 +1111,9 @@ spec:
               value: '#ffffff'
         - $formkit: attachment
           name: love_oneself_avatar
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: 侧边栏恋爱墙-自己的头像
           placeholder: '请输入/选择图片路径'
         - $formkit: text
@@ -1060,6 +1122,9 @@ spec:
           placeholder: '请输入个人主页地址'
         - $formkit: attachment
           name: love_opposite_avatar
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: 侧边栏恋爱墙-对方的头像
           placeholder: '请输入/选择图片路径'
         - $formkit: text
@@ -1220,9 +1285,16 @@ spec:
         - $formkit: attachment
           name: links_thumbnail
           label: 友链页面-封面图
+          aspectRatio: 16/9
+          width: 160px
+          accepts:
+            - "image/*"
           placeholder: '请输入/选择图片路径'
         - $formkit: attachment
           name: links_default_avatar
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: '友链页面-默认 Logo'
           placeholder: '请输入/选择 Logo 路径'
           help: "在加载用户 Logo 时、友链未设置 Logo 时、友链 Logo 加载失败时显示。"
@@ -1237,6 +1309,9 @@ spec:
               label: 关闭
         - $formkit: attachment
           name: links_blogger_avatar
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: '友链页面-交换信息自定义 Logo 链接'
           placeholder: '请输入/选择 Logo 路径'
           help: '用于交换友链的 Logo 链接。'
@@ -1329,6 +1404,10 @@ spec:
               label: 关闭
         - $formkit: attachment
           name: journals_share_image
+          aspectRatio: 16/9
+          width: 160px
+          accepts:
+            - "image/*"
           label: 瞬间页面-瞬间分享背景图
           placeholder: '请输入/选择图片路径'
         - $formkit: group
@@ -1759,6 +1838,9 @@ spec:
           help: '请选择一个“安全链接页面模版”创建的页面以启用功能。若已配置页面被删除，需重选新页面保存，否则会引起主题异常。'
         - $formkit: attachment
           name: security_link_site_img
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           if: $get(enable_security_link).value
           label: 安全链接页面-图标
           placeholder: '请输入/选择安全链接页面站点的图标'
@@ -1766,6 +1848,10 @@ spec:
         - $formkit: attachment
           name: security_link_site_img_background
           if: $get(enable_security_link).value
+          aspectRatio: 16/9
+          width: 160px
+          accepts:
+            - "image/*"
           label: 安全链接页面-背景图片
           value: 'https://bing.ee123.net/img/'
           placeholder: '请输入/选择安全链接页面的背景图片'
@@ -1865,7 +1951,7 @@ spec:
               label: 开启
             - value: false
               label: 关闭
-        - $formkit: attachment
+        - $formkit: attachmentInput
           name: manifest_file
           if: $get(enable_pwa).value
           accepts:
@@ -1898,6 +1984,9 @@ spec:
         - $formkit: attachment
           name: apple_touch_icon
           if: $get(enable_pwa).value
+          aspectRatio: 1/1
+          accepts:
+            - "image/*"
           label: iOS 设备显示图标
           validation: required
           placeholder: '请输入/选择图标文件'
