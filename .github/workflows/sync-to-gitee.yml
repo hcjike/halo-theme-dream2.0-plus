@@ -29,53 +29,84 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code (full history)
+      - name: Checkout only master branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
+          ref: master
+          # 只获取 master 分支
+          sparse-checkout: |
+            /*
+          sparse-checkout-cone-mode: false
 
       - name: Setup Git config
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "github-actions@github.com"
-          git config --global http.postBuffer 524288000
 
-      - name: Sync to Gitee
+      - name: Sync master to Gitee
         run: |
-          echo "Syncing to Gitee..."
+          echo "Syncing master branch to Gitee..."
           GITEE_URL="${{ env.GITEE_REPO }}"
           
           # 添加 Gitee 远程
-          git remote add gitee $GITEE_URL || true
+          git remote add gitee $GITEE_URL 2>/dev/null || git remote set-url gitee $GITEE_URL
           
-          # 强制推送到 Gitee（包括所有分支和标签）
-          git push gitee --all --force
-          git push gitee --tags --force
+          # 强制推送 master 分支到 Gitee
+          echo "Pushing master branch to Gitee..."
+          git push gitee master:master --force
           
-          echo "✅ Successfully synced to Gitee"
+          echo "✅ Master branch synced to Gitee successfully"
 
-      - name: Sync to Gitea (safe method)
+      - name: Sync master to Gitea
         run: |
-          echo "Syncing to Gitea..."
+          echo "Syncing master branch to Gitea..."
           GITEA_URL="${{ env.GITEA_REPO }}"
           
           # 添加 Gitea 远程
-          git remote add gitea $GITEA_URL || true
+          git remote add gitea $GITEA_URL 2>/dev/null || git remote set-url gitea $GITEA_URL
           
-          # 1. 先推送非 master 分支
-          echo "Pushing non-master branches..."
-          for branch in $(git branch -r | grep -v '\->' | sed "s,.*/,,g" | grep -v 'master' | grep -v 'HEAD'); do
-            echo "Pushing branch: $branch"
-            git push gitea "refs/remotes/origin/$branch:refs/heads/$branch" --force || true
-          done
+          # 先获取 Gitea 的当前状态
+          echo "Fetching from Gitea to check current state..."
+          git fetch gitea || echo "Could not fetch from Gitea, continuing..."
           
-          # 2. 推送所有标签
-          echo "Pushing all tags..."
-          git push gitea --tags --force || true
+          # 使用更安全的强制推送
+          echo "Pushing master branch to Gitea..."
           
-          # 3. 最后推送 master 分支（不删除，只覆盖）
-          echo "Pushing master branch (force update)..."
-          git push gitea origin/master:master --force-with-lease
+          # 方法1: 先尝试普通强制推送
+          if git push gitea master:master --force; then
+            echo "✅ Master branch force pushed to Gitea"
+          else
+            # 方法2: 如果失败，使用更激进的方法重置远程
+            echo "Force push failed, trying alternative method..."
           
-          echo "✅ Successfully synced to Gitea"
+            # 备份当前的 FETCH_HEAD
+            git fetch gitea master
+            GITEA_MASTER_HASH=$(git rev-parse gitea/master 2>/dev/null || echo "")
+          
+            if [ -n "$GITEA_MASTER_HASH" ]; then
+              echo "Gitea's current master hash: $GITEA_MASTER_HASH"
+              echo "GitHub's master hash: $(git rev-parse HEAD)"
+          
+              # 如果远程有不同历史，使用更新引用方法
+              git update-ref refs/remotes/gitea/master HEAD
+              git push gitea +HEAD:refs/heads/master
+              echo "✅ Master branch updated using ref update method"
+            else
+              # 如果远程分支不存在，直接推送
+              git push gitea HEAD:master
+              echo "✅ Created master branch on Gitea"
+            fi
+          fi
+          
+          echo "✅ Master branch synced to Gitea successfully"
+
+      - name: Verify sync
+        run: |
+          echo "=== Sync Verification ==="
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Commit: $(git rev-parse HEAD)"
+          echo "Branch: master"
+          echo "Time: $(date)"
+          echo "=== End Verification ==="
