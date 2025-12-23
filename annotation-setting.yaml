@@ -7,7 +7,7 @@ spec:
     group: content.halo.run
     kind: Post
   formSchema:
-    - $formkit: radio
+    - $formkit: select
       name: enable_copyright
       label:  开启文章版权声明
       value: ""
@@ -45,7 +45,7 @@ spec:
       value: ""
       placeholder: '请输入提示内容'
       help: '在文章顶部显示一条提示。'
-    - $formkit: radio
+    - $formkit: select
       name: enable_share
       label:  开启文章分享
       value: ""
@@ -57,7 +57,7 @@ spec:
           label:  关闭
         - value: ""
           label:  跟随默认配置
-    - $formkit: radio
+    - $formkit: select
       name: enable_donate
       label:  开启文章打赏
       value: ""
@@ -81,7 +81,7 @@ spec:
     group: content.halo.run
     kind: SinglePage
   formSchema:
-    - $formkit: radio
+    - $formkit: select
       name: enable_copyright
       label:  开启文章版权声明
       value: ""
@@ -99,7 +99,7 @@ spec:
       value: ""
       placeholder: '请输入提示内容'
       help: '在文章顶部显示一条提示。'
-    - $formkit: radio
+    - $formkit: select
       name: enable_share
       label:  开启文章分享
       value: ""
@@ -111,7 +111,7 @@ spec:
           label:  关闭
         - value: ""
           label:  跟随默认配置
-    - $formkit: radio
+    - $formkit: select
       name: enable_donate
       label:  开启文章打赏
       value: ""
@@ -145,7 +145,7 @@ spec:
       name: "desc"
       label: "描述"
       placeholder: '请输入鼠标悬停时描述内容，默认为菜单名'
-    - $formkit: radio
+    - $formkit: select
       name: "disable_pjax"
       label: "PJAX 加载方式"
       value: "false"
@@ -166,7 +166,7 @@ spec:
     group: core.halo.run
     kind: LinkGroup
   formSchema:
-    - $formkit: radio
+    - $formkit: select
       name: "hide"
       label: "是否隐藏"
       value: "false"
@@ -187,7 +187,7 @@ spec:
     group: core.halo.run
     kind: Link
   formSchema:
-    - $formkit: radio
+    - $formkit: select
       name: "hide"
       label: "是否隐藏"
       value: "false"
