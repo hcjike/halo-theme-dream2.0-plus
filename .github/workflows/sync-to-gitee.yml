@@ -4,13 +4,18 @@ permissions:
   contents: write
 
 on:
+  # 每日定时同步
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'  # 每天 UTC 0 点（北京时间 8 点）
+
+  # master 分支有代码提交时同步
   push:
     branches: [ master ]
-  pull_request:
+  # 仅在 Pull Request 合并到 master 后执行
+  pull_request_target:
     branches: [ master ]
     types: [ closed ]
+  # 手动触发
   workflow_dispatch:
 
 env:
@@ -18,45 +23,105 @@ env:
   GITEA_REPO: "https://${{ secrets.GITEA_USERNAME }}:${{ secrets.GITEA_TOKEN }}@code.hcjike.com/hcjike/halo-theme-dream2.0-plus.git"
 
 jobs:
-  mirror-to-gitee:
+  mirror:
+    # 精确的条件判断
+    if: |
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request_target' && 
+       github.event.pull_request.merged == true)
+
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        remote: [gitee, gitea]
 
     steps:
       - name: Checkout code (full history)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # 获取完整提交历史
+          # 对于合并的 PR，使用合并后的 commit
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Setup Git config
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions@github.com"
+          git config --global http.postBuffer 524288000  # 增大缓冲区避免大文件问题
 
-      - name: Force mirror to Gitee
-        run: |
-          # 删除所有现有的远程引用（避免引用冲突）
-          git ls-remote --heads ${{ env.GITEE_REPO }} | awk '{print ":"$2}' | xargs -r git push ${{ env.GITEE_REPO }} --delete || true
-          
-          # 添加远程并强制推送所有内容
-          git remote add gitee ${{ env.GITEE_REPO }}
-          git push gitee --mirror --force
-
-      - name: Force mirror to Gitea
+      - name: Force mirror to ${{ matrix.remote }}
         run: |
           # 设置变量
-          GITEA_REPO_URL="${{ env.GITEA_REPO }}"
-          REMOTE_NAME="gitea"  # 使用更具描述性的远程名称
+          if [ "${{ matrix.remote }}" = "gitee" ]; then
+            REMOTE_URL="${{ env.GITEE_REPO }}"
+            echo "Syncing to Gitee..."
+          else
+            REMOTE_URL="${{ env.GITEA_REPO }}"
+            echo "Syncing to Gitea..."
+          fi
           
-          # 移除可能已存在的远程
+          REMOTE_NAME="${{ matrix.remote }}"
+          
+          # 移除已存在的远程
           git remote remove $REMOTE_NAME 2>/dev/null || true
           
-          # 添加Gitea远程仓库
-          git remote add $REMOTE_NAME $GITEA_REPO_URL
+          # 添加远程仓库
+          git remote add $REMOTE_NAME $REMOTE_URL
+          
+          # 尝试获取远程引用信息
+          echo "Fetching remote references..."
+          git fetch $REMOTE_NAME || echo "Failed to fetch from remote, continuing..."
           
           # 删除远程已有的引用（避免冲突）
-          git ls-remote --heads $REMOTE_NAME | awk '{print ":"$2}' | xargs -r git push $REMOTE_NAME --delete 2>/dev/null || true
+          echo "Cleaning up old remote references..."
+          git ls-remote --heads $REMOTE_NAME 2>/dev/null | awk '{print ":"$2}' | xargs -r git push $REMOTE_NAME --delete 2>/dev/null || true
+          git ls-remote --tags $REMOTE_NAME 2>/dev/null | awk '{print ":"$2}' | xargs -r git push $REMOTE_NAME --delete 2>/dev/null || true
           
           # 强制推送所有内容（镜像推送）
-          git push $REMOTE_NAME --mirror --force
+          echo "Mirroring to $REMOTE_NAME..."
+          RETRY_COUNT=0
+          MAX_RETRIES=3
           
-          echo "Successfully mirrored to Gitea repository"
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if git push $REMOTE_NAME --mirror --force; then
+              echo "Successfully mirrored to $REMOTE_NAME!"
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT+1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Mirror failed, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
+                sleep 5
+              else
+                echo "Failed to mirror to $REMOTE_NAME after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+          
+          # 清理临时远程
+          git remote remove $REMOTE_NAME
+
+      - name: Success notification
+        if: success()
+        run: |
+          echo "=========================================="
+          echo "✅ Synchronization completed successfully!"
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Source: ${{ github.repository }}"
+          echo "Targets: Gitee and Gitea"
+          echo "Time: $(date)"
+          echo "=========================================="
+
+      - name: Failure notification
+        if: failure()
+        run: |
+          echo "=========================================="
+          echo "❌ Synchronization failed!"
+          echo "Event: ${{ github.event_name }}"
+          echo "Error in: ${{ matrix.remote }}"
+          echo "Time: $(date)"
+          echo "Please check the logs above for details."
+          echo "=========================================="
+        continue-on-error: true
