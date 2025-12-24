@@ -739,7 +739,7 @@ spec:
         - $formkit: select
           name: show_img_name
           label: 显示图片名称
-          value: true
+          value: false
           options:
             - value: true
               label: 开启
