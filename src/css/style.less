@@ -3940,6 +3940,16 @@ details[open] > summary::before {
     padding: var(--radius-inner);
     border-radius: var(--radius-inner);
     box-shadow: 0 4px 10px rgba(0, 0, 0, .05), 0 0 1px rgba(0, 0, 0, .1);
+
+    .gallery-item {
+      width: 100%;
+      height: 100%;
+
+      & > div {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 
   figure {
@@ -3953,6 +3963,11 @@ details[open] > summary::before {
     img,
     audio {
       margin: 5px 0;
+    }
+
+    &[data-content-type] > figcaption {
+      color: var(--dark-d);
+      font-style: italic;
     }
 
     &:not([data-content-type]) > figcaption {
@@ -4070,15 +4085,11 @@ details[open] > summary::before {
 
   .gallery-item {
     text-align: center;
-    width: 100%;
-    height: 100%;
 
     & > div {
       position: relative;
       overflow: hidden;
       display: inline-block;
-      width: 100%;
-      height: 100%;
     }
 
     & > p {
