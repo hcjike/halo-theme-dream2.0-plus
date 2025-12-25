@@ -36,7 +36,7 @@ spec:
   # 版本号
   version: 0.0.0
   # 最低支持的 Halo 版本
-  requires: ">=2.22.0"
+  requires: ">=2.22.1"
   # 许可
   license:
     - name: "MIT"

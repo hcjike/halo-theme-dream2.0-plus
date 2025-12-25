@@ -243,27 +243,21 @@ spec:
           onValue: true
           offValue: false
           value: false
-          help: 固定标题栏时不会随着页面滚动而隐藏，始终显示标题栏。
-        - $formkit: select
+          help: 开启后标题栏不会随着页面滚动而隐藏，始终显示标题栏。
+        - $formkit: switch
+          onValue: true
+          offValue: false
           name: menu_center
-          label: 菜单栏对齐方式
+          label: 菜单栏居中显示
           value: false
-          help: 在非移动设备下改变菜单栏对齐方式。
-          options:
-            - label: 默认
-              value: false
-            - label: 居中
-              value: true
-        - $formkit: select
+          help: '开启后在非移动设备下菜单栏居中显示，反之左侧显示。'
+        - $formkit: switch
+          onValue: true
+          offValue: false
           name: footer_center
-          label: 页脚对齐方式
+          label: 页脚居中显示
           value: false
-          help: 在非移动设备下改变页脚的对齐方式。
-          options:
-            - label: 左侧
-              value: false
-            - label: 居中
-              value: true
+          help: '开启后页脚居中显示，反之左侧显示。'
     - group: basic_style
       label: '基础样式'
       formSchema:
@@ -366,29 +360,25 @@ spec:
               validation: required
               label: 未登录，控制台跳转URL
               help: '未登录，控制台跳转URL，可使用“redirect_uri”参数进行登录后跳转，例如：“/login?redirect_uri=/”，登录后默认跳转到前台页面。'
-            - $formkit: select
+            - $formkit: switch
+              onValue: '_blank'
+              offValue: '_self'
               name: console_target
               validation: required
-              label: 未登录，控制台跳转方式
-              options:
-                - value: '_blank'
-                  label: 新标签页
-                - value: '_self'
-                  label: 当前窗口
+              label: 未登录，新标签页打开控制台URL
+              help: '开启后在新标签页打开“未登录，控制台跳转URL”，反之在当前页面打开。'
             - $formkit: text
               name: console_logon_url
               validation: required
               label: 已登录，控制台跳转URL
               help: '已登录，控制台跳转URL。'
-            - $formkit: select
+            - $formkit: switch
+              onValue: '_blank'
+              offValue: '_self'
               name: console_logon_target
               validation: required
-              label: 已登录，控制台跳转方式
-              options:
-                - value: '_blank'
-                  label: 新标签页
-                - value: '_self'
-                  label: 当前窗口
+              label: 已登录，新标签页打开控制台URL
+              help: '开启后在新标签页打开“已登录，控制台跳转URL”，反之在当前页面打开。'
         - $formkit: select
           name: load_progress
           label: 加载进度条
@@ -402,15 +392,12 @@ spec:
             - value: center
               label: 居中展开
         - $formkit: switch
+          onValue: true
+          offValue: false
           name: drawer_toc
           label: 侧边抽屉式目录
           value: true
           help: "在非桌面设备上，显示展开侧边抽屉式目录的悬浮按钮。"
-          options:
-            - value: true
-              label: 显示
-            - value: false
-              label: 不显示
         - $formkit: switch
           onValue: true
           offValue: false
@@ -481,15 +468,13 @@ spec:
           name: banner_description
           label: 横幅文字描述
           placeholder: '请输入描述内容'
-        - $formkit: select
+        - $formkit: switch
+          onValue: true
+          offValue: false
           name: banner_full_screen
-          label: 横幅高度
+          label: 横幅全屏显示
           value: false
-          options:
-            - label: 全屏
-              value: true
-            - label: 默认
-              value: false
+          help: '开启后，横幅将全屏显示，反之则为默认显示。'
         - $formkit: switch
           onValue: true
           offValue: false
@@ -529,16 +514,14 @@ spec:
           name: night_theme_color
           label: 黑暗模式主题色
           value: '#5d93db'
-        - $formkit: select
+        - $formkit: switch
+          onValue: 'custom'
+          offValue: 'default'
           name: web_font
           id: web_font
-          label: 博客字体
+          label: 自定义博客字体
+          help: '开启后使用自定义字体，反之使用默认字体'
           value: 'default'
-          options:
-            - value: 'default'
-              label: 默认字体
-            - value: 'custom'
-              label: 自定义
         - $formkit: attachmentInput
           name: custom_font
           label: 自定义博客字体
@@ -578,15 +561,13 @@ spec:
               accepts:
                 - "image/*"
               label: 背景图
-            - $formkit: select
+            - $formkit: switch
+              onValue: '_blank'
+              offValue: '_self'
               name: target
-              label: 打开方式
+              label: 新标签页打开
               value: '_blank'
-              options:
-                - value: '_blank'
-                  label: 新窗口
-                - value: '_self'
-                  label: 原窗口
+              help: '开启后在新标签页打开，反之在当前页面打开。'
         - $formkit: select
           name: sidebar_column
           label: 博客布局方式
@@ -943,6 +924,7 @@ spec:
           offValue: false
           name: enable_color_character
           label: 侧边栏信息-开启彩字切换
+          help: '开启后侧边栏信息模块会根据配置的彩字内容显示彩字切换效果。'
           value: false
         - $formkit: textarea
           name: color_character
@@ -1045,31 +1027,21 @@ spec:
               label: 跳转链接
               placeholder: '请输入网址/选择附件作为点击时的链接'
             - $formkit: attachment
-              aspectRatio: 16/9
+              aspectRatio: 23/9
               width: 160px
               accepts:
                 - "image/*"
               name: wechat_img_face
               label: 公众号正面图
               placeholder: '请输入/选择公众号正面图路径'
-            - $formkit: color
-              name: wechat_img_face_color
-              label: 公众号正面图背景色
-              help: 用于填充图片无法铺满部分的颜色。
-              value: '#07c261'
             - $formkit: attachment
               name: wechat_img_back
-              aspectRatio: 16/9
+              aspectRatio: 23/9
               width: 160px
               accepts:
                 - "image/*"
               label: 公众号背面图
               placeholder: '请输入/选择公众号背面图路径'
-            - $formkit: color
-              name: wechat_img_back_color
-              label: 公众号背面图背景色
-              help: 用于填充图片无法铺满部分的颜色。
-              value: '#ffffff'
         - $formkit: attachment
           name: love_oneself_avatar
           aspectRatio: 1/1
@@ -1101,7 +1073,7 @@ spec:
           name: meting_api
           label: 侧边栏音乐-自建API
           placeholder: '请输入 API 地址'
-          help: '自建 API 方法见文档：https://github.com/metowolf/Meting'
+          help: '填写后，“侧边栏音乐-音乐播放器配置方式”将会失效，自建 API 方法见文档：https://github.com/metowolf/Meting。'
         - $formkit: select
           name: music_mode
           label: 侧边栏音乐-音乐播放器配置方式
@@ -1115,7 +1087,7 @@ spec:
           name: netease_playlist_id
           label: '侧边栏音乐-网易云歌单 ID'
           placeholder: '请输入歌单 ID'
-          help: '填写网易云歌单的 ID。'
+          help: '填写网易云歌单的 ID，“侧边栏音乐-音乐播放器配置方式”配置为“网易云歌单 ID”且未填写“侧边栏音乐-自建API”时有效。'
         - $formkit: textarea
           name: music_config
           label: 侧边栏音乐-参数进阶配置
@@ -1125,7 +1097,7 @@ spec:
             server="netease"
             type="playlist"
             id="7355014621"
-          help: '输入音乐参数配置(id / server / type必填)，详细配置方式见官方文档：https://github.com/metowolf/MetingJS/'
+          help: '输入音乐参数配置(id / server / type必填)，详细配置方式见官方文档：https://github.com/metowolf/MetingJS/，“侧边栏音乐-音乐播放器配置方式”配置为“参数进阶配置”且未填写“侧边栏音乐-自建API”时有效。'
         - $formkit: number
           name: recent_posts_num
           label: 侧边栏最近文章-展示文章数量
@@ -1138,16 +1110,13 @@ spec:
           label: 侧边栏最近文章-显示”更多”按钮
           value: true
           help: '侧边栏最近文章是否显示更多按钮。更多按钮跳转至文章归档页面。'
-        - $formkit: select
+        - $formkit: switch
+          onValue: true
+          offValue: false
           name: recent_posts_pinned
-          label: 侧边栏最近文章-显示模式
+          label: 侧边栏最近文章-置顶优先
           value: false
-          help: '侧边栏最近文章显示模式，置顶优先：优先显示置顶文章，同时显示置顶标记，发布优先：优先显示最新发布的文章，不显示置顶标记。'
-          options:
-            - value: true
-              label: 置顶优先
-            - value: false
-              label: 发布优先
+          help: '开启后优先显示置顶文章，同时显示置顶标记，反之优先显示最新发布的文章，不显示置顶标记。'
         - $formkit: number
           name: recent_comments_num
           label: 侧边栏最近评论-展示评论数量
@@ -1170,7 +1139,7 @@ spec:
           name: categories_names
           label: 侧边栏分类-展示的分类
           addLabel: 添加分类
-          help: '默认树形展示全部分类，配置后仅显示选定分类（单层显示）。'
+          help: '默认树形展示全部分类，配置后仅显示选定分类（单层级显示）。'
           itemType: string
           children:
             - $formkit: categorySelect
@@ -1194,6 +1163,7 @@ spec:
           name: enable_tag_color
           label: 侧边栏标签-开启标签颜色
           value: false
+          help: '开启后会显示标签设定的颜色，反之显示默认颜色。'
         - $formkit: switch
           onValue: true
           offValue: false
@@ -1211,17 +1181,15 @@ spec:
           offValue: false
           name: enable_tagcloud_color
           label: 侧边栏标签云-开启标签颜色
+          help: '开启后会显示标签设定的颜色，反之显示默认颜色。'
           value: false
-        - $formkit: select
+        - $formkit: switch
+          onValue: true
+          offValue: false
           name: show_tagcloud_style
-          label: 侧边栏标签云-标签云显示风格
-          help: '若未添加侧边栏标签云，建议保持默认风格。'
+          label: 侧边栏标签云-3D标签云
+          help: '开启后显示3D标签云风格，反之显示默认标签云风格。'
           value: false
-          options:
-            - value: false
-              label: 默认
-            - value: true
-              label: 3D
     - group: page_config
       label: '页面设置'
       formSchema:
@@ -1247,6 +1215,7 @@ spec:
           name: show_exchange_info
           label: 友链页面-显示友链交换信息
           value: true
+          help: '开启后显示友链交换信息，反之不显示。'
         - $formkit: attachment
           name: links_blogger_avatar
           aspectRatio: 1/1
@@ -1297,6 +1266,7 @@ spec:
           offValue: false
           name: enable_tags_tag_color
           label: 标签页面-开启标签颜色
+          help: '开启后会显示标签设定的颜色，反之显示默认颜色。'
           value: false
         - $formkit: switch
           onValue: true
@@ -1355,17 +1325,14 @@ spec:
                   label: 搜索表单
                 - value: 'basic'
                   label: 经典
-            - $formkit: select
+            - $formkit: switch
+              onValue: '_blank'
+              offValue: '_self'
               if: $get(search_style).value != 'basic'
               name: search_target
               validation: required
-              label: 搜索页面-搜索结果跳转方式
-              help: '搜索页面-搜索结果跳转方式，搜索表单、热门文章风格有效。'
-              options:
-                - value: _blank
-                  label: 新标签页
-                - value: _self
-                  label: 当前窗口
+              label: 搜索页面-新标签页打开目标页面
+              help: '开启后在新标签页打开目标页面，反之在当前窗口打开目标页面，搜索表单、热门文章风格有效。'
             - $formkit: code
               if: $get(search_style).value != 'basic'
               name: search_empty_tips

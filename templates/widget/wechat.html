@@ -1,6 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
      th:fragment="widget (sidebar)"
      th:class="'card widget wechat ' + ${sidebar.hide}"
+     style="background: transparent;"
      th:with="faceImg = ${theme.config.sidebar.wechat.wechat_img_face},
               backImg = ${theme.config.sidebar.wechat.wechat_img_back},
               wechatUrl = ${theme.config.sidebar.wechat.wechat_url}">
@@ -8,11 +9,10 @@
         th:href="${!#strings.isEmpty(wechatUrl) ? wechatUrl : (!#strings.isEmpty(faceImg) ? faceImg : (!#strings.isEmpty(backImg) ? backImg : '#'))}"
         th:onclick="${#strings.isEmpty(wechatUrl)} ? 'event.preventDefault();'" target="_blank">
         <div th:class="${!#strings.isEmpty(faceImg) && !#strings.isEmpty(backImg) ? 'flip-content animation' : 'flip-content'}">
-            <div class="wechatFace" th:style="|background-color: ${theme.config.sidebar.wechat.wechat_img_face_color};|">
+            <div class="wechatFace">
                 <img th:if="${!#strings.isEmpty(faceImg)}" height="auto" width="100%" th:src="${faceImg}" th:alt="#{widget.wechat.desc}"/>
             </div>
-            <div th:class="${!#strings.isEmpty(faceImg) && !#strings.isEmpty(backImg) ? 'wechatBack animation' : 'wechatBack'}" th:classappend="${#strings.isEmpty(faceImg)}? 'show'"
-                 th:style="|background-color: ${theme.config.sidebar.wechat.wechat_img_back_color};|">
+            <div th:class="${!#strings.isEmpty(faceImg) && !#strings.isEmpty(backImg) ? 'wechatBack animation' : 'wechatBack'}" th:classappend="${#strings.isEmpty(faceImg)}? 'show'">
                 <img th:if="${!#strings.isEmpty(backImg)}" height="auto" width="100%" th:src="${backImg}" th:alt="#{widget.wechat.desc}"/>
             </div>
         </div>
