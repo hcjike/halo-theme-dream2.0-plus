@@ -689,6 +689,17 @@ spec:
           label: 文章摘要显示“AI 总结”
           value: false
           help: '当启用“AI 助手-文章自动总结”功能时，是否将“AI 助手-文章自动总结”结果显示在摘要位置（与其他摘要功能互斥）。'
+        - $formkit: radio
+          name: cursor
+          id: cursor
+          label: 上下页排序
+          value: true
+          help: 正序：从新到旧；倒序：从旧到新。
+          options:
+            - value: true
+              label: 正序
+            - value: false
+              label: 倒序
         - $formkit: number
           name: code_fold_line
           label: 代码块折叠

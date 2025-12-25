@@ -116,16 +116,20 @@
         </div>
     </div>
 
-    <th:block th:if="${isPost}" th:with="postCursor = ${postFinder.cursor(post.metadata.name)}">
-        <div th:if="${postCursor.hasPrevious() || postCursor.hasNext()}" class="card">
+    <th:block th:if="${isPost}" th:with="postCursor = ${postFinder.cursor(post.metadata.name)},
+              prevPost = ${theme.config.post.cursor ? postCursor.next : postCursor.previous},
+              nextPost = ${theme.config.post.cursor ? postCursor.previous : postCursor.next},
+              hasPrev = ${theme.config.post.cursor ? postCursor.hasNext() : postCursor.hasPrevious()},
+              hasNext = ${theme.config.post.cursor ? postCursor.hasPrevious() : postCursor.hasNext()}">
+        <div th:if="${hasPrev || hasNext}" class="card">
             <div class="level post-navigation card-content">
-                <a th:if="${postCursor.hasNext()}" class="level-item"
-                   th:href="@{${postCursor.next.status.permalink}}" th:aria-label="${postCursor.next.spec.title}" th:title="${postCursor.next.spec.title}">
-                    <i class="ri-arrow-left-s-line"></i><span th:text="${postCursor.next.spec.title}"></span>
+                <a th:if="${hasPrev}" class="level-item"
+                   th:href="@{${prevPost.status.permalink}}" th:aria-label="${prevPost.spec.title}" th:title="${prevPost.spec.title}">
+                    <i class="ri-arrow-left-s-line"></i><span th:text="${prevPost.spec.title}"></span>
                 </a>
-                <a th:if="${postCursor.hasPrevious()}" class="level-item"
-                   th:href="@{${postCursor.previous.status.permalink}}" th:aria-label="${postCursor.previous.spec.title}" th:title="${postCursor.previous.spec.title}">
-                    <span th:text="${postCursor.previous.spec.title}"></span><i class="ri-arrow-right-s-line"></i>
+                <a th:if="${hasNext}" class="level-item"
+                   th:href="@{${nextPost.status.permalink}}" th:aria-label="${nextPost.spec.title}" th:title="${nextPost.spec.title}">
+                    <span th:text="${nextPost.spec.title}"></span><i class="ri-arrow-right-s-line"></i>
                 </a>
             </div>
         </div>
