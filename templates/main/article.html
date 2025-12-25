@@ -119,13 +119,13 @@
     <th:block th:if="${isPost}" th:with="postCursor = ${postFinder.cursor(post.metadata.name)}">
         <div th:if="${postCursor.hasPrevious() || postCursor.hasNext()}" class="card">
             <div class="level post-navigation card-content">
-                <a th:if="${postCursor.hasPrevious()}" class="level-item"
-                   th:href="@{${postCursor.previous.status.permalink}}" th:aria-label="${postCursor.previous.spec.title}" th:title="${postCursor.previous.spec.title}">
-                    <i class="ri-arrow-left-s-line"></i><span th:text="${postCursor.previous.spec.title}"></span>
-                </a>
                 <a th:if="${postCursor.hasNext()}" class="level-item"
                    th:href="@{${postCursor.next.status.permalink}}" th:aria-label="${postCursor.next.spec.title}" th:title="${postCursor.next.spec.title}">
-                    <span th:text="${postCursor.next.spec.title}"></span><i class="ri-arrow-right-s-line"></i>
+                    <i class="ri-arrow-left-s-line"></i><span th:text="${postCursor.next.spec.title}"></span>
+                </a>
+                <a th:if="${postCursor.hasPrevious()}" class="level-item"
+                   th:href="@{${postCursor.previous.status.permalink}}" th:aria-label="${postCursor.previous.spec.title}" th:title="${postCursor.previous.spec.title}">
+                    <span th:text="${postCursor.previous.spec.title}"></span><i class="ri-arrow-right-s-line"></i>
                 </a>
             </div>
         </div>
