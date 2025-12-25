@@ -257,7 +257,7 @@ spec:
           name: footer_center
           label: 页脚居中显示
           value: false
-          help: '开启后页脚居中显示，反之左侧显示。'
+          help: '开启后在非移动设备下页脚居中显示，反之左侧显示。'
     - group: basic_style
       label: '基础样式'
       formSchema:
@@ -395,9 +395,9 @@ spec:
           onValue: true
           offValue: false
           name: drawer_toc
-          label: 侧边抽屉式目录
+          label: 开启侧边抽屉式目录
           value: true
-          help: "在非桌面设备上，显示展开侧边抽屉式目录的悬浮按钮。"
+          help: "开启后在非桌面设备上，显示展开侧边抽屉式目录的悬浮按钮。"
         - $formkit: switch
           onValue: true
           offValue: false
