@@ -524,7 +524,7 @@ spec:
           value: 'default'
         - $formkit: attachmentInput
           name: custom_font
-          label: 自定义博客字体
+          label: 博客字体
           accepts:
             - "font/woff2"
             - "font/woff"
@@ -699,12 +699,6 @@ spec:
           label: 正文长图折叠
           placeholder: '请输入高度数值（px）'
           help: '图片高度超出指定高度（px）后默认进行折叠，指定的高度需大于等于 400px。'
-        - $formkit: switch
-          onValue: true
-          offValue: false
-          name: show_img_name
-          label: 显示图片名称
-          value: false
         - $formkit: number
           name: invalid_tips_day
           label: 文章失效提示

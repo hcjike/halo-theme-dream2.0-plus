@@ -111,7 +111,7 @@ const commonContext = {
         }
 
         $(this).wrap(`<div class="gallery-item"><div data-fancybox="gallery" data-options='{"hash": false}' ${this.alt ? `data-caption="${this.alt}"` : ''} href="${src
-        }"></div>${(this.alt && DreamConfig.show_img_name) ? `<p>${this.alt}</p>` : ''}</div>`)
+        }"></div></div>`)
       }
     })
   },
