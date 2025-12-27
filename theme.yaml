@@ -25,6 +25,7 @@ spec:
   description: '梦之城，童话梦境'
   # 主题logo地址
   logo: /themes/theme-dream2-plus/assets/img/logo.png
+  homepage: https://www.halo.run/store/apps/app-HrMpM
   # 主题地址
   website: https://www.hcjike.com/docs/halo-theme-dream2.0
   # 主题github开源地址
