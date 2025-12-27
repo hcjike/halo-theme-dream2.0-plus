@@ -524,7 +524,7 @@ spec:
           value: 'default'
         - $formkit: attachmentInput
           name: custom_font
-          label: 自定义博客字体
+          label: 博客字体
           accepts:
             - "font/woff2"
             - "font/woff"
@@ -699,12 +699,6 @@ spec:
           label: 正文长图折叠
           placeholder: '请输入高度数值（px）'
           help: '图片高度超出指定高度（px）后默认进行折叠，指定的高度需大于等于 400px。'
-        - $formkit: switch
-          onValue: true
-          offValue: false
-          name: show_img_name
-          label: 显示图片名称
-          value: false
         - $formkit: number
           name: invalid_tips_day
           label: 文章失效提示
@@ -1522,6 +1516,13 @@ spec:
               language: html
               height: 45px
               help: '填写页面内容，填写<html>、<head>和<body>标签内容。'
+        - $formkit: switch
+          onValue: true
+          offValue: false
+          name: mobile_special_effects
+          label: 移动端特效显示
+          value: false
+          help: '开启后移动端也可显示特效，具体效果取决于当前启用的特效模式。'
         - $formkit: select
           name: effects_lantern_mode
           id: effects_lantern_mode

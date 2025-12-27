@@ -142,5 +142,5 @@ function drawSnow() {
 }
 
 /* 调用及控制方法 */
-var snow = new snowFall({maxFlake:150})
+var snow = new snowFall({maxFlake: Utils.isMobile() ? 35 : 100})
 snow.start()

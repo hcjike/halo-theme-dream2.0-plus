@@ -186,13 +186,9 @@
     let effects_lantern_right = [[${theme.config.enhance.effects_lantern.effects_lantern_right}]];
     if(effects_lantern_left && effects_lantern_left.length > 1) {
       effects_lantern_left = effects_lantern_left.charAt(0);
-    } else {
-      effects_lantern_left = '';
     }
-    if(effects_lantern_left && effects_lantern_right.length > 1) {
+    if(effects_lantern_right && effects_lantern_right.length > 1) {
       effects_lantern_right = effects_lantern_right.charAt(0);
-    } else {
-      effects_lantern_right = '';
     }
     DreamConfig["effects_lantern_left"] = effects_lantern_left;
     DreamConfig["effects_lantern_right"] = effects_lantern_right;
@@ -217,6 +213,8 @@
     DreamConfig["default_theme"] = [[${theme.config.basic_style.default_theme}]];
     DreamConfig["theme_version"] = [[${theme.spec.version}]];
     DreamConfig["theme_base"] = "[(${#theme.assets('/')})]";
+    /** 移动端特效开关 */
+    DreamConfig["mobile_special_effects"] = [[${theme.config.enhance.mobile_special_effects}]];
     [(${!#strings.isEmpty(theme.config.post.code_fold_line)?'DreamConfig["code_fold_line"] = "' + theme.config.post.code_fold_line + '";': ''})]
       [(${!#strings.isEmpty(theme.config.basic_info.document_hidden_title)?'DreamConfig["document_hidden_title"] = "' + #strings.escapeJavaScript(theme.config.basic_info.document_hidden_title) + '";': ''})]
       [(${!#strings.isEmpty(theme.config.basic_info.document_visible_title)?'DreamConfig["document_visible_title"] = "' + #strings.escapeJavaScript(theme.config.basic_info.document_visible_title) + '";' : ''})]
@@ -233,7 +231,6 @@
       [(${theme.config.enhance.effects_universe_mode != 'none'?'DreamConfig["effects_universe_mode"] = "' + theme.config.enhance.effects_universe_mode + '";': ''})]
       [(${theme.config.enhance.effects_circle_magic_mode != 'none'?'DreamConfig["effects_circle_magic_mode"] = "' + theme.config.enhance.effects_circle_magic_mode + '";': ''})]
       [(${theme.config.enhance.effects_quantum_silk_thread_mode != 'none'?'DreamConfig["effects_quantum_silk_thread_mode"] = "' + theme.config.enhance.effects_quantum_silk_thread_mode + '";': ''})]
-      [(${theme.config.post.show_img_name?'DreamConfig["show_img_name"] = true;': ''})]
       [(${theme.config.basic_style.load_progress != 'none'?'DreamConfig["load_progress"] = "' + theme.config.basic_style.load_progress + '";': ''})]
       [(${!#strings.isEmpty(theme.config.page_config.journals_share_image)?'DreamConfig["journals_share_image"] = "' + theme.config.page_config.journals_share_image + '";': ''})]
       [(${!#strings.isEmpty(theme.config.sidebar.meting_api)?'var meting_api = "' + theme.config.sidebar.meting_api + '";': ''})]

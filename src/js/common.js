@@ -111,7 +111,7 @@ const commonContext = {
         }
 
         $(this).wrap(`<div class="gallery-item"><div data-fancybox="gallery" data-options='{"hash": false}' ${this.alt ? `data-caption="${this.alt}"` : ''} href="${src
-        }"></div>${(this.alt && DreamConfig.show_img_name) ? `<p>${this.alt}</p>` : ''}</div>`)
+        }"></div></div>`)
       }
     })
   },
@@ -702,7 +702,7 @@ const commonContext = {
   },
   /* 初始化特效，只需要初始化一次，移动端设备不初始化 */
   initEffects() {
-    if (Utils.isMobile()) return
+    if (Utils.isMobile() && !DreamConfig.mobile_special_effects) return
     DreamConfig.cursor_move && Utils.cachedScript(`${DreamConfig.theme_base}/js/cursor/move/${DreamConfig.cursor_move}.min.js?mew=${DreamConfig.theme_version}`)
     DreamConfig.cursor_click && Utils.cachedScript(`${DreamConfig.theme_base}/js/cursor/click/${DreamConfig.cursor_click}.min.js?mew=${DreamConfig.theme_version}`)
     DreamConfig.enable_live2d && Utils.cachedScript(`${DreamConfig.theme_base}/js/autoload.min.js?mew=${DreamConfig.theme_version}`)
