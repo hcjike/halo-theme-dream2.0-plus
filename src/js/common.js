@@ -809,7 +809,7 @@ window.commonContext = commonContext
 let timeLifeHour = -1
 
 !(function () {
-  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'playBannerVideo', 'initGallery']
+  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'playBannerVideo']
   const omits = ['initEffects', 'showThemeVersion', 'iniTaskItemDisabled']
 
   Object.keys(commonContext).forEach(
