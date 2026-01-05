@@ -371,7 +371,9 @@
             if (countdown <= 0) {
               countdownTextElement.textContent = '[[#{page.security_link.countdown_tip_jump}]]'
               clearInterval(timer)
-              window.location.replace(targetUrl);
+              setTimeout(function() {
+                window.location.replace(targetUrl);
+              }, 30);
             }
           }, 1000)
         } else {
@@ -384,7 +386,9 @@
           if (timer) {
             clearInterval(timer)
           }
-          window.location.replace(targetUrl)
+          setTimeout(function() {
+            window.location.replace(targetUrl);
+          }, 30);
           if (countdownElement) {
             countdownElement.textContent = 0
           }
