@@ -810,8 +810,8 @@ window.commonContext = commonContext
 let timeLifeHour = -1
 
 !(function () {
-  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'playBannerVideo']
-  const omits = ['initEffects', 'showThemeVersion', 'iniTaskItemDisabled']
+  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'playBannerVideo', 'initEffects', 'iniTaskItemDisabled']
+  const omits = ['showThemeVersion']
 
   Object.keys(commonContext).forEach(
     (c) => !loads.includes(c) && !omits.includes(c) && commonContext[c]()
