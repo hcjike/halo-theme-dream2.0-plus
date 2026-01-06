@@ -8,11 +8,12 @@ const RainEffect = (function () {
   // 配置参数
   const config = {
     density: 5,     // 雨滴密度
-    speed: 0.5      // 下落速度
+    speed: 0.5,      // 下落速度
+    frameDuration: 1000 / 33   // 帧间隔 ms
   }
 
-  let rainInterval = null
   let container = null
+  let lastRenderTime = 0
 
   // 创建样式
   function createStyles() {
@@ -45,7 +46,7 @@ const RainEffect = (function () {
                 10% {
                     opacity: 1;
                 }
-                90% {
+                95% {
                     opacity: 1;
                 }
                 100% {
@@ -93,13 +94,22 @@ const RainEffect = (function () {
   }
 
   // 开始下雨
-  function startRaining() {
-    // 持续创建新雨滴
-    rainInterval = setInterval(() => {
-      for (let i = 0; i < config.density; i++) {
-        createRainDrop()
+  function animate() {
+    let now = Date.now()
+    let secondsSinceLastRender = (now - lastRenderTime)
+    if (secondsSinceLastRender >= config.frameDuration) {
+      let isNight = document.documentElement.classList.contains('night')
+      let rainMode = DreamConfig.effects_rain_mode
+      if (rainMode === 'all' || (rainMode === 'day' && !isNight) || (rainMode === 'night' && isNight)) {
+        for (let i = 0; i < config.density; i++) {
+          createRainDrop()
+        }
+      } else {
+        RainEffect.clear()
       }
-    }, 100)
+      lastRenderTime = now
+    }
+    requestAnimationFrame(animate)
   }
 
   // 窗口大小改变时调整雨滴
@@ -122,6 +132,7 @@ const RainEffect = (function () {
       createStyles()
       container = createContainer()
       startRaining()
+      animate()
       setupResizeHandler()
     },
 
@@ -129,10 +140,13 @@ const RainEffect = (function () {
       if (container) container.remove()
       const style = document.querySelector('style[data-rain-effect]')
       if (style) style.remove()
+    },
 
-      if (rainInterval) {
-        clearInterval(rainInterval)
-      }
+    clear: function () {
+      const rains = container.querySelectorAll('.rain')
+      rains.forEach(rain => {
+        rain.remove()
+      })
     },
 
     setDensity: function (density) {
@@ -145,14 +159,8 @@ const RainEffect = (function () {
   }
 })()
 
-const isNight = document.documentElement.classList.contains('night')
-let rainMode = DreamConfig.effects_rain_mode
-if (rainMode === 'all' || (rainMode === 'day' && !isNight) || (rainMode === 'night' && isNight)) {
-  RainEffect.init({
-    density: Utils.isMobile() ? 2 : 5,  // 雨滴密度
-    speed: 0.4    // 下落速度
-  })
-} else {
-  RainEffect.destroy()
-}
+RainEffect.init({
+  density: Utils.isMobile() ? 2 : 2,  // 雨滴密度
+  speed: 0.4    // 下落速度
+})
 
