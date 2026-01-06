@@ -43,6 +43,7 @@
 
   function createElement() {
     var div = document.createElement('div')
+    div.id = 'effects_lantern'
     div.className = 'j-china-lantern'
     div.innerHTML = content
     document.body.appendChild(div)

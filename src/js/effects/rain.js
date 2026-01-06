@@ -14,6 +14,7 @@ const RainEffect = (function () {
 
   let container = null
   let lastRenderTime = 0
+  let isNight = null
 
   // 创建样式
   function createStyles() {
@@ -61,6 +62,7 @@ const RainEffect = (function () {
   // 创建雨滴容器
   function createContainer() {
     const container = document.createElement('div')
+    container.id = 'effects_rain'
     container.className = 'rain-effect-container'
     document.body.appendChild(container)
     return container
@@ -93,12 +95,18 @@ const RainEffect = (function () {
     })
   }
 
+  function getNightMode() {
+    const nightValue = localStorage.getItem('night')
+    if (nightValue !== null) return nightValue === 'true'
+    return isNight !== null ? isNight : document.documentElement.classList.contains('night')
+  }
+
   // 开始下雨
   function animate() {
     let now = Date.now()
     let secondsSinceLastRender = (now - lastRenderTime)
     if (secondsSinceLastRender >= config.frameDuration) {
-      let isNight = document.documentElement.classList.contains('night')
+      isNight = getNightMode()
       let rainMode = DreamConfig.effects_rain_mode
       if (rainMode === 'all' || (rainMode === 'day' && !isNight) || (rainMode === 'night' && isNight)) {
         for (let i = 0; i < config.density; i++) {

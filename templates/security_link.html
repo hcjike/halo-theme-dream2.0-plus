@@ -287,27 +287,6 @@
             color: var(--theme);
         }
 
-        .canvas_effects {
-            position: fixed;
-            margin: 0;
-            padding: 0;
-            border: 0;
-            outline: 0;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .canvas_effects.universe {
-            background: radial-gradient(1600px at 70% 120%, #212750 10%, #020409 100%);
-        }
-
-        .canvas_effects.night {
-            display: none;
-        }
-
     </style>
     <style th:if="${!#strings.isEmpty(theme.config.security_link_config.inline_css)}" type="text/css" th:utext="${theme.config.security_link_config.inline_css}"></style>
 </head>

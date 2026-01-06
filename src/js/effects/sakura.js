@@ -1,5 +1,6 @@
 (function () {
   let stop, staticx
+  let isNight = null
   const mode = DreamConfig.effects_sakura_mode
   const canvas = document.createElement('canvas')
   const img = new Image()
@@ -100,12 +101,20 @@
     return ret
   }
 
+  function getNightMode() {
+    const nightValue = localStorage.getItem('night')
+    if (nightValue !== null) return nightValue === 'true'
+    return isNight !== null ? isNight : document.documentElement.classList.contains('night')
+  }
+
   function startSakura() {
     let requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame
     staticx = true
+    canvas.id = 'effects_sakura'
     canvas.height = window.innerHeight
     canvas.width = window.innerWidth
     canvas.setAttribute('class', `canvas_effects ${mode}`)
+    canvas.setAttribute('style', 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;')
     document.getElementsByTagName('body')[0].appendChild(canvas)
     const cxt = canvas.getContext('2d')
     const sakuraList = new SakuraList()
@@ -123,11 +132,15 @@
       sakuraList.push(sakura)
     }
     stop = requestAnimationFrame(function () {
-      const isNight = document.documentElement.classList.contains('night')
+      isNight = getNightMode()
       if (mode === 'all' || (mode === 'day' && !isNight) || (mode === 'night' && isNight)) {
         cxt.clearRect(0, 0, canvas.width, canvas.height)
         sakuraList.update()
         sakuraList.draw(cxt)
+      } else {
+        if (cxt && canvas) {
+          cxt.clearRect(0, 0, canvas.width, canvas.height)
+        }
       }
       stop = requestAnimationFrame(arguments.callee)
     })

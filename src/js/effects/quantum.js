@@ -1,4 +1,5 @@
 (function () {
+  let isNight = null
   // 初始化配置
   function initConfig() {
     return {
@@ -27,13 +28,19 @@
       document.body.clientHeight
   }
 
+  function getNightMode() {
+    const nightValue = localStorage.getItem('night')
+    if (nightValue !== null) return nightValue === 'true'
+    return isNight !== null ? isNight : document.documentElement.classList.contains('night')
+  }
+
   // 动画主循环
   function animate() {
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     // 模式检查
     const mode = DreamConfig.effects_quantum_silk_thread_mode
-    const isNight = document.documentElement.classList.contains('night')
+    isNight = getNightMode()
     if (mode === 'all' || (mode === 'day' && !isNight) || (mode === 'night' && isNight)) {
       var particleA, particleB, distance, dx, dy, alpha, lineWidth
 
@@ -93,7 +100,7 @@
   }
 
   // 设置canvas属性
-  canvas.id = 'quantum_c_n'
+  canvas.id = 'effects_quantum'
   canvas.style.cssText = 'position:fixed;top:0;left:0;z-index:' +
     config.zIndex + ';opacity:' + config.opacity
 

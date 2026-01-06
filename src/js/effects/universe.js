@@ -4,7 +4,7 @@
  */
 (function drawBg() {
   window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame
+    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame
   // const
   const starDensity = 0.216
   const speedCoeff = 0.05
@@ -24,6 +24,7 @@
   const cometColor = '226,225,224'
   const stars = []
   let universe
+  let isNight = null
 
   windowResizeHandler()
   window.addEventListener('resize', windowResizeHandler, false)
@@ -32,14 +33,11 @@
     width = window.innerWidth
     height = window.innerHeight
     starCount = width * starDensity
-    // circleRadius = (width > height ? height / 2 : width / 2);
-    // circleCenter = {
-    //   x: width / 2,
-    //   y: height / 2
-    // };
+    canvas.id = 'effects_universe'
     canvas.setAttribute('width', width)
     canvas.setAttribute('height', height)
     canvas.setAttribute('class', `canvas_effects ${mode}`)
+    canvas.setAttribute('style', 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;')
     document.body.insertBefore(canvas, document.body.firstChild)
   }
 
@@ -143,10 +141,20 @@
     return (Math.random() * (max - min) + min)
   }
 
+  function getNightMode() {
+    const nightValue = localStorage.getItem('night')
+    if (nightValue !== null) return nightValue === 'true'
+    return isNight !== null ? isNight : document.documentElement.classList.contains('night')
+  }
+
   (function drawIfNeeded() {
-    const isNight = document.documentElement.classList.contains('night')
-    if (canvas.classList.contains('all') || (canvas.classList.contains('day') && !isNight) || (canvas.classList.contains('night') && isNight)) {
+    isNight = getNightMode()
+    if (mode === ('all') || (mode === ('day') && !isNight) || (mode === ('night') && isNight)) {
       draw()
+    } else {
+      if (universe) {
+        universe.clearRect(0, 0, width, height)
+      }
     }
     window.requestAnimationFrame(drawIfNeeded)
   })()
