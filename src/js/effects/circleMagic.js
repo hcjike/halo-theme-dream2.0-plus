@@ -2,6 +2,7 @@
   $.fn.circleMagic = function (options) {
 
     let width, height, canvas, ctx, animateHeader = true
+    let isNight = null
     const circles = []
 
     const settings = $.extend({
@@ -40,7 +41,9 @@
     //Init canvas element
     function initCanvas() {
       const canvasElement = document.createElement('canvas')
+      canvasElement.id = 'effects_circleMagic'
       canvasElement.setAttribute('class', `canvas_effects ${settings.mode}`)
+      canvasElement.setAttribute('style', 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;')
       container.prepend(canvasElement)
       return canvasElement
     }
@@ -54,8 +57,7 @@
     function scrollCheck() {
       if (document.body.scrollTop > height) {
         animateHeader = false
-      }
-      else {
+      } else {
         animateHeader = true
       }
     }
@@ -67,14 +69,24 @@
       canvas.height = height
     }
 
+    function getNightMode() {
+      const nightValue = localStorage.getItem('night')
+      if (nightValue !== null) return nightValue === 'true'
+      return isNight !== null ? isNight : document.documentElement.classList.contains('night')
+    }
+
     function animate() {
-      const isNight = document.documentElement.classList.contains('night')
+      isNight = getNightMode()
       if (settings.mode === 'all' || (settings.mode === 'day' && !isNight) || (settings.mode === 'night' && isNight)) {
         if (animateHeader) {
           ctx.clearRect(0, 0, width, height)
           for (const i in circles) {
             circles[i].draw()
           }
+        }
+      } else {
+        if (ctx && canvas) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height)
         }
       }
       requestAnimationFrame(animate)
@@ -107,8 +119,7 @@
         that.speed = Math.random()
         if (settings.color === 'random') {
           that.color = randomColor()
-        }
-        else {
+        } else {
           that.color = settings.color
         }
       }

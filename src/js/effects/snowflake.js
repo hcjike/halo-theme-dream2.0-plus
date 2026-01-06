@@ -8,6 +8,8 @@ function snowFall(snow) {
 }
 
 const mode = DreamConfig.effects_snowflake_mode
+let canvas, ctx
+let isNight = null
 
 /* 兼容写法 */
 let requestAnimationFrame = window.requestAnimationFrame ||
@@ -37,11 +39,11 @@ snowFall.prototype.start = function(){
 function snowCanvas() {
   /* 添加Dom结点 */
   var snowcanvas = document.createElement('canvas')
-  snowcanvas.id = 'snowfall'
+  snowcanvas.id = 'effects_snowfall'
   snowcanvas.width = document.body.offsetWidth
   snowcanvas.height = window.innerHeight
   snowcanvas.setAttribute('class', `canvas_effects ${mode}`)
-  snowcanvas.setAttribute('style', 'z-index: 9999;')
+  snowcanvas.setAttribute('style', 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;')
   document.getElementsByTagName('body')[0].appendChild(snowcanvas)
   this.canvas = snowcanvas
   this.ctx = snowcanvas.getContext('2d')
@@ -120,9 +122,15 @@ function createFlakes() {
   }
 }
 
+function getNightMode() {
+  const nightValue = localStorage.getItem('night')
+  if (nightValue !== null) return nightValue === 'true'
+  return isNight !== null ? isNight : document.documentElement.classList.contains('night')
+}
+
 /* 画雪 */
 function drawSnow() {
-  const isNight = document.documentElement.classList.contains('night')
+  isNight = getNightMode()
   if (mode === 'all' || (mode === 'day' && !isNight) || (mode === 'night' && isNight)) {
     var maxFlake = this.maxFlake,
       flakes = this.flakes
@@ -132,6 +140,10 @@ function drawSnow() {
     for (var e = 0; e < maxFlake; e++) {
       flakes[e].update()
       flakes[e].render(ctx)
+    }
+  } else {
+    if (ctx && canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
   }
   that = this
