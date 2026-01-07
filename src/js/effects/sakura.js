@@ -1,6 +1,7 @@
 (function () {
   let stop, staticx
   let isNight = null
+  let isCanvasValid = true
   const mode = DreamConfig.effects_sakura_mode
   const canvas = document.createElement('canvas')
   const img = new Image()
@@ -134,12 +135,14 @@
     stop = requestAnimationFrame(function () {
       isNight = getNightMode()
       if (mode === 'all' || (mode === 'day' && !isNight) || (mode === 'night' && isNight)) {
+        isCanvasValid = true
         cxt.clearRect(0, 0, canvas.width, canvas.height)
         sakuraList.update()
         sakuraList.draw(cxt)
       } else {
-        if (cxt && canvas) {
+        if (cxt && canvas && isCanvasValid) {
           cxt.clearRect(0, 0, canvas.width, canvas.height)
+          isCanvasValid = false
         }
       }
       stop = requestAnimationFrame(arguments.callee)

@@ -15,6 +15,7 @@ const RainEffect = (function () {
   let container = null
   let lastRenderTime = 0
   let isNight = null
+  let isCanvasValid = true
 
   // 创建样式
   function createStyles() {
@@ -109,11 +110,15 @@ const RainEffect = (function () {
       isNight = getNightMode()
       let rainMode = DreamConfig.effects_rain_mode
       if (rainMode === 'all' || (rainMode === 'day' && !isNight) || (rainMode === 'night' && isNight)) {
+        isCanvasValid = true
         for (let i = 0; i < config.density; i++) {
           createRainDrop()
         }
       } else {
-        RainEffect.clear()
+        if (isCanvasValid) {
+          isCanvasValid = false
+          RainEffect.clear()
+        }
       }
       lastRenderTime = now
     }

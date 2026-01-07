@@ -10,6 +10,7 @@ function snowFall(snow) {
 const mode = DreamConfig.effects_snowflake_mode
 let canvas, ctx
 let isNight = null
+let isCanvasValid = true
 
 /* 兼容写法 */
 let requestAnimationFrame = window.requestAnimationFrame ||
@@ -132,6 +133,7 @@ function getNightMode() {
 function drawSnow() {
   isNight = getNightMode()
   if (mode === 'all' || (mode === 'day' && !isNight) || (mode === 'night' && isNight)) {
+    isCanvasValid = true
     var maxFlake = this.maxFlake,
       flakes = this.flakes
     ctx = this.ctx, canvas = this.canvas
@@ -142,8 +144,9 @@ function drawSnow() {
       flakes[e].render(ctx)
     }
   } else {
-    if (ctx && canvas) {
+    if (ctx && canvas && isCanvasValid) {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+      isCanvasValid = false
     }
   }
   that = this

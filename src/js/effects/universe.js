@@ -25,6 +25,7 @@
   const stars = []
   let universe
   let isNight = null
+  let isCanvasValid = true
 
   windowResizeHandler()
   window.addEventListener('resize', windowResizeHandler, false)
@@ -150,10 +151,12 @@
   (function drawIfNeeded() {
     isNight = getNightMode()
     if (mode === ('all') || (mode === ('day') && !isNight) || (mode === ('night') && isNight)) {
+      isCanvasValid = true
       draw()
     } else {
-      if (universe) {
+      if (universe && isCanvasValid) {
         universe.clearRect(0, 0, width, height)
+        isCanvasValid = false
       }
     }
     window.requestAnimationFrame(drawIfNeeded)

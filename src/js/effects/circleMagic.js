@@ -3,6 +3,7 @@
 
     let width, height, canvas, ctx, animateHeader = true
     let isNight = null
+    let isCanvasValid = true
     const circles = []
 
     const settings = $.extend({
@@ -78,6 +79,7 @@
     function animate() {
       isNight = getNightMode()
       if (settings.mode === 'all' || (settings.mode === 'day' && !isNight) || (settings.mode === 'night' && isNight)) {
+        isCanvasValid = true
         if (animateHeader) {
           ctx.clearRect(0, 0, width, height)
           for (const i in circles) {
@@ -85,8 +87,9 @@
           }
         }
       } else {
-        if (ctx && canvas) {
+        if (ctx && canvas && isCanvasValid) {
           ctx.clearRect(0, 0, canvas.width, canvas.height)
+          isCanvasValid = false
         }
       }
       requestAnimationFrame(animate)

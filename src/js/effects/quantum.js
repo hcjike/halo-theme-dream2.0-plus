@@ -1,5 +1,7 @@
 (function () {
   let isNight = null
+  let isCanvasValid = true
+
   // 初始化配置
   function initConfig() {
     return {
@@ -36,12 +38,12 @@
 
   // 动画主循环
   function animate() {
-    context.clearRect(0, 0, canvas.width, canvas.height)
-
     // 模式检查
     const mode = DreamConfig.effects_quantum_silk_thread_mode
     isNight = getNightMode()
     if (mode === 'all' || (mode === 'day' && !isNight) || (mode === 'night' && isNight)) {
+      isCanvasValid = true
+      context.clearRect(0, 0, canvas.width, canvas.height)
       var particleA, particleB, distance, dx, dy, alpha, lineWidth
 
       particles.forEach(function (currentParticle, index) {
@@ -75,6 +77,11 @@
           }
         }
       })
+    } else {
+      if (isCanvasValid) {
+        isCanvasValid = false
+        context.clearRect(0, 0, canvas.width, canvas.height)
+      }
     }
     requestAnimationFrame(animate)
   }
