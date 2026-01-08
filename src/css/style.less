@@ -3745,7 +3745,7 @@ details[open] > summary::before {
     border-left: 5px solid var(--theme);
     border-radius: var(--radius-inner);
 
-    & :not(:last-child) {
+    & :not(:last-child):not(details > summary) {
       margin-bottom: 4px !important;
     }
 
