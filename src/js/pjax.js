@@ -73,7 +73,10 @@ $(document).on('pjax:click', function (event, options) {
 $(document).on('pjax:beforeSend', function (event, xhr, options) {
   if (!options || !options.serialNumber) return
   console.log(`pjax:beforeSend sn = ${options.serialNumber}`)
-  $('html').addClass('pjax-loading')
+  //动画模式
+  if (DreamConfig.pjax_animation_style === 'scale') {
+    $('html').addClass('pjax-loading')
+  }
   document.dispatchEvent(new Event('pjax:beforeSend', {bubbles: true}))
 })
 
@@ -130,7 +133,9 @@ $(document).on('pjax:success', async function (event, data, status, xhr, options
   /* 初始化pjax加载 */
   initPjax()
   /* 已经完成页面渲染 */
-  $('html').removeClass('pjax-loading')
+  if (DreamConfig.pjax_animation_style === 'scale') {
+    $('html').removeClass('pjax-loading')
+  }
 
   const $currentTarget = $($.parseHTML(data, document, true))
   const $head = $('head')
@@ -261,7 +266,10 @@ $(document).on('pjax:end', function (event, xhr, options) {
     commonContext.closeFancybox()
     window.DProgress && DProgress.done()
     // 应该是由于浏览器缓存失效，有时候浏览器前后退还是会执行pjax:beforeSend
-    $('html').removeClass('pjax-loading')
+    //动画模式
+    if (DreamConfig.pjax_animation_style === 'scale') {
+      $('html').removeClass('pjax-loading')
+    }
   }
   document.dispatchEvent(new Event('pjax:end', {bubbles: true}))
 })

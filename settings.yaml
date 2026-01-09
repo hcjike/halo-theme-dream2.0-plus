@@ -1457,9 +1457,20 @@ spec:
           onValue: true
           offValue: false
           name: enable_pjax
+          id: enable_pjax
           label: Pjax 加载
           value: false
           help: '使用Pjax加载可极大提升页面跳转的速度，但可能和部分插件不兼容。'
+        - $formkit: select
+          name: pjax_animation_style
+          if: $get(enable_pjax).value
+          label: Pjax 加载动画风格
+          value: 'scale'
+          options:
+            - value: 'none'
+              label: 无动画
+            - value: 'scale'
+              label: 缩放动画
         - $formkit: group
           name: error
           label: 错误页面

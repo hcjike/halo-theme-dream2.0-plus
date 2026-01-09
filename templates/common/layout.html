@@ -13,7 +13,8 @@
       <th:block th:replace="~{common/banner :: banner}"/>
     </th:block>
     <section class="section" th:classappend="${theme.config.basic_info.header_fixed && !theme.config.basic_style.banner_full_screen ? 'section-top' : ''}">
-      <div th:unless="${hideSidebar}" th:class="${theme.config.basic_style.sidebar_column != 'all' ? 'container two-column' : 'container' }">
+      <div th:class="${theme.config.basic_style.sidebar_column != 'all' ? 'container two-column' : 'container' }"
+           th:classappend="${hideSidebar ? 'hide-sidebar' : ''}">
         <div class="columns">
           <div class="column column-main pjax">
             <th:block th:replace="${content}"/>
@@ -26,13 +27,6 @@
             th:if="${theme.config.basic_style.sidebar_column!='only-left'}">
             <th:block th:replace="~{common/widget :: widget('right')}"/>
           </th:block>
-        </div>
-      </div>
-      <div th:if="${hideSidebar}" class="container hide-sidebar">
-        <div class="columns">
-          <div class="column column-main pjax">
-            <th:block th:replace="${content}"/>
-          </div>
         </div>
       </div>
     </section>
