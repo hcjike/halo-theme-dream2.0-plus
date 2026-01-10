@@ -231,6 +231,13 @@ spec:
             - label: 总是发送完整URL(即使HTTPS→HTTP)
               value: 'unsafe-url'
         - $formkit: switch
+          onValue: true
+          offValue: false
+          name: page_switch_animation
+          label: 页面加载动画
+          value: true
+          help: '开启后，打开站点页面时显示过渡动画效果，使浏览更流畅。关闭可提升响应速度。'
+        - $formkit: switch
           name: lazy_enable
           onValue: true
           offValue: false

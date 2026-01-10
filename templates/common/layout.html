@@ -1,5 +1,6 @@
 <html th:lang="${#locale.toLanguageTag}" xmlns:th="https://www.thymeleaf.org"
       th:class="${theme.config.basic_style.theme_style}"
+      th:classappend="${theme.config.basic_info.page_switch_animation ? '' : 'loaded'}"
       th:fragment="layout (showTitle, canonical, content, isPost, hideSidebar)">
 <th:block th:with="contributor = ${contributorFinder.getContributor(theme.config.basic_info.metadata_name)},
       enableComment = ${baseEnableComment == true && site.comment.enable},
