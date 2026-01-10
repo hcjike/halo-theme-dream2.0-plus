@@ -82,7 +82,6 @@ $(document).on('pjax:beforeSend', function (event, xhr, options) {
     $('.pjax-animation-container').addClass('active')
   }
   window.DProgress && DProgress.start()
-  $('.pjax-close').remove()
   document.dispatchEvent(new Event('pjax:beforeSend', {bubbles: true}))
 })
 
