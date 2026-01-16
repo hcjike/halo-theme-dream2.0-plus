@@ -1487,6 +1487,15 @@ spec:
                   label: 波浪脉冲动画
                 - value: 'orbit-system'
                   label: 轨道行星系统动画
+            - $formkit: range
+              name: animation_bg_alpha
+              id: animation_bg_alpha
+              label: Pjax 加载动画背景不透明度
+              help: '$get(animation_bg_alpha).value + "% 不透明度，仅对【旋转多维方块动画】、【波浪脉冲动画】和【轨道行星系统动画】有效。"'
+              min: 10
+              max: 100
+              value: 100
+              step: 1
         - $formkit: group
           name: error
           label: 错误页面

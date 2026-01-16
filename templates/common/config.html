@@ -12,6 +12,7 @@
 
     html {
       --theme: [(${theme.config.basic_style.theme_color})];
+      --pjax-animation-bg-alpha: calc([(${theme.config.enhance.pjax_config.animation_bg_alpha})]/100);
       [(${theme.config.enhance.cursor_style == 'breeze' ? '--cursor-default:url('+#theme.assets('/')+'/cursor/breeze/Arrow.cur),auto;--cursor-pointer:url('+#theme.assets('/')+'/cursor/breeze/Hand.cur),pointer;--cursor-text:url('+#theme.assets('/')+'/cursor/breeze/IBeam.cur),auto;--cursor-zoom-in:url('+#theme.assets('/')+'/cursor/breeze/Cross.cur),zoom-in;'
       : theme.config.enhance.cursor_style == 'black_cat' ? '--cursor-default:url('+#theme.assets('/')+'/cursor/black_cat/normal.cur),auto;--cursor-pointer:url('+#theme.assets('/')+'/cursor/black_cat/ayuda.cur),pointer;--cursor-text:url('+#theme.assets('/')+'/cursor/black_cat/texto.cur),auto;--cursor-zoom-in:url('+#theme.assets('/')+'/cursor/black_cat/precision.cur),zoom-in;'
       : theme.config.enhance.cursor_style == 'overwatch' ? '--cursor-default:url('+#theme.assets('/')+'/cursor/overwatch/pointer.cur),auto;--cursor-pointer:url('+#theme.assets('/')+'/cursor/overwatch/link.cur),pointer;--cursor-text:url('+#theme.assets('/')+'/cursor/overwatch/text.cur),auto;--cursor-zoom-in:url('+#theme.assets('/')+'/cursor/overwatch/cross.cur),zoom-in;'
