@@ -545,6 +545,14 @@ spec:
           if: $get(web_font).value == 'custom'
           placeholder: '请输入/选择字体路径'
           help: '自定义博客字体，在博客字体选项为自定义时生效。支持woff2/woff/ttf/eot/svg格式的字体文件链接，建议使用woff2格式。'
+        - $formkit: switch
+          onValue: true
+          offValue: false
+          name: carousel_open
+          id: carousel_open
+          label: 显示首页大图轮播
+          value: true
+          help: '开启并配置首页大图轮播选项后，该功能方可生效并在首页显示。'
         - $formkit: array
           name: carousel_options
           label: 首页大图轮播选项

@@ -23,7 +23,7 @@
   </th:block>
 
   <th:block th:fragment="carousel">
-    <div th:if="${!#lists.isEmpty(theme.config.basic_style.carousel_options)}" class="card widget swiper">
+    <div th:if="${!#lists.isEmpty(theme.config.basic_style.carousel_options) && theme.config.basic_style.carousel_open}" class="card widget swiper">
       <div class="swiper-wrapper">
         <a th:each="option :${theme.config.basic_style.carousel_options}" class="swiper-slide bg-shadow cover-image"
            th:style="'background-image: url(' + ${option.image} + ')'" th:target="${option.target}"
