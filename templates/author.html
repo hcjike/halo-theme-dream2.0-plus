@@ -1,33 +1,40 @@
 <!DOCTYPE html>
 <th:block
-        th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.author.browser.title', author.spec.displayName, site.title)}, canonical = @{/authors}, content = ~{::content}, isPost = false, hideSidebar = false)}"
+        th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.author.browser.title', #annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes' ? #messages.msg('page.author.browser.title.privacy_user') : author.spec.displayName, site.title)}, canonical = @{/authors}, content = ~{::content}, isPost = false, hideSidebar = false)}"
         xmlns:th="https://www.thymeleaf.org">
-    <th:block th:fragment="content" th:with="isEmpty = ${#lists.isEmpty(posts.items)}">
+    <th:block th:fragment="content" th:with="isEmpty = ${#lists.isEmpty(posts.items)},
+                                             privacyUser = ${#annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes'},
+                                             userName = ${privacyUser ? #messages.msg('page.author.browser.title.privacy_user') : author.spec.displayName}">
         <div class="author">
-
             <div class="card card-content author-info">
                 <div class="author-info-section">
                     <figure class="image">
                         <!-- 如果有头像，显示头像；否则显示占位符 -->
-                        <th:block th:if="${author.spec.avatar} and ${#strings.length(author.spec.avatar) > 0}">
+                        <th:block th:if="${!#strings.isEmpty(author.spec.avatar) && !privacyUser}">
                             <img th:src="${author.spec.avatar}" height="100%" width="100%"
-                                 th:alt="${author.spec.displayName}"
+                                 th:alt="${userName}"
                                  class="avatar">
                         </th:block>
-                        <th:block th:unless="${author.spec.avatar} and ${#strings.length(author.spec.avatar) > 0}">
+                        <th:block th:unless="${!#strings.isEmpty(author.spec.avatar) && !privacyUser}">
                             <div class="avatar-placeholder"
-                                 th:text="${#strings.substring(author.spec.displayName, 0, 1)}">
+                                 th:text="${#strings.toUpperCase(#strings.substring(userName, 0, 1))}">
                             </div>
                         </th:block>
                     </figure>
 
                     <div class="basic-info">
-                        <h1 class="display-name" th:text="${author.spec.displayName}"></h1>
+                        <h1 class="display-name" th:text="${userName}"></h1>
+                    </div>
+                </div>
+
+                <div class="author-info-bio-section" th:if="${privacyUser}">
+                    <div class="bio-content">
+                        <p class="privacy-user">当前用户已启用隐私保护，相关内容不予显示。</p>
                     </div>
                 </div>
 
                 <!-- 描述区域 -->
-                <div class="author-info-bio-section">
+                <div class="author-info-bio-section" th:unless="${privacyUser}">
                     <div class="section-title not-toc">
                         <i class="ri-book-open-line"></i>
                         <span th:text="#{page.author.bio.title}"></span>
@@ -35,7 +42,7 @@
 
                     <div class="bio-content" th:if="${!#strings.isEmpty(author.spec.bio)}">
                         <!-- 将bio内容按段落分割显示 -->
-                        <th:block th:each="paragraph : ${#strings.listSplit(#strings.escapeJavaScript(author.spec.bio), '\\n')}">
+                        <th:block th:each="paragraph : ${#strings.arraySplit(author.spec.bio, '\\n')}">
                             <p th:if="${!#strings.isEmpty(paragraph)}" th:text="${paragraph}"></p>
                         </th:block>
                     </div>
@@ -68,7 +75,7 @@
                 </div>
             </div>
 
-            <div class="author-posts">
+            <div class="author-posts" th:unless="${privacyUser}">
                 <div th:if="${isEmpty}" class="card card-empty" th:with="title=#{global.route.back.home.name},
             linkHtml='&lt;a href=&quot;/&quot; aria-label=&quot;' + ${title} + '&quot; title=&quot;' + ${title} + '&quot;&gt;' + ${title} + '&lt;/a&gt;',
             finalMessage=${#messages.msg('page.author.posts.empty.tip', linkHtml)}">

@@ -1,7 +1,7 @@
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  name: dream2-plus-annotation-setting
+  name: dream2-plus-annotation-setting-post
 spec:
   targetRef:
     group: content.halo.run
@@ -75,7 +75,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  name: dream2-plus-annotation-setting
+  name: dream2-plus-annotation-setting-single-page
 spec:
   targetRef:
     group: content.halo.run
@@ -129,7 +129,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  name: dream2-plus-annotation-setting
+  name: dream2-plus-annotation-setting-menu-item
 spec:
   targetRef:
     group: ""
@@ -157,7 +157,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  name: dream2-plus-annotation-setting
+  name: dream2-plus-annotation-setting-link-group
 spec:
   targetRef:
     group: core.halo.run
@@ -175,7 +175,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  name: dream2-plus-annotation-setting
+  name: dream2-plus-annotation-setting-link
 spec:
   targetRef:
     group: core.halo.run
@@ -193,12 +193,19 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  name: dream2-plus-annotation-setting
+  name: dream2-plus-annotation-setting-user
 spec:
   targetRef:
     group: ""
     kind: User
   formSchema:
+    - $formkit: switch
+      onValue: 'yes'
+      offValue: 'no'
+      name: privacy_user
+      label: 作者归档页-隐私用户
+      value: 'no'
+      help: '控制是否在"作者归档"页面中显示为隐私用户，隐私用户的信息将隐藏。'
     - $formkit: switch
       onValue: 'show'
       offValue: 'hide'
