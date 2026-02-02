@@ -35,8 +35,8 @@
 
                     <div class="bio-content" th:if="${!#strings.isEmpty(author.spec.bio)}">
                         <!-- 将bio内容按段落分割显示 -->
-                        <th:block th:each="paragraph : ${#strings.listSplit(author.spec.bio, '\r\n')}">
-                            <p th:text="${paragraph}"></p>
+                        <th:block th:each="paragraph : ${#strings.listSplit(#strings.escapeJavaScript(author.spec.bio), '\\n')}">
+                            <p th:if="${!#strings.isEmpty(paragraph)}" th:text="${paragraph}"></p>
                         </th:block>
                     </div>
 
@@ -51,7 +51,7 @@
                             <span th:utext="${#messages.msg('page.author.other.posts', '&lt;b&gt'+posts.total+'&lt;/b&gt')}"></span>
                         </div>
 
-                        <th:block th:if="${#annotations.get(author, 'show_email')}">
+                        <th:block th:if="${#annotations.getOrDefault(author, 'show_email', 'hide') == 'show'}">
                             <div class="bio-other-item center">
                                 <i class="ri-mail-line"></i>
                                 <span th:text="${author.spec.email}"></span>

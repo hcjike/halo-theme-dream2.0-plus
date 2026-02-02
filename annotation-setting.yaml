@@ -1,7 +1,7 @@
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  generateName: annotation-setting-
+  name: dream2-plus-annotation-setting
 spec:
   targetRef:
     group: content.halo.run
@@ -75,7 +75,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  generateName: annotation-setting-
+  name: dream2-plus-annotation-setting
 spec:
   targetRef:
     group: content.halo.run
@@ -129,7 +129,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  generateName: annotation-setting-
+  name: dream2-plus-annotation-setting
 spec:
   targetRef:
     group: ""
@@ -157,7 +157,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  generateName: annotation-setting-
+  name: dream2-plus-annotation-setting
 spec:
   targetRef:
     group: core.halo.run
@@ -175,7 +175,7 @@ spec:
 apiVersion: v1alpha1
 kind: AnnotationSetting
 metadata:
-  generateName: annotation-setting-
+  name: dream2-plus-annotation-setting
 spec:
   targetRef:
     group: core.halo.run
@@ -189,21 +189,21 @@ spec:
       value: "false"
       help: '控制是否在"/links"页面中隐藏此链接。'
 
-#---
-#apiVersion: v1alpha1
-#kind: AnnotationSetting
-#metadata:
-#  generateName: dream2-plus-annotation-setting
-#spec:
-#  targetRef:
-#    group: ""
-#    kind: User
-#  formSchema:
-#    - $formkit: switch
-#      onValue: true
-#      offValue: false
-#      name: show_email
-#      label: 作者归档页-显示邮件地址
-#      value: false
-#      help: '控制是否在"作者归档"页面中显示此邮件地址。'
+---
+apiVersion: v1alpha1
+kind: AnnotationSetting
+metadata:
+  name: dream2-plus-annotation-setting
+spec:
+  targetRef:
+    group: ""
+    kind: User
+  formSchema:
+    - $formkit: switch
+      onValue: 'show'
+      offValue: 'hide'
+      name: show_email
+      label: 作者归档页-显示邮件地址
+      value: 'hide'
+      help: '控制是否在"作者归档"页面中显示此邮件地址。'
 
