@@ -46,7 +46,7 @@
 
                     <!-- 其他信息 -->
                     <div class="bio-other">
-                        <div class="bio-other-item left">
+                        <div class="bio-other-item center">
                             <i class="ri-sticky-note-line"></i>
                             <span th:utext="${#messages.msg('page.author.other.posts', '&lt;b&gt'+posts.total+'&lt;/b&gt')}"></span>
                         </div>
@@ -59,7 +59,7 @@
                         </th:block>
 
                         <th:block th:if="${author.metadata.creationTimestamp}">
-                            <div class="bio-other-item right">
+                            <div class="bio-other-item center">
                                 <i class="ri-time-line"></i>
                                 <span th:text="${#messages.msg('page.author.other.time', #dates.format(author.metadata.creationTimestamp, theme.config.basic_info.global_time_format))}"></span>
                             </div>
