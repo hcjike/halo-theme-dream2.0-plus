@@ -47,7 +47,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install -g npm@latest
+
+      - name: npm ci
+        run: npm ci
 
       # 编译资源文件，用于上传到npm
       - name: Build
