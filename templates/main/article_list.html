@@ -32,6 +32,15 @@
                   th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
                   th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
               </li>
+              <li th:case="owner" class="owner" th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar}">
+                  <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
+                     th:href="@{|/authors/${post.owner.name}|}">
+                      <img th:src="${userAvatar}" height="100%" width="100%"
+                           th:alt="${userAvatar}"
+                           class="avatar">
+                      <span class="display-name" th:text="${post.owner.displayName}"></span>
+                  </a>
+              </li>
             </th:block>
           </ul>
         </div>
@@ -79,6 +88,15 @@
                   th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
                   th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
               </li>
+              <li th:case="owner" class="owner" th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar}">
+                  <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
+                     th:href="@{|/authors/${post.owner.name}|}">
+                      <img th:src="${userAvatar}" height="100%" width="100%"
+                           th:alt="${userAvatar}"
+                           class="avatar">
+                      <span class="display-name" th:text="${post.owner.displayName}"></span>
+                  </a>
+              </li>
             </th:block>
           </ul>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item is-hidden-mobile">
@@ -111,6 +129,15 @@
               <li th:case="heat"
                   th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
                   th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
+              </li>
+              <li th:case="owner" class="owner" th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar}">
+                  <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
+                     th:href="@{|/authors/${post.owner.name}|}">
+                      <img th:src="${userAvatar}" height="100%" width="100%"
+                           th:alt="${userAvatar}"
+                           class="avatar">
+                      <span class="display-name" th:text="${post.owner.displayName}"></span>
+                  </a>
               </li>
             </th:block>
           </ul>
@@ -180,6 +207,15 @@
                   th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
                   th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
               </li>
+              <li th:case="owner" class="owner" th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar}">
+                  <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
+                     th:href="@{|/authors/${post.owner.name}|}">
+                      <img th:src="${userAvatar}" height="100%" width="100%"
+                           th:alt="${userAvatar}"
+                           class="avatar">
+                      <span class="display-name" th:text="${post.owner.displayName}"></span>
+                  </a>
+              </li>
             </th:block>
           </ul>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item">
@@ -225,6 +261,15 @@
             <li th:case="heat"
                 th:with="heat= ${24+post.stats.visit*0.1+post.stats.upvote*2+post.stats.comment*3}, heatColor= '#'+${(heat < 37)? 'ffa87e' : (heat < 120)? 'fb734a' : 'e0081c'}"
                 th:style="'color: ' + ${heatColor}"><i class="ri-fire-line"></i>[[${#numbers.formatDecimal(heat,0,1)}]]℃
+            </li>
+            <li th:case="owner" class="owner" th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar}">
+                <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
+                   th:href="@{|/authors/${post.owner.name}|}">
+                    <img th:src="${userAvatar}" height="100%" width="100%"
+                         th:alt="${userAvatar}"
+                         class="avatar">
+                    <span class="display-name" th:text="${post.owner.displayName}"></span>
+                </a>
             </li>
           </th:block>
         </ul>

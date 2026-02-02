@@ -624,6 +624,7 @@ table td, table th {
   justify-content: flex-start;
   font-size: 0.8rem;
   flex-shrink: 0;
+  overflow-y: hidden;
 
   li {
 
@@ -642,6 +643,23 @@ table td, table th {
 
       &:hover {
         color: var(--theme);
+      }
+    }
+  }
+
+  .owner {
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+
+      .avatar {
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: center;
+        object-fit: cover;
       }
     }
   }
@@ -5876,31 +5894,16 @@ text-diagram[data-type="mermaid"] {
         }
       }
 
-      .avatar-placeholder {
-        width: 100%;
-        height: 100%;
-        color: var(--main);
-        font-size: 40px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
       .basic-info {
         color: var(--title);
-        font-size: 2rem;
+        font-size: 1.3rem;
         text-align: center;
         width: 100%;
       }
     }
 
-    &-privacy-user {
-
-    }
-
     &-bio-section {
-      font-size: 1.1rem;
+      font-size: 1rem;
       padding: 0 10px 0;
 
       .section-title {
@@ -5908,7 +5911,6 @@ text-diagram[data-type="mermaid"] {
         display: flex;
         align-items: baseline;
         margin-bottom: 14px;
-        font-size: 1.25em;
 
         svg, i {
           color: var(--theme);
@@ -5938,9 +5940,13 @@ text-diagram[data-type="mermaid"] {
         }
 
         .privacy-user {
-          font-size: 1.3rem;
           color: var(--theme);
           font-weight: 600;
+          text-align: center;
+        }
+
+        &.privacy {
+          border-left: initial;
         }
       }
 
@@ -5952,7 +5958,8 @@ text-diagram[data-type="mermaid"] {
 
         &-item {
           display: flex;
-          align-items: center;
+          align-items: baseline;
+          vertical-align: middle;
           color: var(--main);
           flex: 1;
 
