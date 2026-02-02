@@ -205,12 +205,12 @@ spec:
       name: privacy_user
       label: 作者归档页-隐私用户
       value: 'no'
-      help: '控制是否在"作者归档"页面中显示为隐私用户，隐私用户的信息将隐藏。'
+      help: '开启后，此用户的归档页将对外隐藏，仅登录用户本人可见。'
     - $formkit: switch
       onValue: 'show'
       offValue: 'hide'
       name: show_email
       label: 作者归档页-显示邮件地址
       value: 'hide'
-      help: '控制是否在"作者归档"页面中显示此邮件地址。'
+      help: '开启后，此用户的电子邮件地址将在作者归档页中公开显示。'
 

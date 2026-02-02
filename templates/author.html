@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <th:block
-        th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.author.browser.title', #annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes' ? #messages.msg('page.author.browser.title.privacy_user') : author.spec.displayName, site.title)}, canonical = @{/authors}, content = ~{::content}, isPost = false, hideSidebar = false)}"
+        th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.author.browser.title', (#annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes' && author.metadata.name != logonUserName) ? #messages.msg('page.author.browser.title.privacy_user') : author.spec.displayName, site.title)}, canonical = @{/authors}, content = ~{::content}, isPost = false, hideSidebar = false)}"
         xmlns:th="https://www.thymeleaf.org">
     <th:block th:fragment="content" th:with="isEmpty = ${#lists.isEmpty(posts.items)},
-                                             privacyUser = ${#annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes'},
+                                             privacyUser = ${#annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes' && author.metadata.name != logonUserName},
                                              userName = ${privacyUser ? #messages.msg('page.author.browser.title.privacy_user') : author.spec.displayName}">
         <div class="author">
             <div class="card card-content author-info">
