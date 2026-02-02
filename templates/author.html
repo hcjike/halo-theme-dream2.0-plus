@@ -8,18 +8,10 @@
         <div class="author">
             <div class="card card-content author-info">
                 <div class="author-info-section">
-                    <figure class="image">
-                        <!-- 如果有头像，显示头像；否则显示占位符 -->
-                        <th:block th:if="${!#strings.isEmpty(author.spec.avatar) && !privacyUser}">
-                            <img th:src="${author.spec.avatar}" height="100%" width="100%"
-                                 th:alt="${userName}"
-                                 class="avatar">
-                        </th:block>
-                        <th:block th:unless="${!#strings.isEmpty(author.spec.avatar) && !privacyUser}">
-                            <div class="avatar-placeholder"
-                                 th:text="${#strings.toUpperCase(#strings.substring(userName, 0, 1))}">
-                            </div>
-                        </th:block>
+                    <figure class="image" th:with="userAvatar = ${(#strings.isEmpty(author.spec.avatar) || privacyUser) ? #theme.assets('/img/avatar.svg') : author.spec.avatar}">
+                        <img th:src="${userAvatar}" height="100%" width="100%"
+                             th:alt="${userName}"
+                             class="avatar">
                     </figure>
 
                     <div class="basic-info">
@@ -28,8 +20,8 @@
                 </div>
 
                 <div class="author-info-bio-section" th:if="${privacyUser}">
-                    <div class="bio-content">
-                        <p class="privacy-user">当前用户已启用隐私保护，相关内容不予显示。</p>
+                    <div class="bio-content privacy">
+                        <p class="privacy-user" th:text="#{'page.author.bio.privacy_user.tip'}"></p>
                     </div>
                 </div>
 
