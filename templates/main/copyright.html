@@ -9,7 +9,8 @@
     <div class="copyright-meta level">
         <div class="level-item">
             <h6>[[#{main.copyright.owner}]]</h6>
-            <p th:text="${post.owner.displayName}"></p>
+            <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
+               th:href="@{|/authors/${post.owner.name}|}">[[${post.owner.displayName}]]</a>
         </div>
         <div class="level-item">
             <h6>[[#{main.copyright.publish}]]</h6>

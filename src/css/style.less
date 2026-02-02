@@ -504,6 +504,7 @@ table td, table th {
           flex: none;
           width: 100% !important
         }
+
         &-sidebar {
           display: none;
         }
@@ -2546,7 +2547,7 @@ details[open] > summary::before {
       text-transform: uppercase;
       font-weight: 500;
       border-bottom: 1px solid var(--light-b);
-      align-items: center;
+      align-items: baseline;
       height: 45px;
       line-height: 45px;
       padding: 0 15px;
@@ -5845,5 +5846,143 @@ text-diagram[data-type="mermaid"] {
 .popup-notice {
   &.hidden {
     display: none !important;
+  }
+}
+
+//作者信息
+.author {
+  vertical-align: baseline;
+
+  &-info {
+
+    &-section {
+      figure {
+        width: 98px;
+        height: 98px;
+        padding: 4px;
+        border-radius: 50%;
+        background: var(--light-b);
+        margin: 2em auto .5em;
+
+        img {
+          transition: all 2s;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
+
+        &:hover img {
+          transform: rotate(360deg);
+        }
+      }
+
+      .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        color: var(--main);
+        font-size: 40px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .basic-info {
+        color: var(--title);
+        font-size: 2rem;
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    &-privacy-user {
+
+    }
+
+    &-bio-section {
+      font-size: 1.1rem;
+      padding: 0 10px 0;
+
+      .section-title {
+        color: var(--title);
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 14px;
+        font-size: 1.25em;
+
+        svg, i {
+          color: var(--theme);
+          margin-right: 5px;
+        }
+
+        span {
+          font-weight: 600;
+        }
+      }
+
+      .bio-content {
+        background-color: var(--bg-a);
+        padding: 10px;
+        border-radius: var(--radius-wrap);
+        line-height: 1.8;
+        color: var(--main);
+        border-left: var(--radius-inner) solid var(--theme);
+        margin-bottom: 14px;
+
+        p {
+          margin-bottom: 4px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+
+        .privacy-user {
+          font-size: 1.3rem;
+          color: var(--theme);
+          font-weight: 600;
+        }
+      }
+
+      .bio-other {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: baseline;
+
+        &-item {
+          display: flex;
+          align-items: center;
+          color: var(--main);
+          flex: 1;
+
+          svg, i {
+            font-size: 1.2rem;
+            color: var(--theme);
+            margin-right: 5px;
+          }
+
+          b {
+            color: var(--theme);
+          }
+
+          &.left {
+            justify-content: flex-start;
+          }
+
+          &.center {
+            justify-content: center;
+          }
+
+          &.right {
+            justify-content: flex-end;
+          }
+        }
+      }
+    }
+  }
+
+  &-posts {
+    margin-top: 1.4rem
   }
 }
