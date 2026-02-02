@@ -5,6 +5,10 @@ on:
     types:
       - published
 
+permissions:
+  id-token: write
+  contents: read    # 读取仓库代码
+
 jobs:
 
   # 非正式版执行时，不发布到商店
