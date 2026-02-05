@@ -21,7 +21,7 @@
       <div class="details">
         <h2 class="title"><span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span>[[${post.spec.title}]]
         </h2>
-        <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post})}"/>
+        <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_post_list})}"/>
       </div>
       <div th:if="${!#lists.isEmpty(post.categories)}" class="category">
         <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}" th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}" th:text="${cy.spec.displayName}"></a>&nbsp;
@@ -53,7 +53,7 @@
         <div class="main-content" th:text="${post.status.excerpt}"></div>
         <hr/>
         <div class="meta">
-          <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post})}"/>
+          <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_post_list})}"/>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item is-hidden-mobile">
             <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}" th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}" th:text="${cy.spec.displayName}"></a>&nbsp;
           </div>
@@ -72,7 +72,7 @@
         <div class="main-content" th:text="${post.status.excerpt}"></div>
         <hr/>
         <div class="meta">
-          <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post})}"/>
+          <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_post_list})}"/>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item is-hidden-mobile">
             <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}" th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}" th:text="${cy.spec.displayName}"></a>&nbsp;
           </div>
@@ -126,7 +126,7 @@
                                                                                            th:href="${post.status.permalink}" th:text="${post.spec.title}"></a>
         </h2>
         <div class="meta">
-          <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post})}"/>
+          <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_post_list})}"/>
           <div th:if="${!#lists.isEmpty(post.categories)}" class="level-item">
             <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}" th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}"
                th:text="${cy.spec.displayName}"></a>&nbsp;
@@ -158,7 +158,7 @@
                th:src="${theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"
                th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
         </a>
-        <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post})}"/>
+        <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_post_list})}"/>
         <h2 class="title">
           <span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span>
           <a th:aria-label="${post.spec.title}" th:title="${post.spec.title}"
