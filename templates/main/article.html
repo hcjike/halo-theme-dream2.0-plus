@@ -20,7 +20,9 @@
             </div>
             <div class="details">
                 <h1 class="title" th:text="${post.spec.title}"></h1>
-                <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_detail_list})}"/>
+                <div class="meta">
+                    <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_detail_list})}"/>
+                </div>
             </div>
         </div>
     </div>
