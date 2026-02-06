@@ -635,7 +635,7 @@ table td, table th {
 
     &:not(:first-child)::before {
       content: "/";
-      color: var(--light-d);
+      color: var(--dark-z);
       padding: 0 5px;
     }
 
@@ -650,17 +650,21 @@ table td, table th {
   }
 
   .owner {
+    display: inline-flex;
+    align-items: center;
+
     a {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      column-gap: 3px;
+      line-height: 1.2;
 
       .avatar {
         width: 0.8rem;
         height: 0.8rem;
         border-radius: 50%;
         display: inline-block;
-        vertical-align: center;
+        vertical-align: middle;
         object-fit: cover;
       }
     }
@@ -2567,7 +2571,7 @@ details[open] > summary::before {
       text-transform: uppercase;
       font-weight: 500;
       border-bottom: 1px solid var(--light-b);
-      align-items: baseline;
+      align-items: center;
       height: 45px;
       line-height: 45px;
       padding: 0 15px;
@@ -2686,6 +2690,14 @@ details[open] > summary::before {
         background-image: linear-gradient(0deg, rgba(29, 41, 49, .5), rgba(255, 255, 255, 0));
         padding: 2em 15px 15px;
         pointer-events: none;
+
+        .meta {
+          color: inherit;
+
+          li:not(:first-child)::before {
+            color: #fff;
+          }
+        }
       }
 
       .title {
@@ -2804,7 +2816,7 @@ details[open] > summary::before {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--dark-b);
+      color: var(--dark-z);
       font-size: .8rem;
       overflow-x: auto;
 
@@ -5931,7 +5943,8 @@ text-diagram[data-type="mermaid"] {
         border-radius: var(--radius-wrap);
         line-height: 1.8;
         color: var(--main);
-        border-left: var(--radius-inner) solid var(--theme);
+        text-align: center;
+        //border-left: var(--radius-inner) solid var(--theme);
         margin-bottom: 14px;
 
         p {
@@ -5957,12 +5970,12 @@ text-diagram[data-type="mermaid"] {
         display: flex;
         gap: 20px;
         flex-wrap: wrap;
-        align-items: baseline;
+        align-items: center;
 
         &-item {
           display: flex;
-          align-items: baseline;
           vertical-align: middle;
+          align-items: center;
           color: var(--main);
           flex: 1;
 
