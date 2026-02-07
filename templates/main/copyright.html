@@ -9,8 +9,20 @@
     <div class="copyright-meta level">
         <div class="level-item">
             <h6>[[#{main.copyright.owner}]]</h6>
-            <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
-               th:href="@{|/authors/${post.owner.name}|}">[[${post.owner.displayName}]]</a>
+            <th:block sec:authorize="hasRole('ROLE_super-role')" th:with="userName = ${post.owner.displayName}">
+                <a target="_self" th:title="${userName}" th:aria-label="${userName}"
+                   th:href="@{|/authors/${post.owner.name}|}"
+                >[[${userName}]]</a>
+            </th:block>
+            <th:block sec:authorize="!hasRole('ROLE_super-role')"
+                      th:with="author = ${contributorFinder.getContributor(post.owner.name)},
+                               privacyUser = ${#annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes' && author.name != logonUserName},
+                               userName = ${privacyUser ? #messages.msg('page.author.browser.title.privacy_user') : author.displayName}">
+                <a target="_self" th:title="${userName}" th:aria-label="${userName}"
+                   th:href="@{${privacyUser} ? '#' : |/authors/${post.owner.name}|}"
+                   th:onclick="${privacyUser} ? 'event.preventDefault(); return false;' : ''"
+                >[[${userName}]]</a>
+            </th:block>
         </div>
         <div class="level-item">
             <h6>[[#{main.copyright.publish}]]</h6>
@@ -23,7 +35,8 @@
         <div class="level-item">
             <h6>[[#{main.copyright.license}]]</h6>
             <a rel="noopener" target="_blank" title="CC BY 4.0" aria-label="CC BY 4.0"
-               href="https://creativecommons.org/licenses/by/4.0/deed.zh"><i class="icon ri-creative-commons-line"></i>CC BY 4.0</a>
+               href="https://creativecommons.org/licenses/by/4.0/deed.zh"><i class="icon ri-creative-commons-line"></i>CC
+                BY 4.0</a>
         </div>
     </div>
 </div>

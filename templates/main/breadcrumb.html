@@ -1,5 +1,5 @@
 <ul xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
-    th:fragment="breadcrumbList (post, breadcrumbs)"
+    th:fragment="breadcrumbList (post, breadcrumbs, isPost)"
     class="breadcrumb">
     <th:block th:each="item,sindex :${breadcrumbs}" th:switch="${item}">
         <li th:case="publish_time"><i class="ri-time-line"></i>[[${#dates.format(post.spec.publishTime,
@@ -20,21 +20,52 @@
                                          wordCountTimeStr = ${wordCountTime == 0} ? #{main.article.read_time.less} : ${#messages.msg('main.article.read_time', wordCountTime)}">
             <i class="ri-time-line"></i>[[${wordCountTimeStr}]]
         </li>
-        <li sec:authorize="hasRole('ROLE_super-role')" th:case="edit">
+        <th:block th:case="edit">
+            <li sec:authorize="hasRole('ROLE_super-role')">
+                <a target="_blank" th:title="#{main.article.button.edit}"
+                   th:aria-label="#{main.article.button.edit}"
+                   th:href="@{|/console/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i
+                        class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a>
+            </li>
+            <li sec:authorize="!hasRole('ROLE_super-role')" th:if="${logonUserName == post.owner.name}">
+                <a target="_blank" th:title="#{main.article.button.edit}"
+                   th:aria-label="#{main.article.button.edit}"
+                   th:href="@{|/uc/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i
+                        class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a>
+            </li>
+        </th:block>
+        <li sec:authorize="hasRole('ROLE_super-role')" th:if="${pos}" th:case="edit">
             <a target="_blank" th:title="#{main.article.button.edit}"
                th:aria-label="#{main.article.button.edit}"
                th:href="@{|/console/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i
                     class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a>
         </li>
-        <li th:case="owner" class="owner"
-            th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar}">
-            <a target="_self" th:title="${post.owner.displayName}" th:aria-label="${post.owner.displayName}"
-               th:href="@{|/authors/${post.owner.name}|}">
-                <img th:src="${userAvatar}" height="100%" width="100%"
-                     th:alt="${userAvatar}"
-                     class="avatar">
-                <span class="display-name" th:text="${post.owner.displayName}"></span>
-            </a>
-        </li>
+        <th:block th:case="owner">
+            <li class="owner" sec:authorize="hasRole('ROLE_super-role')"
+                th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar},
+                         userName = ${post.owner.displayName}">
+                <a target="_self" th:title="${userName}" th:aria-label="${userName}"
+                   th:href="@{|/authors/${post.owner.name}|}">
+                    <img th:src="${userAvatar}" height="100%" width="100%"
+                         th:alt="${userAvatar}"
+                         class="avatar">
+                    [[${userName}]]
+                </a>
+            </li>
+            <li class="owner" sec:authorize="!hasRole('ROLE_super-role')"
+                th:with="author = ${contributorFinder.getContributor(post.owner.name)},
+                     privacyUser = ${#annotations.getOrDefault(author, 'privacy_user', 'no') == 'yes' && author.name != logonUserName},
+                     userAvatar = ${(#strings.isEmpty(author.avatar) || privacyUser) ? #theme.assets('/img/avatar.svg') : author.avatar},
+                     userName = ${privacyUser ? #messages.msg('page.author.browser.title.privacy_user') : author.displayName}">
+                <a target="_self" th:title="${userName}" th:aria-label="${userName}"
+                   th:href="@{${privacyUser} ? '#' : |/authors/${post.owner.name}|}"
+                   th:onclick="${privacyUser} ? 'event.preventDefault(); return false;' : ''">
+                    <img th:src="${userAvatar}" height="100%" width="100%"
+                         th:alt="${userAvatar}"
+                         class="avatar">
+                    [[${userName}]]
+                </a>
+            </li>
+        </th:block>
     </th:block>
 </ul>
