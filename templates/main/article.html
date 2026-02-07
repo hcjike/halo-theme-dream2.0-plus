@@ -21,7 +21,7 @@
             <div class="details">
                 <h1 class="title" th:text="${post.spec.title}"></h1>
                 <div class="meta">
-                    <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_detail_list})}"/>
+                    <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_detail_list}, isPost = ${isPost})}"/>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
             <th:block th:if="${#strings.isEmpty(thumbnail_img)}">
                 <h1 class="title" th:text="${post.spec.title}"></h1>
                 <div class="meta">
-                    <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_detail_list})}"/>
+                    <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_detail_list}, isPost = ${isPost})}"/>
                     <div th:if="${isPost && !#lists.isEmpty(post.categories)}" class="level-item">
                         <a th:each="cy : ${post.categories}" th:href="${cy.status.permalink}"
                            th:aria-label="${cy.spec.displayName}" th:title="${cy.spec.displayName}"
