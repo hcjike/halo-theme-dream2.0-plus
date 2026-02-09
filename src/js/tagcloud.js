@@ -96,7 +96,7 @@ window.tagcloud = (function (win, doc) { // ns
         requestAnimationFrame(animate)
         return
       }
-      // 时间控制 - 限制最大30帧
+      
       if (currentTime - self.lastTime >= self.frameInterval) {
         self.isUpdating = true
         self.update(self)
