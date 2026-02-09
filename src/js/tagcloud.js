@@ -78,21 +78,34 @@ window.tagcloud = (function (win, doc) { // ns
     self.box.style.margin = '0'
     self.box.style.padding = '0'
     self.box.style.whiteSpace = 'nowrap'
-    self.box.style.minHeight = (1.2 * self.size < 220 ? 220 : 1.2 * self.size) + 'px'
-    self.box.style.minWidth = 'auto'
+    self.box.style.minHeight = '200px'
+    self.box.style.maxHeight = '260px'
+    self.box.style.width = '100%'
+    self.box.style.aspectRatio = '1 / 1'
     for (var j2 = 0, len2 = self.items.length; j2 < len2; j2++) {
       self.items[j2].element.style.position = 'absolute'
       self.items[j2].element.style.zIndex = j2 + 1
     }
     self.isUpdating = false
-    self.up = setInterval(function () {
+    // 添加时间控制变量
+    self.lastTime = 0
+    self.frameInterval = 1000 / 60; // 60fps对应的时间间隔(毫秒)
+
+    (function animate(currentTime) {
       if (self.isUpdating) {
+        requestAnimationFrame(animate)
         return
       }
-      self.isUpdating = true
-      self.update(self)
-      self.isUpdating = false
-    }, 30)
+      // 时间控制 - 限制最大30帧
+      if (currentTime - self.lastTime >= self.frameInterval) {
+        self.isUpdating = true
+        self.update(self)
+        self.isUpdating = false
+        self.lastTime = currentTime
+      }
+
+      requestAnimationFrame(animate)
+    })(0)
   }
 
   //实例
