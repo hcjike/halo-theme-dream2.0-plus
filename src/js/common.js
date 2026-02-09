@@ -71,22 +71,43 @@ const commonContext = {
     $bannerInfoDesc.text('')
     let currentBannerDesc = ''
     let isWrite = true
-    let id
-    const updateDesc = function () {
-      let num = currentBannerDesc.length
-      if (isWrite && num < bannerDesc.length) {
-        currentBannerDesc += bannerDesc.charAt(num)
-        $bannerInfoDesc.text(currentBannerDesc)
-      } else if (!isWrite && num > 0) {
-        currentBannerDesc = currentBannerDesc.slice(0, num - 1)
-        $bannerInfoDesc.text(currentBannerDesc)
-      } else {
-        clearInterval(id)
-        isWrite = !isWrite
-        id = setInterval(updateDesc, isWrite ? 500 : 80)
+    let animationId = null
+    let lastTime = 0
+
+    const updateDesc = function (currentTime) {
+      // 初始化时间
+      if (lastTime === 0) {
+        lastTime = currentTime
       }
+      // 计算时间差
+      const elapsed = currentTime - lastTime
+      const currentInterval = isWrite ? 500 : 80
+      // 如果时间差大于等于间隔时间，执行一次更新
+      if (elapsed >= currentInterval) {
+        let num = currentBannerDesc.length
+        if (isWrite && num < bannerDesc.length) {
+          currentBannerDesc += bannerDesc.charAt(num)
+          $bannerInfoDesc.text(currentBannerDesc)
+        } else if (!isWrite && num > 0) {
+          currentBannerDesc = currentBannerDesc.slice(0, num - 1)
+          $bannerInfoDesc.text(currentBannerDesc)
+        } else {
+          // 当前方向完成，切换方向并重置时间
+          cancelAnimationFrame(animationId)
+          isWrite = !isWrite
+          lastTime = 0 // 重置时间，让下一帧重新开始计时
+          // 直接继续动画，不需要 setTimeout
+          animationId = requestAnimationFrame(updateDesc)
+          return
+        }
+        // 更新最后执行时间（减去多余的时间，保持节奏）
+        lastTime = currentTime - (elapsed % currentInterval)
+      }
+      // 继续动画循环
+      animationId = requestAnimationFrame(updateDesc)
     }
-    id = setInterval(updateDesc, isWrite ? 500 : 80)
+    // 启动动画
+    animationId = requestAnimationFrame(updateDesc)
   },
   /* 激活图片预览功能 */
   initGallery() {
@@ -457,47 +478,63 @@ const commonContext = {
       return
     }
     const grt = new Date(loveTime)
-    setInterval(function () {
-      let now = new Date(Date.now())
-      let difference = parseInt((now - grt) / 1000)
-      let seconds = difference % 60
-      difference = parseInt(difference / 60)
-      let minutes = difference % 60
-      difference = parseInt(difference / 60)
-      let hours = difference % 24
-      let days = parseInt(difference / 24)
-      let year = 0
-      let grtYear = grt.getFullYear()
-      let nowYear = now.getFullYear()
-      while (grtYear < nowYear) {
-        if ((grtYear % 4 === 0 && grtYear % 100 !== 0) || grtYear % 400 === 0) {
-          // 闰年366天
-          if (days < 366) break
-          days -= 366
-          year += 1
-          grtYear += 1
-        } else {
-          // 平年365天
-          if (days < 365) break
-          days -= 365
-          year += 1
-          grtYear += 1
+    let animationId = null
+    let lastTime = 0
+    function updateLoveTime(currentTime) {
+      // 初始化时间
+      if (lastTime === 0) {
+        lastTime = currentTime
+      }
+      // 计算时间差，大约300毫秒更新一次
+      const elapsed = currentTime - lastTime
+      if (elapsed >= 300) {
+        let now = new Date(Date.now())
+        let difference = parseInt((now - grt) / 1000)
+        let seconds = difference % 60
+        difference = parseInt(difference / 60)
+        let minutes = difference % 60
+        difference = parseInt(difference / 60)
+        let hours = difference % 24
+        let days = parseInt(difference / 24)
+        let year = 0
+        let grtYear = grt.getFullYear()
+        let nowYear = now.getFullYear()
+        while (grtYear < nowYear) {
+          if ((grtYear % 4 === 0 && grtYear % 100 !== 0) || grtYear % 400 === 0) {
+            // 闰年366天
+            if (days < 366) break
+            days -= 366
+            year += 1
+            grtYear += 1
+          } else {
+            // 平年365天
+            if (days < 365) break
+            days -= 365
+            year += 1
+            grtYear += 1
+          }
         }
+        if (year !== 0) {
+          $elem.html(DreamConfig.love_time_template_year
+            .replace(/\{(\d+)\}/g, (match, p1) => {
+              const values = [year, days, hours, minutes, seconds]
+              return values[p1]
+            }))
+        } else {
+          $elem.html(DreamConfig.love_time_template
+            .replace(/\{(\d+)\}/g, (match, p1) => {
+              const values = [days, hours, minutes, seconds]
+              return values[p1]
+            }))
+        }
+        // 更新最后执行时间（简单重置，不校正多余时间）
+        lastTime = currentTime
       }
-      if (year !== 0) {
-        $elem.html(DreamConfig.love_time_template_year
-          .replace(/\{(\d+)\}/g, (match, p1) => {
-            const values = [year, days, hours, minutes, seconds]
-            return values[p1]
-          }))
-      } else {
-        $elem.html(DreamConfig.love_time_template
-          .replace(/\{(\d+)\}/g, (match, p1) => {
-            const values = [days, hours, minutes, seconds]
-            return values[p1]
-          }))
-      }
-    }, 300)
+      // 继续动画循环
+      animationId = requestAnimationFrame(updateLoveTime)
+    }
+    // 启动动画
+    animationId = requestAnimationFrame(updateLoveTime)
   },
   /* 激活建站倒计时功能 */
   websiteTime() {
@@ -509,36 +546,50 @@ const commonContext = {
       return
     }
     const grt = new Date(DreamConfig.website_time).getTime()
-    setInterval(function () {
-      let now = Date.now()
-      let difference = parseInt((now - grt) / 1000)
-      let seconds = difference % 60
-      if (String(seconds).length === 1) {
-        seconds = '0' + seconds
+    let animationId = null
+    let lastTime = 0
+    function updateSiteTime(currentTime) {
+      // 初始化时间
+      if (lastTime === 0) {
+        lastTime = currentTime
       }
-      difference = parseInt(difference / 60)
-
-      let minutes = difference % 60
-      if (String(minutes).length === 1) {
-        minutes = '0' + minutes
-      }
-      difference = parseInt(difference / 60)
-
-      let hours = difference % 24
-      if (String(hours).length === 1) {
-        hours = '0' + hours
-      }
-      let days = parseInt(difference / 24)
-      //使用时间表达式显示，适配多语言
-      let timeText = DreamConfig.site_time_expression
-        .replace(/\{(\d+)\}/g, (match, p1) => {
-          const values = [days, hours, minutes, seconds]
-          return `<span class="stand">${values[p1]}</span>`
+      // 计算时间差，大约300毫秒更新一次
+      const elapsed = currentTime - lastTime
+      if (elapsed >= 300) {
+        let now = Date.now()
+        let difference = parseInt((now - grt) / 1000)
+        let seconds = difference % 60
+        if (String(seconds).length === 1) {
+          seconds = '0' + seconds
+        }
+        difference = parseInt(difference / 60)
+        let minutes = difference % 60
+        if (String(minutes).length === 1) {
+          minutes = '0' + minutes
+        }
+        difference = parseInt(difference / 60)
+        let hours = difference % 24
+        if (String(hours).length === 1) {
+          hours = '0' + hours
+        }
+        let days = parseInt(difference / 24)
+        // 使用时间表达式显示，适配多语言
+        let timeText = DreamConfig.site_time_expression
+          .replace(/\{(\d+)\}/g, (match, p1) => {
+            const values = [days, hours, minutes, seconds]
+            return `<span class="stand">${values[p1]}</span>`
+          })
+        websiteDate.forEach(element => {
+          element.innerHTML = timeText
         })
-      websiteDate.forEach(element => {
-        element.innerHTML = timeText
-      })
-    }, 300)
+        // 更新最后执行时间（简单重置，不校正多余时间）
+        lastTime = currentTime
+      }
+      // 继续动画循环
+      animationId = requestAnimationFrame(updateSiteTime)
+    }
+    // 启动动画
+    animationId = requestAnimationFrame(updateSiteTime)
   },
   /* 显示web版权 */
   webCopyright() {
