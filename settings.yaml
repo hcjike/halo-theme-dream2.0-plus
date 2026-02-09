@@ -489,6 +489,13 @@ spec:
           label: 隐藏横幅遮罩
           value: false
           help: '隐藏后横幅显示会更亮'
+        - $formkit: switch
+          onValue: true
+          offValue: false
+          name: banner_hide_info
+          label: 隐藏横幅信息
+          value: false
+          help: '隐藏后“横幅标题”和“横幅文字描述”将不显示。'
         - $formkit: select
           name: theme_style
           label: 主题风格
