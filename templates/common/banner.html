@@ -10,7 +10,7 @@
         }
       })()
     </script>
-    <video preload="auto" loop autoplay muted playsinline
+    <video preload="auto" loop autoplay muted playsinline th:poster="${theme.config.basic_style.banner_image}"
            th:if="${theme.config.basic_style.enable_banner == 'video'}"
            th:src="${theme.config.basic_style.banner_video}"
            style="width: 100%;height: 100%;object-position: center;object-fit: cover;">
