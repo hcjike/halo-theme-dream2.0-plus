@@ -235,7 +235,7 @@ window.tagcloud = (function (win, doc) { // ns
         if (self.index === j) {
 
           self.items[j].scale = 1 //取值范围0.6 ~ 3
-          self.items[j].fontsize = 16
+          self.items[j].fontsize = 18
           self.items[j].alpha = 1
           self.items[j].element.style.zIndex = 99
         } else {
@@ -245,7 +245,7 @@ window.tagcloud = (function (win, doc) { // ns
           self.items[j].z = rz2
 
           self.items[j].scale = per //取值范围0.6 ~ 3
-          self.items[j].fontsize = Math.ceil(per * 2) + self.fontsize - 6
+          self.items[j].fontsize = 16 //Math.ceil(per * 2) + self.fontsize - 6
           self.items[j].alpha = 1.5 * per - 0.5
           self.items[j].element.style.zIndex = Math.ceil(per * 10 - 5)
         }
@@ -329,7 +329,7 @@ window.tagcloud = (function (win, doc) { // ns
 !(function () {
   tagcloud({
     selector: '.tagcloud .card-content',
-    fontsize: 18,
+    fontsize: 16,
     radius: 75,
     mspeed: 'slow',
     ispeed: 'slow',
