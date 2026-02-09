@@ -1229,13 +1229,6 @@ spec:
           label: 侧边栏标签云-开启标签颜色
           help: '开启后会显示标签设定的颜色，反之显示默认颜色。'
           value: false
-        - $formkit: switch
-          onValue: true
-          offValue: false
-          name: show_tagcloud_style
-          label: 侧边栏标签云-3D标签云
-          help: '开启后显示3D标签云风格，反之显示默认标签云风格。'
-          value: false
     - group: page_config
       label: '页面设置'
       formSchema:
