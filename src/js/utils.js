@@ -3,17 +3,19 @@ const Utils = {
    * 是否移动设备
    */
   isMobile() {
-    if (
-      navigator.userAgent.match(/Android/i) ||
-      navigator.userAgent.match(/webOS/i) ||
-      navigator.userAgent.match(/iPhone/i) ||
-      navigator.userAgent.match(/iPad/i) ||
-      navigator.userAgent.match(/iPod/i) ||
-      navigator.userAgent.match(/BlackBerry/i) ||
-      navigator.userAgent.match(/Windows Phone/i)
-    )
+    const ua = navigator.userAgent.toLowerCase()
+    const width = window.innerWidth
+    // 1. 优先检测平板设备，平板视为电脑
+    if (/ipad|android(?!.*mobile)|tablet|silk/i.test(ua)) {
+      return false
+    }
+    // 2. 检测移动设备和鸿蒙系统
+    if (/android|webos|iphone|ipod|blackberry|windows phone|mobile|harmonyos|hmos/i.test(ua)) {
       return true
-    return false
+    }
+    // 3. 最后用屏幕宽度兜底判断
+    // 小屏幕（<=768px）且非平板的情况，视为移动设备
+    return width <= 768
   },
   /**
    * 安全压缩HTML（防御XSS/注入攻击）
