@@ -28,11 +28,6 @@
                 <span class="tag is-grey" th:text="${tag.postCount == null ? 0 : tag.postCount}"
                       th:style="${(enableTagsColor && tag.spec.color != '#ffffff')? 'background: ' + tag.spec.color +'CC' : ''}"></span>
             </a>
-<!--            <a th:aria-label="${tag.spec.displayName}" th:title="${tag.spec.displayName}"-->
-<!--               th:each="tag : ${tags.items}"-->
-<!--               th:href="@{${tag.status.permalink}}"-->
-<!--               th:text="${tag.spec.displayName}"-->
-<!--               th:style="${(enableTagsColor && tag.spec.color != '#ffffff')? 'color: ' + tag.spec.color +'; border-color: ' + tag.spec.color +'; background: ' + tag.spec.color +'20;' : ''}"></a>-->
         </div>
         <script th:src="@{/assets/js/tagcloud.min.js(mew=${theme.spec.version})}"></script>
     </th:block>
