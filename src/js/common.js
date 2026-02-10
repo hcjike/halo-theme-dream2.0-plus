@@ -804,6 +804,9 @@ const commonContext = {
     }
 
     function playVideo() {
+      if (!videoElement.src || videoElement.src === window.location.href || videoElement.getAttribute('src') === null) {
+        return
+      }
       try {
         if (videoElement.paused) {
           var playPromise = videoElement.play()
