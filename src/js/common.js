@@ -480,6 +480,7 @@ const commonContext = {
     const grt = new Date(loveTime)
     let animationId = null
     let lastTime = 0
+
     function updateLoveTime(currentTime) {
       // 初始化时间
       if (lastTime === 0) {
@@ -533,6 +534,7 @@ const commonContext = {
       // 继续动画循环
       animationId = requestAnimationFrame(updateLoveTime)
     }
+
     // 启动动画
     animationId = requestAnimationFrame(updateLoveTime)
   },
@@ -548,6 +550,7 @@ const commonContext = {
     const grt = new Date(DreamConfig.website_time).getTime()
     let animationId = null
     let lastTime = 0
+
     function updateSiteTime(currentTime) {
       // 初始化时间
       if (lastTime === 0) {
@@ -588,6 +591,7 @@ const commonContext = {
       // 继续动画循环
       animationId = requestAnimationFrame(updateSiteTime)
     }
+
     // 启动动画
     animationId = requestAnimationFrame(updateSiteTime)
   },
@@ -799,12 +803,6 @@ const commonContext = {
       return
     }
 
-    // 设置循环播放相关属性
-    videoElement.loop = true // 关键属性：启用循环
-    videoElement.muted = true // 静音更易自动播放
-    videoElement.setAttribute('playsinline', '') // iOS内联播放
-    videoElement.setAttribute('webkit-playsinline', '') // 旧版iOS支持
-
     function playVideo() {
       try {
         if (videoElement.paused) {
@@ -813,7 +811,6 @@ const commonContext = {
           if (playPromise !== undefined) {
             playPromise.catch(function (error) {
               console.log('视频播放失败:', error)
-              bannerElement.style.backgroundImage = `url(${DreamConfig.banner_image})`
             })
           }
         }
@@ -860,7 +857,7 @@ window.commonContext = commonContext
 let timeLifeHour = -1
 
 !(function () {
-  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'playBannerVideo', 'initEffects', 'iniTaskItemDisabled']
+  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'initEffects', 'iniTaskItemDisabled']
   const omits = ['showThemeVersion']
 
   Object.keys(commonContext).forEach(
