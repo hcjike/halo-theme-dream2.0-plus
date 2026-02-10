@@ -2328,6 +2328,14 @@ details[open] > summary::before {
   justify-content: center;
   align-items: center;
 
+  &.full {
+    height: 100vh;
+  }
+
+  &.header-fixed-full {
+    height: calc(100vh - 3.5rem);
+  }
+
   &:before {
     content: "";
     position: absolute;
