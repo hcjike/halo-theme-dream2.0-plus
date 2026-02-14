@@ -5,18 +5,13 @@
             thumbnail_mode = ${(theme.config.post.top_thumbnail_mode == 'grid' || (!post.spec.pinned && theme.config.post.thumbnail_mode == 'grid'))? 'grid' : (!#strings.isEmpty(post.metadata.annotations.get('thumbnail_mode')) && post.metadata.annotations.get('thumbnail_mode') != 'none')? post.metadata.annotations.get('thumbnail_mode') : post.spec.pinned ? theme.config.post.top_thumbnail_mode : theme.config.post.thumbnail_mode}">
     <div th:if="${!#strings.isEmpty(thumbnail_img) && thumbnail_mode == 'back'}" class="card widget card-cover">
       <a th:href="${post.status.permalink}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}">
-        <img class="cover-image" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
-             th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
+        <img class="cover-image lazyload" th:alt="${post.spec.title}" width="auto" height="auto"
+             th:data-srcset="|${thumbnail.gen(thumbnail_img, 's')} 400w,
               ${thumbnail.gen(thumbnail_img, 'm')} 800w,
               ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-             th:srcset="${!theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
-              ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
+              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w|"
              sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px, (max-width: 1600px) 1600px"
-             th:src="${theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"
-             th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
+             th:data-src="${thumbnail_img}"/>
       </a>
       <div class="details">
         <h2 class="title"><span class="top" th:if="${post.spec.pinned}">[[#{global.pinned.name}]]</span>[[${post.spec.title}]]
@@ -34,18 +29,12 @@
             th:if="${!#strings.isEmpty(thumbnail_img) && (thumbnail_mode == 'small' || (thumbnail_mode == 'small-alter' && postStat.index % 2 == 0))}"
             class="card widget card-small">
       <a th:href="${post.status.permalink}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}">
-        <img class="small-image" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
-             th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
+        <img class="small-image lazyload" th:alt="${post.spec.title}" width="auto" height="auto"
+             th:data-srcset="|${thumbnail.gen(thumbnail_img, 's')} 400w,
               ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-             th:srcset="${!theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
-              ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-             sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px, (max-width: 1600px) 1600px"
-             th:src="${theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"
-             th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
+              ${thumbnail.gen(thumbnail_img, 'l')} 1200w|"
+             sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px"
+             th:data-src="${thumbnail_img}"/>
       </a>
       <div class="card-content main">
         <h2 class="title">
@@ -81,18 +70,12 @@
         </div>
       </div>
       <a th:href="${post.status.permalink}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}">
-        <img class="small-image" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
-             th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
+        <img class="small-image lazyload" th:alt="${post.spec.title}" width="auto" height="auto"
+             th:data-srcset="|${thumbnail.gen(thumbnail_img, 's')} 400w,
               ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-             th:srcset="${!theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
-              ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-             sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px, (max-width: 1600px) 1600px"
-             th:src="${theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"
-             th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
+              ${thumbnail.gen(thumbnail_img, 'l')} 1200w|"
+             sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px"
+             th:data-src="${thumbnail_img}"/>
       </a>
     </div>
 
@@ -109,18 +92,12 @@
       <a th:if="${!#strings.isEmpty(thumbnail_img)}" class="thumbnail"
          th:aria-label="${post.spec.title}" th:title="${post.spec.title}"
          th:href="${post.status.permalink}">
-        <img class="thumbnail-image" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
-             th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
+        <img class="thumbnail-image lazyload" th:alt="${post.spec.title}" width="auto" height="auto"
+             th:data-srcset="|${thumbnail.gen(thumbnail_img, 's')} 400w,
               ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-             th:srcset="${!theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
-              ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-             sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px, (max-width: 1600px) 1600px"
-             th:src="${theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"
-             th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
+              ${thumbnail.gen(thumbnail_img, 'l')} 1200w|"
+             sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px"
+             th:data-src="${thumbnail_img}"/>
       </a>
       <div class="card-content main">
         <h2 class="title">
@@ -147,18 +124,12 @@
               th:if="${(theme.config.post.top_thumbnail_mode == 'grid' || (!post.spec.pinned && theme.config.post.thumbnail_mode == 'grid'))}"
               class="card widget">
         <a class="thumbnail" th:href="${post.status.permalink}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}">
-          <img class="thumbnail-image" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
-               th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
+          <img class="thumbnail-image lazyload" th:alt="${post.spec.title}" width="auto" height="auto"
+               th:data-srcset="|${thumbnail.gen(thumbnail_img, 's')} 400w,
               ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-               th:srcset="${!theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
-              ${thumbnail.gen(thumbnail_img, 'm')} 800w,
-              ${thumbnail.gen(thumbnail_img, 'l')} 1200w,
-              ${thumbnail.gen(thumbnail_img, 'xl')} 1600w| : ''"
-               sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px, (max-width: 1600px) 1600px"
-               th:src="${theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"
-               th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
+              ${thumbnail.gen(thumbnail_img, 'l')} 1200w|"
+               sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px"
+               th:data-src="${thumbnail_img}"/>
         </a>
         <th:block th:replace="~{main/breadcrumb :: breadcrumbList (post = ${post}, breadcrumbs = ${theme.config.post.breadcrumb_post_list}, isPost = true)}"/>
         <h2 class="title">

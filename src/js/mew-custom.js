@@ -486,13 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
           $(elem).wrap(wrapper)
         })
         $(this).justifiedGallery({captions: this.options.captions, margins: this.options.margins})
-        // 懒加载
-        if (this.hasAttribute('lazy') && this.getAttribute('lazy') !== 'false') {
-          $(this).find('img').each((i, elem) => {
-            $(elem).removeAttr('src')
-            $(elem).removeAttr('srcset')
-          })
-        }
         this.drawComplete()
       }
     })

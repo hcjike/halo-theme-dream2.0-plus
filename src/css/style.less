@@ -773,7 +773,7 @@ table td, table th {
 }
 
 .expand-done {
-  background: var(--bg-k);
+  background: var(--bg-j);
   position: absolute;
   bottom: 0;
   left: 0;
@@ -796,9 +796,10 @@ table td, table th {
   max-height: 320px;
 
   .expand-done {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.0), rgb(77 77 77 / 40%));
+    background: var(--bg-z);
 
     i {
+      color: var(--dark-c);
       transform: rotatex(180deg);
     }
   }
@@ -4101,9 +4102,9 @@ details[open] > summary::before {
       color: inherit !important;
     }
 
-    &:not(.fold) .expand-done {
-      background: rgb(153 153 153 / 8%);
-    }
+    //&:not(.fold) .expand-done {
+    //  background: rgb(153 153 153 / 8%);
+    //}
   }
 
   .gallery-item {
@@ -5103,6 +5104,7 @@ details[open] > summary::before {
         height: 64px;
         width: 64px;
         object-fit: cover;
+        border-radius: var(--radius-inner);
       }
     }
 
