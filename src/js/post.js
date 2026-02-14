@@ -127,7 +127,7 @@ const postContext = {
   /* 初始化图片折叠 */
   foldImage() {
     if (!DreamConfig.img_fold_height) return
-    const $galleryList = $('.article .gallery-item>[data-fancybox]>img')
+    const $galleryList = $('.article .gallery-item>[data-fancybox]>img, .journal .gallery-item>[data-fancybox]>img')
     $galleryList.parent().addClass('fold')
     $galleryList.each(function () {
       const $gallery = $(this).parent()

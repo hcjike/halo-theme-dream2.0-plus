@@ -113,29 +113,8 @@ const commonContext = {
   initGallery() {
     // 用链接和标题包装图像
     $('.main-content img:not(.not-gallery)').each(function () {
-      const $img = $(this)
-      const src = $img.attr('src')
-      const alt = $img.attr('alt')
-      const srcset = $img.attr('srcset')
-
-      if (DreamConfig.lazy_enable) {
-        if (src) {
-          $img.attr('data-src', src)
-        }
-        if (srcset) {
-          $img.attr('data-srcset', srcset)
-        }
-        $img.addClass('lazyload')
-      }
-
       if ($(this).parents('[data-fancybox],mew-photos').length === 0) {
-        if (DreamConfig.lazy_enable) {
-          // 移除 src 并用 data-src 替代（避免立即加载）
-          $img.removeAttr('src')
-          $img.removeAttr('srcset')
-        }
-
-        $(this).wrap(`<div class="gallery-item"><div data-fancybox="gallery" data-options='{"hash": false}' ${this.alt ? `data-caption="${this.alt}"` : ''} href="${src
+        $(this).wrap(`<div class="gallery-item"><div data-fancybox="gallery" data-options='{"hash": false}' ${this.alt ? `data-caption="${this.alt}"` : ''} href="${$(this).attr('src')
         }"></div></div>`)
       }
     })
@@ -486,9 +465,9 @@ const commonContext = {
       if (lastTime === 0) {
         lastTime = currentTime
       }
-      // 计算时间差，大约300毫秒更新一次
+      // 计算时间差，大约200毫秒更新一次
       const elapsed = currentTime - lastTime
-      if (elapsed >= 300) {
+      if (elapsed >= 200) {
         let now = new Date(Date.now())
         let difference = parseInt((now - grt) / 1000)
         let seconds = difference % 60
@@ -556,9 +535,9 @@ const commonContext = {
       if (lastTime === 0) {
         lastTime = currentTime
       }
-      // 计算时间差，大约300毫秒更新一次
+      // 计算时间差，大约200毫秒更新一次
       const elapsed = currentTime - lastTime
-      if (elapsed >= 300) {
+      if (elapsed >= 200) {
         let now = Date.now()
         let difference = parseInt((now - grt) / 1000)
         let seconds = difference % 60

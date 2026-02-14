@@ -1,6 +1,6 @@
 <th:block xmlns:th="https://www.thymeleaf.org">
     <script th:if="${theme.config.enhance.disable_debug}" th:src="@{/assets/js/ban-debug.min.js(mew=${theme.spec.version})}"></script>
-    <script th:if="${theme.config.basic_info.lazy_enable}" th:src="@{/assets/lib/lazysizes@5.3.2/lazysizes.min.js}"></script>
+    <script th:src="@{/assets/lib/lazysizes@5.3.2/lazysizes.min.js}"></script>
     <script th:src="@{/assets/js/utils.min.js(mew=${theme.spec.version})}"></script>
     <script th:src="@{/assets/js/btoc.min.js(mew=${theme.spec.version})}"></script>
     <script th:if="${isFirstIndex == true && !#lists.isEmpty(theme.config.basic_style.carousel_options)}" data-pjax

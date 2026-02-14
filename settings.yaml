@@ -238,13 +238,6 @@ spec:
           value: true
           help: '开启后，打开站点页面时显示过渡动画效果，使浏览更流畅。关闭可提升响应速度。'
         - $formkit: switch
-          name: lazy_enable
-          onValue: true
-          offValue: false
-          label: 懒加载
-          value: false
-          help: 对文章列表图片、归档页图片和文章图片启用懒加载，pjax加载的页面无效。
-        - $formkit: switch
           name: header_fixed
           label: 固定标题栏
           onValue: true

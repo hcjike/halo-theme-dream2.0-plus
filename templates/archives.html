@@ -17,14 +17,11 @@
             <article th:each="post : ${months.posts}" class="media"
                      th:with="thumbnail_img = ${#strings.isEmpty(post.spec.cover) ? #strings.isEmpty(theme.config.post.default_thumbnail) ? '' : theme.config.post.default_thumbnail + (#strings.contains(theme.config.post.default_thumbnail, '?') ? '&' : '?') + 'id=' + post.metadata.name : post.spec.cover}">
               <a th:if="${!#strings.isEmpty(thumbnail_img)}" th:href="${post.status.permalink}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}" class="media-left">
-                <img class="not-gallery" th:alt="${post.spec.title}" th:classappend="${theme.config.basic_info.lazy_enable} ? 'lazyload'" width="auto" height="auto"
-                     th:data-srcset="${theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
-              ${thumbnail.gen(thumbnail_img, 'm')} 800w| : ''"
-                     th:srcset="${!theme.config.basic_info.lazy_enable} ? |${thumbnail.gen(thumbnail_img, 's')} 400w,
-              ${thumbnail.gen(thumbnail_img, 'm')} 800w| : ''"
+                <img class="not-gallery lazyload" th:alt="${post.spec.title}" width="auto" height="auto"
+                     th:data-srcset="|${thumbnail.gen(thumbnail_img, 's')} 400w,
+                                      ${thumbnail.gen(thumbnail_img, 'm')} 800w|"
                      sizes="(max-width: 400px) 400px, (max-width: 800px) 800px"
-                     th:src="${theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"
-                     th:data-src="${!theme.config.basic_info.lazy_enable ? '' : thumbnail_img}"/>
+                     th:data-src="${thumbnail_img}"/>
               </a>
               <div class="media-content">
                 <time th:text="${#dates.format(post.spec.publishTime, theme.config.basic_info.global_time_format)}"></time>
