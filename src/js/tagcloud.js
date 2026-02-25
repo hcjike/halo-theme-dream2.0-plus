@@ -332,7 +332,8 @@ window.tagcloud = (function (win, doc) { // ns
 
 })(window, document)
 
-!(function () {
+// 在 DOM 加载完成后执行
+function initTagCloud() {
   tagcloud({
     selector: '.tagcloud .card-content',
     fontsize: 16,
@@ -342,4 +343,5 @@ window.tagcloud = (function (win, doc) { // ns
     direction: 45,
     keep: false
   })
-})()
+}
+document.addEventListener('DOMContentLoaded', initTagCloud)
