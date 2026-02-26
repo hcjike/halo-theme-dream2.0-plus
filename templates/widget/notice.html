@@ -1,5 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
-     th:fragment="widget (sidebar)"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
      th:class="'card widget notice ' + ${sidebar.hide} + ' is-hidden-all'">
     <div class="card-title" th:with="defaultTitle=#{widget.notice.title},
                     iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-volume-up-line')},

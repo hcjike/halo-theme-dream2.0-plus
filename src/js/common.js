@@ -5,27 +5,90 @@ const commonContext = {
   /* 初始化widget */
   initWidget() {
     const BREAKPOINT = 1216
+    const $leftCol = $('.column-left')
     const $rightCol = $('.column-right')
-    const $shadowCol = $('.column-right-shadow')
-    // 检查元素是否存在
-    if (!$rightCol.length || !$shadowCol.length) return
+
+    if (!$rightCol.length || !$leftCol.length) return
+
     const $window = $(window)
-    // 监听窗口大小变化（使用防抖优化性能）
-    $(window).on('resize', debounce(checkWidgetPosition, 50))
+
+    $(window).on('resize', debounce(checkWidgetPosition, 100))
+
+    // 按顺序插入元素到目标容器
+    function insertSequentially($target, elementsArray, callback) {
+      let index = 0
+      function insertNext() {
+        if (index < elementsArray.length) {
+          const el = elementsArray[index]
+          // 直接移动 DOM 节点
+          $target[0].appendChild(el)
+          index++
+          insertNext()
+        } else if (callback) {
+          callback()
+        }
+      }
+      insertNext()
+    }
 
     function checkWidgetPosition() {
       const windowWidth = $window.width()
-      const isMoved = $shadowCol.children().length > 0
 
-      // 移动到左侧的条件
-      if (windowWidth < BREAKPOINT && !isMoved) {
-        $rightCol.children().detach().appendTo($shadowCol)
-        $shadowCol.addClass('is-active')
-      }
-      // 移回右侧的条件
-      else if (windowWidth >= BREAKPOINT && isMoved) {
-        $shadowCol.children().detach().appendTo($rightCol)
-        $shadowCol.removeClass('is-active')
+      // 小屏：判断 leftCol 里是否已经有从 rightCol 移过来的 data-position="right" 元素
+      const isMovedToLeft = $leftCol.children().filter(function () {
+        return $(this).attr('data-position') === 'right'
+      }).length > 0
+
+      // 大屏：判断 rightCol 里是否已经有从 leftCol 移回来的 data-position="right" 元素
+      const isMovedToRight = $rightCol.children().filter(function () {
+        return $(this).attr('data-position') === 'right'
+      }).length > 0
+
+      if (windowWidth < BREAKPOINT && !isMovedToLeft) {
+        // 小屏：合并 leftCol(data-position="left") 和 rightCol(data-position="right")，按 data-index 升序
+        const $leftItems = $leftCol.children().filter(function () {
+          return $(this).attr('data-position') === 'left'
+        })
+        const $rightItems = $rightCol.children().filter(function () {
+          return $(this).attr('data-position') === 'right'
+        })
+
+        // 合并为数组
+        const allItems = $leftItems.toArray().concat($rightItems.toArray())
+
+        // 按 data-index 升序排序
+        allItems.sort((a, b) => {
+          const indexA = parseInt($(a).attr('data-index'), 10) || 0
+          const indexB = parseInt($(b).attr('data-index'), 10) || 0
+          return indexA - indexB
+        })
+
+        // 清空 leftCol，按顺序插入
+        $leftCol.empty()
+        insertSequentially($leftCol, allItems, () => {
+          // 可选：移动完成回调
+        })
+      } else if (windowWidth >= BREAKPOINT && isMovedToLeft) {
+        // 大屏：只移动 leftCol 里的 data-position="right" 元素回 rightCol，按 data-index 升序
+        const $rightItemsInLeft = $leftCol.children().filter(function () {
+          return $(this).attr('data-position') === 'right'
+        })
+
+        // 按 data-index 升序排序
+        const sortedRightItems = $rightItemsInLeft.toArray().sort((a, b) => {
+          const indexA = parseInt($(a).attr('data-index'), 10) || 0
+          const indexB = parseInt($(b).attr('data-index'), 10) || 0
+          return indexA - indexB
+        })
+
+        // 清空 leftCol 里的这些元素，按顺序插入 rightCol
+        $leftCol.children().filter(function () {
+          return $(this).attr('data-position') === 'right'
+        }).detach() // 先移除
+
+        insertSequentially($rightCol, sortedRightItems, () => {
+          // 可选：移回完成回调
+        })
       }
     }
 
@@ -42,7 +105,7 @@ const commonContext = {
       }
     }
 
-    // 初始检查窗口大小
+    // 初始检查
     checkWidgetPosition()
   },
   /* 初始化目录和公告模块 */

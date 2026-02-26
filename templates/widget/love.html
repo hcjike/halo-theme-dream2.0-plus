@@ -1,5 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
-     th:fragment="widget (sidebar)"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
      th:class="'card widget love brightness ' + ${sidebar.hide}">
   <div class="card-title" th:with="defaultTitle=#{widget.love.title},
                     iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-heart-fill')},

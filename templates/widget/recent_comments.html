@@ -1,5 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
-     th:fragment="widget (sidebar)"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
      th:class="'card widget recent-comments ' + ${sidebar.hide}"
      th:with="num = ${#strings.isEmpty(theme.config.sidebar.recent_comments_num)? 5 : T(java.lang.Integer).parseInt(theme.config.sidebar.recent_comments_num)},
               comments = ${commentFinder.list(null,1,num)},

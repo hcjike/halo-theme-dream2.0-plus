@@ -1,5 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
-     th:fragment="widget (sidebar)"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
      th:class="'card widget recent-posts ' + ${sidebar.hide}"
      th:with="num = ${#strings.isEmpty(theme.config.sidebar.recent_posts_num)? 5 : T(java.lang.Integer).parseInt(theme.config.sidebar.recent_posts_num)},
      sortCondition = ${theme.config.sidebar.recent_posts_pinned ? {'spec.pinned,desc', 'spec.publishTime,desc', 'metadata.creationTimestamp,desc'} : {'spec.publishTime,desc', 'metadata.creationTimestamp,desc'}},
