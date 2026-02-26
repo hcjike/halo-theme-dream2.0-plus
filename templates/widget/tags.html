@@ -1,5 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
-     th:fragment="widget (sidebar)"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
      th:class="'card widget tags ' + ${sidebar.hide}"
      th:with="num = ${#strings.isEmpty(theme.config.sidebar.tags_num)? 18 : T(java.lang.Integer).parseInt(theme.config.sidebar.tags_num)},
      tags = ${tagFinder.list(1,num)},

@@ -1,5 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
-     th:fragment="widget (sidebar)"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
      th:class="'card widget wechat ' + ${sidebar.hide}"
      style="background: transparent;"
      th:with="faceImg = ${theme.config.sidebar.wechat.wechat_img_face},
