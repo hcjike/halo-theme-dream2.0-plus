@@ -141,6 +141,14 @@ spec:
       name: "icon"
       label: "图标"
       placeholder: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容'
+      sizing:
+        enabled: true
+        size: '1.2em'
+        presets:
+          - '1em'
+          - '1.2em'
+          - '1.5em'
+          - '2em'
     - $formkit: "text"
       name: "desc"
       label: "描述"

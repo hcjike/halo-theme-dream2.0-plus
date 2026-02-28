@@ -305,36 +305,92 @@ spec:
               name: console_post_icon
               label: 新建文章图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_single_pages_icon
               label: 新建页面图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_moment_icon
               label: 发布瞬间图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_login_icon
               label: 登录按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_person_icon
               label: 个人中心按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_manage_icon
               label: 后台管理按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。此菜单仅限管理员可见。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_logout_icon
               label: 退出登录按钮图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
         - $formkit: group
           name: console
           label: 控制台按钮样式
@@ -352,6 +408,14 @@ spec:
               name: console_icon_new
               label: 控制台图标
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，留空显示默认图标。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: text
               name: console_title
               label: 控制台鼠标悬停提示，留空不显示
@@ -945,6 +1009,14 @@ spec:
               label: 侧边栏图标
               placeholder: '请输入图标 class 内容'
               help: '非必填，选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，可覆盖默认侧边栏图标。'
+              sizing:
+                enabled: true
+                size: '1.2em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: code
               name: content
               if: $value.type === 'notice' || $value.type === 'ad_piece' || $value.type === 'custom'
@@ -1040,8 +1112,16 @@ spec:
               name: icon_new
               validation: required
               label: 图标
-              help: "选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容"
+              help: "选择图标(推荐大小1.2em、1.5em)或在手动编辑图标中输入图标class内容"
               value: ""
+              sizing:
+                enabled: true
+                size: '1.5em'
+                presets:
+                  - '1em'
+                  - '1.2em'
+                  - '1.5em'
+                  - '2em'
             - $formkit: textarea
               rows: 2
               name: url
