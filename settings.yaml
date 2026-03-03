@@ -307,7 +307,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -320,7 +320,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -333,7 +333,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容。此菜单仅限管理员可见。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -346,7 +346,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -359,7 +359,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -372,7 +372,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。此菜单仅限管理员可见。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -385,7 +385,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，清空不显示图标。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -410,7 +410,7 @@ spec:
               help: '选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，留空显示默认图标。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -1011,7 +1011,7 @@ spec:
               help: '非必填，选择图标(推荐大小1.2em)或在手动编辑图标中输入图标class内容，可覆盖默认侧边栏图标。'
               sizing:
                 enabled: true
-                size: '1.2em'
+                default: '1.2em'
                 presets:
                   - '1em'
                   - '1.2em'
@@ -1116,7 +1116,7 @@ spec:
               value: ""
               sizing:
                 enabled: true
-                size: '1.5em'
+                default: '1.5em'
                 presets:
                   - '1em'
                   - '1.2em'
