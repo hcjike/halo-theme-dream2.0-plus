@@ -15,7 +15,7 @@
 
 | 站点名    | 预览地址 | 
 | ----------- |----------|
-| 宏尘极客     | [https://www.hcjike.com](https://www.hcjike.com/?preview-theme=theme-dream2-plus)  |
+| 宏尘极客     | [https://www.hcjike.com](https://www.hcjike.com)  |
 
 
 ## 主题文档
