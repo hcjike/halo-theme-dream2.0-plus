@@ -169,7 +169,7 @@ spec:
                   name: content
                   if: $value.type === 'custom'
                   language: html
-                  height: 45px
+                  height: 100px
                   validation: required
                   label: 内容
                   placeholder: 请输入 HTML 内容
@@ -310,9 +310,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_single_pages_icon
@@ -323,9 +325,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_moment_icon
@@ -336,9 +340,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_login_icon
@@ -349,9 +355,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_person_icon
@@ -362,9 +370,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_manage_icon
@@ -375,9 +385,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: iconify
               format: svg
               name: console_logout_icon
@@ -388,9 +400,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
         - $formkit: group
           name: console
           label: 控制台按钮样式
@@ -413,9 +427,11 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: text
               name: console_title
               label: 控制台鼠标悬停提示，留空不显示
@@ -1014,14 +1030,16 @@ spec:
                 default: '1.2em'
                 presets:
                   - '1em'
+                  - '1.1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
-                  - '2em'
             - $formkit: code
               name: content
               if: $value.type === 'notice' || $value.type === 'ad_piece' || $value.type === 'custom'
               language: html
-              height: 45px
+              height: 100px
               label: 侧边栏内容
               placeholder: 请输入 HTML 内容
               help: '非必填，仅在侧边栏类型为公告、广告、自定义时生效。'
@@ -1118,9 +1136,14 @@ spec:
                 enabled: true
                 default: '1.5em'
                 presets:
-                  - '1em'
                   - '1.2em'
+                  - '1.3em'
+                  - '1.4em'
                   - '1.5em'
+                  - '1.6em'
+                  - '1.7em'
+                  - '1.8em'
+                  - '1.9em'
                   - '2em'
             - $formkit: textarea
               rows: 2
@@ -1358,7 +1381,7 @@ spec:
           label: "友链页面-补充信息"
           placeholder: '请输入补充信息'
           language: html
-          height: 45px
+          height: 100px
           help: '友链页面最低部的补充说明信息，支持 HTML 格式。'
         - $formkit: select
           name: link_enable_comment
@@ -1459,7 +1482,7 @@ spec:
               label: "搜索页面-无搜索结果提示语"
               language: html
               value: '没有搜索结果'
-              height: 45px
+              height: 100px
               help: '搜索页面-无搜索结果提示语，支持 HTML 格式，搜索表单、热门文章风格有效。'
             - $formkit: number
               if: $get(search_style).value != 'basic'
@@ -1565,6 +1588,7 @@ spec:
           name: sw_cdn_source
           label: "Service Worker 并发 CDN 源"
           placeholder: 请输入 CDN 地址（一行一个）
+          height: 100px
           help: '填入可用的 NPM 公共开源 CDN 地址（一行一个），通过 “{CDN 地址}/{项目名}@{版本号}/${文件路径}” 可访问到文件，如：https://unpkg.com/halo-theme-dream2.0-plus@latest/templates/assets/js/utils.min.js'
           value: |-
             https://unpkg.com
@@ -1640,7 +1664,7 @@ spec:
               validation: required
               label: 自定义4xx错误页面内容
               language: html
-              height: 45px
+              height: 100px
               help: '填写页面内容，填写<html>、<head>和<body>标签内容。'
             - $formkit: select
               name: style_5xx
@@ -1668,7 +1692,7 @@ spec:
               validation: required
               label: 自定义5xx错误页面内容
               language: html
-              height: 45px
+              height: 100px
               help: '填写页面内容，填写<html>、<head>和<body>标签内容。'
         - $formkit: switch
           onValue: true
@@ -1923,7 +1947,7 @@ spec:
           if: $get(enable_security_link).value
           label: 安全链接页面-提示区域文本描述
           language: html
-          height: 45px
+          height: 100px
           placeholder: '请输入安全链接页面提示区域的文本描述'
           help: '请输入安全链接页面提示区域的文本描述，留空使用默认：“请注意您的账号和财产安全！”。'
         - $formkit: number
@@ -1940,7 +1964,7 @@ spec:
           validation: required
           label: 安全链接页面-跳转提示区域文本描述
           language: html
-          height: 45px
+          height: 100px
           value: '您即将离开{title}，去往：{url}'
           placeholder: '请输入安全链接页面跳转提示区域的文本描述'
           help: '“ {title} ”表示站点主标题，“ {url} ”表示跳转URL，区分大小写。默认值：“您即将离开{title}，去往：{url}”'
@@ -1973,14 +1997,14 @@ spec:
           name: inline_css
           if: $get(enable_security_link).value
           language: css
-          height: 45px
+          height: 100px
           label: "内嵌 CSS"
           placeholder: 请输入 CSS 样式内容
           help: '填入CSS代码，无需style标签，将插入head标签尾部。'
         - $formkit: code
           language: javascript
           if: $get(enable_security_link).value
-          height: 45px
+          height: 100px
           name: inline_js_body
           label: "内嵌JS（body）"
           placeholder: 请输入 JS 代码内容
@@ -2127,41 +2151,41 @@ spec:
         - $formkit: code
           name: inline_css
           language: css
-          height: 45px
+          height: 100px
           label: "内嵌 CSS"
           placeholder: 请输入 CSS 样式内容
           help: '填入CSS代码，无需style标签，将插入head标签尾部。'
         - $formkit: code
           name: external_js_head
           language: javascript
-          height: 45px
+          height: 100px
           label: "外部 JS 链接（head）"
           placeholder: 请输入 script 标签
           help: '填入外部JS链接，需要script标签，可按情况指定async和defer属性，将插入head标签尾部。'
         - $formkit: code
           name: inline_js_head
           language: javascript
-          height: 45px
+          height: 100px
           label: "内嵌 JS（head）"
           placeholder: 请输入 JS 代码内容
           help: '填入JS代码，无需script标签，将插入head标签尾部。'
         - $formkit: code
           name: external_js_body
           language: javascript
-          height: 45px
+          height: 100px
           label: "外部 JS 链接（body）"
           placeholder: 请输入 script 标签
           help: '填入外部JS链接，需要script标签，可按情况指定async和defer属性，将插入body标签尾部。'
         - $formkit: code
           language: javascript
-          height: 45px
+          height: 100px
           name: inline_js_body
           label: "内嵌JS（body）"
           placeholder: 请输入 JS 代码内容
           help: '填入JS代码，无需script标签，将插入body标签尾部。'
         - $formkit: code
           language: html
-          height: 45px
+          height: 100px
           name: inline_body_html
           label: "内嵌Html内容（body）"
           placeholder: 请输入 Html 代码内容

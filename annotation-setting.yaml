@@ -145,10 +145,9 @@ spec:
         enabled: true
         default: '1.2em'
         presets:
-          - '1em'
+          - '1.1em'
           - '1.2em'
-          - '1.5em'
-          - '2em'
+          - '1.3em'
     - $formkit: "text"
       name: "desc"
       label: "描述"
