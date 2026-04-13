@@ -12,7 +12,7 @@ const commonContext = {
 
     const $window = $(window)
 
-    $(window).on('resize', debounce(checkWidgetPosition, 100))
+    $(window).on('resize', Utils.debounce(checkWidgetPosition, 100))
 
     // 按顺序插入元素到目标容器
     function insertSequentially($target, elementsArray, callback) {
@@ -89,19 +89,6 @@ const commonContext = {
         insertSequentially($rightCol, sortedRightItems, () => {
           // 可选：移回完成回调
         })
-      }
-    }
-
-    // 防抖函数
-    function debounce(func, wait) {
-      let timeout
-      return function () {
-        const context = this
-        const args = arguments
-        clearTimeout(timeout)
-        timeout = setTimeout(function () {
-          func.apply(context, args)
-        }, wait)
       }
     }
 

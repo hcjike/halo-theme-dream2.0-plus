@@ -56,6 +56,7 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
 
   <th:block th:replace="~{common/config}"/>
 
+  <script th:src="@{/assets/js/utils.min.js(mew=${theme.spec.version})}"></script>
   <script th:src="@{/assets/lib/jquery@3.5.1/jquery.min.js}"></script>
 
   <link th:if="${!#strings.isEmpty(theme.config.custom.external_css)}" rel="stylesheet" th:href="${theme.config.custom.external_css}">
