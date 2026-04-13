@@ -544,6 +544,22 @@ spec:
             - "video/*"
           placeholder: '请输入/选择视频路径'
           help: '输入/选择视频路径，视频支持mp4格式，不支持声音播放。仅在“博客横幅大图”设置为“视频”时有效。'
+        - $formkit: attachment
+          name: banner_image_mobile
+          label: 横幅移动端背景图
+          aspectRatio: 9/16
+          accepts:
+            - "image/*"
+          placeholder: '请输入/选择图片路径'
+          help: '输入/选择图片路径。当“博客横幅大图”设置为“视频”时，可设置视频封面/预览图。确保在微信等限制环境中，用户能看到预设图片，实现优雅降级。若未设置此项，则使用“横幅背景图”的配置内容。'
+        - $formkit: attachment
+          name: banner_video_mobile
+          label: 横幅移动端背景视频
+          aspectRatio: 9/16
+          accepts:
+            - "video/*"
+          placeholder: '请输入/选择视频路径'
+          help: '输入/选择视频路径，视频支持mp4格式，不支持声音播放。仅在“博客横幅大图”设置为“视频”时有效。若未设置此项，则使用“横幅背景视频”的配置内容。'
         - $formkit: switch
           onValue: true
           offValue: false

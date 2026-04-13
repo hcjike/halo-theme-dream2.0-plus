@@ -17,6 +17,11 @@ const Utils = {
     // 小屏幕（<=768px）且非平板的情况，视为移动设备
     return width <= 768
   },
+  isMobileByScreenWidth() {
+    const width = window.innerWidth
+    // 小屏幕（<=768px）且非平板的情况，视为移动设备
+    return width <= 768
+  },
   /**
    * 安全压缩HTML（防御XSS/注入攻击）
    * @param {string} html - 待处理的HTML字符串
@@ -57,6 +62,18 @@ const Utils = {
       .replace(/&gt;\s+&lt;/g, '&gt;&lt;')
       .replace(/\s+&gt;/g, '&gt;')
       .replace(/&lt;\s+/g, '&lt;')
+  },
+  // 防抖函数
+  debounce(func, wait) {
+    let timeout
+    return function () {
+      const context = this
+      const args = arguments
+      clearTimeout(timeout)
+      timeout = setTimeout(function () {
+        func.apply(context, args)
+      }, wait)
+    }
   },
   /**
    * 有缓存的方式加载js
