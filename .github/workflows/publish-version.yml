@@ -46,8 +46,11 @@ jobs:
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install dependencies
-        run: npm install -g npm@latest
+      - name: Reinstall Node.js and npm
+        run: |
+          sudo apt-get remove -y nodejs npm
+          curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+          sudo apt-get install -y nodejs
 
       - name: npm ci
         run: npm ci
