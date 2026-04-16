@@ -211,7 +211,7 @@
     /** 配置主题模式 */
     DreamConfig["default_theme"] = [[${theme.config.basic_style.default_theme}]];
     DreamConfig["theme_version"] = [[${theme.spec.version}]];
-    DreamConfig["theme_base"] = "[(${#theme.assets('/')})]";
+    DreamConfig["theme_base"] = "[(${#theme.assets('/')})]".replace(/\?.*$/, '');
     /** 移动端特效开关 */
     DreamConfig["mobile_special_effects"] = [[${theme.config.enhance.mobile_special_effects}]];
     [(${!#strings.isEmpty(theme.config.post.code_fold_line)?'DreamConfig["code_fold_line"] = "' + theme.config.post.code_fold_line + '";': ''})]
