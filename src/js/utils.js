@@ -331,6 +331,47 @@ const Utils = {
     }
     return (hash >>> 0).toString()
   },
+  /**
+   * 移除html标签
+   * @param html
+   * @param retainTag 需要保留的标签名
+   * @returns {string}
+   */
+  removeHTMLTags(html, retainTag) {
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+
+    function processNode(node) {
+      let result = ''
+      for (const child of node.childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) {
+          result += child.textContent
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          if (retainTag && child.tagName.toLowerCase() === retainTag) {
+            result += child.outerHTML
+          } else {
+            result += processNode(child)
+          }
+        }
+      }
+      return result
+    }
+
+    return processNode(doc.body)
+  },
+  /**
+   * 获取指定URL的指定参数名的参数
+   * @param name
+   * @param url
+   * @returns {string|null}
+   */
+  getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url)
+    if (!results) return null
+    if (!results[2]) return ''
+    return decodeURIComponent(results[2].replace(/\+/g, ' '))
+  }
 
 }
 

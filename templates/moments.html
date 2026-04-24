@@ -15,69 +15,9 @@
         <a th:each="tag : ${tags}" th:class="${#strings.equals(param.tag, tag.name)? 'item active' : 'item'}" th:title="${tag.name}" th:aria-label="${tag.name}" th:href="@{/moments(tag=${tag.name})}" th:text="${tag.name}"></a>
       </div>
     </div>
-    <div class="card card-content journal" th:each="moment : ${moments.items}">
-      <p class="journal-date">
-        <i class="ri-send-plane-line"></i>
-        <em th:text="${#dates.format(moment.spec.releaseTime,theme.config.basic_info.global_time_format)}"></em>
-      </p>
-      <div class="journal-content fold">
-        <div class="main-content not-toc" data-target="Moment" th:data-id="${moment.metadata.name}">
-          [(${moment.spec.content.html})]
-          <mew-photos th:if="${!#lists.isEmpty(moment.spec.content.medium)}">
-            <img th:each="momentItem : ${moment.spec.content.medium}" th:if="${momentItem.type.name == 'PHOTO'}" th:src="${momentItem.url}"
-                 th:srcset="|${thumbnail.gen(momentItem.url, 's')} 400w,
-                                 ${thumbnail.gen(momentItem.url, 'm')} 800w,
-                                 ${thumbnail.gen(momentItem.url, 'l')} 1200w|"
-                 sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px"/>
-          </mew-photos>
-          <th:block th:if="${!#lists.isEmpty(moment.spec.content.medium)}" th:each="momentItem : ${moment.spec.content.medium}">
-            <mew-video th:if="${momentItem.type.name == 'VIDEO'}" th:src="${momentItem.url}"></mew-video>
-          </th:block>
-          <th:block th:if="${!#lists.isEmpty(moment.spec.content.medium)}" th:each="momentItem : ${moment.spec.content.medium}">
-            <mew-music th:if="${momentItem.type.name == 'AUDIO'}" th:url="${momentItem.url}"
-                       th:with="list = ${#strings.listSplit(momentItem.url,'/')}, size = ${#lists.size(list)}"
-                       th:name="${size >= 0 ? list[size - 1] : momentItem.url}"
-                       th:cover="${#theme.assets('/img/music.webp')}"
-            ></mew-music>
-          </th:block>
-        </div>
-      </div>
-      <div class="journal-operation">
-        <span class="journal-operation-item">
-          <a class="like" th:data-id="${moment.metadata.name}" data-type="Moments" th:aria-label="${(moment.stats.upvote != 0)? moment.stats.upvote : #messages.msg('page.moments.upvote')}"
-             th:title="${(moment.stats.upvote != 0)? moment.stats.upvote : #messages.msg('page.moments.upvote')}" th:data-likes="${moment.stats.upvote}">
-            <i class="ri-heart-3-line"></i>
-            <em th:text="${(moment.stats.upvote != 0)? moment.stats.upvote : #messages.msg('page.moments.upvote')}"></em>
-          </a>
-        </span>
-        <span class="journal-operation-item" th:if="${enableComment}">
-          <a class="comment" th:aria-label="${(moment.stats.totalComment != 0)? moment.stats.totalComment : #messages.msg('global.comment_title')}"
-             th:title="${(moment.stats.totalComment != 0)? moment.stats.totalComment : #messages.msg('global.comment_title')}">
-            <i class="ri-message-3-line"></i>
-            <em th:text="${(moment.stats.totalComment != 0)? moment.stats.totalComment : #messages.msg('global.comment_title')}"></em>
-          </a>
-        </span>
-        <span class="journal-operation-item" th:if="${enableShare}">
-          <a class="share" th:aria-label="#{page.moments.share}" th:title="#{page.moments.share}"><i class="ri-share-forward-line"></i><em>[[#{page.moments.share}]]</em></a>
-        </span>
-        <a target="_self" th:if="${theme.config.page_config.enable_journals_owner}" class="journal-operation-owner" th:title="${moment.owner.displayName}"
-           th:aria-label="${moment.owner.displayName}" th:href="@{|/authors/${moment.owner.name}|}">
-          <img th:unless="${#strings.isEmpty(moment.owner.avatar)}" class="avatar" th:src="${moment.owner.avatar}"
-               alt="avatar">
-          <div th:if="${#strings.isEmpty(moment.owner.avatar)}" class="no-avatar">
-            <span class="avatar-info">[[${#strings.substring(moment.owner.displayName, 0, 1)}]]</span>
-          </div>
-          <span class="name">[[${moment.owner.displayName}]]</span>
-        </a>
-      </div>
-      <div class="journal-comment comment-wrapper-z-index" th:if="${enableComment}">
-        <halo:comment
-                group="moment.halo.run"
-                kind="Moment"
-                th:attr="name=${moment.metadata.name}"
-        />
-      </div>
-    </div>
+    <th:block th:each="moment : ${moments.items}">
+      <th:block th:replace="~{moment :: momentDetail (moment = ${moment})}" />
+    </th:block>
     <th:block th:replace="~{main/pagination :: pagination (${moments}, '/moments')}"/>
   </th:block>
 </th:block>
