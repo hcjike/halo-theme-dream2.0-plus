@@ -44,26 +44,6 @@
                       }, 150)
                     })
 
-                    function removeHTMLTags(html) {
-                      const doc = new DOMParser().parseFromString(html, 'text/html');
-                      function processNode(node) {
-                        let result = '';
-                        for (const child of node.childNodes) {
-                          if (child.nodeType === Node.TEXT_NODE) {
-                            result += child.textContent;
-                          } else if (child.nodeType === Node.ELEMENT_NODE) {
-                            if (child.tagName.toLowerCase() === 'mark') {
-                              result += child.outerHTML;
-                            } else {
-                              result += processNode(child);
-                            }
-                          }
-                        }
-                        return result;
-                      }
-                      return processNode(doc.body);
-                    }
-
                     function findResult(keyword) {
                       if (!keyword) {
                         searchResult.empty()
@@ -90,12 +70,13 @@
                             for (var i = 0; i < _res.hits.length; i++) {
                               try {
                                 var hit = _res.hits[i]
-                                var title = removeHTMLTags(hit.title)
-                                var description = hit.content ? removeHTMLTags(hit.content) : ''
+                                var title = Utils.removeHTMLTags(hit.title, 'mark')
+                                var titleNoTag = Utils.removeHTMLTags(title)
+                                var description = hit.content ? Utils.removeHTMLTags(hit.content) : ''
 
                                 searchResult.append('<div class="widget card search-page">\n' +
                                   '<div class="card-content main">\n' +
-                                  `<a aria-label="${title}" title="${title}" href="` + hit.permalink + '" ' + ' target="' + target + '">\n' +
+                                  `<a aria-label="${titleNoTag}" title="${titleNoTag}" href="` + hit.permalink + '" ' + ' target="' + target + '">\n' +
                                   '<h2 class="title">' + title + '</h2>\n' +
                                   '</a>\n' +
                                   (description ?
@@ -104,6 +85,7 @@
                                   '<hr/>\n' +
                                   '<div class="meta">\n' +
                                   '<div></div>\n' +
+                                  // '<div>'+ ('post.content.halo.run' === hit.type ? '文章' : ('moment.moment.halo.run' === hit.type ? '瞬间' : '文档')) +'</div>\n' +
                                   '<em>' + updateMessage.replace('{0}', Utils.formatDate(hit.updateTimestamp, timeFormat)) + '</em>\n' +
                                   '</div>\n' +
                                   '</div>\n')
@@ -122,16 +104,7 @@
                         })
                     }
 
-                    function getParameterByName(name, url = window.location.href) {
-                      name = name.replace(/[\[\]]/g, '\\$&')
-                      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                        results = regex.exec(url)
-                      if (!results) return null
-                      if (!results[2]) return ''
-                      return decodeURIComponent(results[2].replace(/\+/g, ' '))
-                    }
-
-                    var keyword = getParameterByName('keyword')
+                    var keyword = Utils.getParameterByName('keyword')
                     if (keyword) {
                       var event = new Event('input', {bubbles: true})
                       searchInput.dispatchEvent(event)
