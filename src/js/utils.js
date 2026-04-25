@@ -365,7 +365,7 @@ const Utils = {
    * @returns {string|null}
    */
   getParameterByName(name, url = window.location.href) {
-    name = name.replace(/[\[\]]/g, '\\$&')
+    name = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
       results = regex.exec(url)
     if (!results) return null
