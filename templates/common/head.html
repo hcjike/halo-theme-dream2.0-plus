@@ -6,8 +6,6 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="applicable-device" content="pc,mobile">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="keywords" th:content="${site.seo.keywords}"/>
-  <meta name="description" th:content="${description}">
   <meta name="author" th:content="${site.title}">
   <meta name="site" th:content="${site.url}">
   <meta name="referrer" th:attr="content=${theme.config.basic_info.referrer_policy}">
