@@ -992,6 +992,8 @@ spec:
                   label: 广告模块
                 - value: 'recent_posts'
                   label: 最近文章模块
+                - value: 'random_posts'
+                  label: 随机文章模块
                 - value: 'recent_comments'
                   label: 最近评论模块
                 - value: 'categories'
@@ -1282,6 +1284,19 @@ spec:
           label: 侧边栏最近文章-置顶优先
           value: false
           help: '开启后优先显示置顶文章，同时显示置顶标记，反之优先显示最新发布的文章，不显示置顶标记。'
+        - $formkit: number
+          name: random_posts_num
+          label: 侧边栏随机文章-展示文章数量
+          placeholder: 请输入数量数值
+          value: 5
+          help: '侧边栏随机文章展示文章数量。'
+        - $formkit: switch
+          onValue: true
+          offValue: false
+          name: random_posts_more
+          label: 侧边栏随机文章-显示”更多”按钮
+          value: true
+          help: '侧边栏随机文章是否显示更多按钮。更多按钮跳转至文章归档页面。'
         - $formkit: number
           name: recent_comments_num
           label: 侧边栏最近评论-展示评论数量
