@@ -1,0 +1,28 @@
+<div xmlns:th="https://www.thymeleaf.org"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
+     th:class="'card widget recent-posts ' + ${sidebar.hide}"
+     th:with="num = ${#strings.isEmpty(theme.config.sidebar.random_posts_num)? 5 : T(java.lang.Integer).parseInt(theme.config.sidebar.random_posts_num)},
+     posts = ${postFinder.random(num)},
+     isEmpty = ${posts == null or #lists.isEmpty(posts)}">
+    <div class="card-title" th:with="defaultTitle=#{widget.random_posts.title},
+                    iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-history-line')},
+                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+        <i class="card-title-label"
+           th:unless="${iconSvg}"
+           th:classappend="${iconContent}"></i>
+        <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+        <span th:text="${#strings.defaultString(sidebar.title, defaultTitle)}"></span>
+        <a th:if="${theme.config.sidebar.random_posts_more}" class="card-more" th:href="@{${site.routes.archivesUri}}" th:aria-label="#{global.more.name}" th:title="#{global.more.name}">[[#{global.more.name}]]<i class="ri-arrow-right-double-line"></i></a>
+    </div>
+    <div th:if="${isEmpty}" class="card-empty">[[#{widget.random_posts.empty.tip}]]</div>
+    <div th:unless="${isEmpty}" class="card-content">
+        <ul class="list">
+            <li class="item" th:each="post : ${posts}">
+                <a class="link" th:href="@{${post.status.permalink}}" th:aria-label="${post.spec.title}" th:title="${post.spec.title}">[[${post.spec.title}]]</a>
+                <i class="ri-link"></i>
+            </li>
+        </ul>
+    </div>
+</div>
