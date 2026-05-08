@@ -58,7 +58,7 @@ function Btoc(tocList, contentElement) {
       if (n > last && n <= depth) {
         depth = n
         var id = elem.id
-        var text = elem.innerText
+        var text = elem.textContent.trim()
         // 标签不存在id，设置id
         if (id == null || id === '') {
           id = text + '_' + this.eIndex
