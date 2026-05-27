@@ -45,18 +45,18 @@ spec:
     - $formkit: text
       name: copyright_repost_name
       if: $get(copyright).value === 'repost'
-      label: 版权协议-转载名称
+      label: 版权协议-转载-来源名称
       validation: required
       value: ""
-      placeholder: '请输入转载名称'
+      placeholder: '请输入来源名称'
       help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
     - $formkit: text
       name: copyright_repost_url
       if: $get(copyright).value === 'repost'
-      label: 版权协议-转载链接
+      label: 版权协议-转载-原文链接
       validation: required
       value: ""
-      placeholder: '请输入转载链接'
+      placeholder: '请输入原文链接'
       help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
     - $formkit: select
       name: thumbnail_mode
@@ -158,18 +158,18 @@ spec:
     - $formkit: text
       name: copyright_repost_name
       if: $get(copyright).value === 'repost'
-      label: 版权协议-转载名称
+      label: 版权协议-转载-来源名称
       validation: required
       value: ""
-      placeholder: '请输入转载名称'
+      placeholder: '请输入来源名称'
       help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
     - $formkit: text
       name: copyright_repost_url
       if: $get(copyright).value === 'repost'
-      label: 版权协议-转载链接
+      label: 版权协议-转载-原文链接
       validation: required
       value: ""
-      placeholder: '请输入转载链接'
+      placeholder: '请输入原文链接'
       help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
     - $formkit: text
       name: tips
