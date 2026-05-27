@@ -162,7 +162,7 @@ spec:
       validation: required
       value: ""
       placeholder: '请输入来源名称'
-      help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
+      help: '版权协议选择为"转载"时，必须填写来源名称和原文链接。'
     - $formkit: text
       name: copyright_repost_url
       if: $get(copyright).value === 'repost'
@@ -170,7 +170,7 @@ spec:
       validation: required
       value: ""
       placeholder: '请输入原文链接'
-      help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
+      help: '版权协议选择为"转载"时，必须填写来源名称和原文链接。'
     - $formkit: text
       name: tips
       label:  文章提示
