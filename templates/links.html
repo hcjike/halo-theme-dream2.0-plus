@@ -49,7 +49,7 @@
                                         <span class="status"
                                               th:with="state1 = ${link.status?.verification?.access?.state?.name()},
                                                       lastCheckedAt1 = ${link.status?.verification?.lastCheckedAt}"
-                                              th:title="${#dates.format(lastCheckedAt1, 'yyyy-MM-dd HH:mm')}"
+                                              th:title="${#messages.msg('page.links.link.last_checked_at', #dates.format(lastCheckedAt1, 'yyyy-MM-dd HH:mm'))}"
                                               th:classappend="${state1 == 'ACCESSIBLE' ? 'online' : (state1 == 'INACCESSIBLE' ? 'offline' : 'checking')}"></span>
                                     </th:block>
                                 </li>

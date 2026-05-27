@@ -32,11 +32,54 @@
             <h6>[[#{main.copyright.update}]]</h6>
             <p th:text="${#dates.format(post.status.lastModifyTime,theme.config.basic_info.global_time_format)}"></p>
         </div>
-        <div class="level-item">
-            <h6>[[#{main.copyright.license}]]</h6>
-            <a rel="noopener" target="_blank" title="CC BY 4.0" aria-label="CC BY 4.0"
-               href="https://creativecommons.org/licenses/by/4.0/deed.zh"><i class="icon ri-creative-commons-line"></i>CC
-                BY 4.0</a>
-        </div>
+        <th:block th:with="defaultCopyright = ${theme.config.post.default_copyright},
+                           postCopyright = ${#annotations.getOrDefault(post,'copyright', '')},
+                           copyright = ${#strings.isEmpty(postCopyright) ? defaultCopyright : postCopyright},
+                           postCopyrightRepostName = ${#annotations.getOrDefault(post,'copyright_repost_name', '')},
+                           postCopyrightRepostUrl = ${#annotations.getOrDefault(post,'copyright_repost_url', '')}"
+                  th:switch="${copyright}">
+            <div class="level-item" th:case="cc-by">
+                <h6>[[#{main.copyright.license}]]</h6>
+                <a rel="noopener" target="_blank" title="CC BY 4.0" aria-label="CC BY 4.0"
+                   href="https://creativecommons.org/licenses/by/4.0/deed.zh-hans"><i
+                        class="icon ri-creative-commons-line"></i>CC BY 4.0</a>
+            </div>
+            <div class="level-item" th:case="cc-by-nc">
+                <h6>[[#{main.copyright.license}]]</h6>
+                <a rel="noopener" target="_blank" title="CC BY-NC 4.0" aria-label="CC BY-NC 4.0"
+                   href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh-hans"><i
+                        class="icon ri-creative-commons-line"></i>CC BY-NC 4.0</a>
+            </div>
+            <div class="level-item" th:case="cc-by-nc-nd">
+                <h6>[[#{main.copyright.license}]]</h6>
+                <a rel="noopener" target="_blank" title="CC BY-NC-ND 4.0" aria-label="CC BY-NC-ND 4.0"
+                   href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans"><i
+                        class="icon ri-creative-commons-line"></i>CC BY-NC-ND 4.0</a>
+            </div>
+            <div class="level-item" th:case="cc-by-nc-sa">
+                <h6>[[#{main.copyright.license}]]</h6>
+                <a rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" aria-label="CC BY-NC-SA 4.0"
+                   href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans"><i
+                        class="icon ri-creative-commons-line"></i>CC BY-NC-SA 4.0</a>
+            </div>
+            <div class="level-item" th:case="cc-by-nd">
+                <h6>[[#{main.copyright.license}]]</h6>
+                <a rel="noopener" target="_blank" title="CC BY-ND 4.0" aria-label="CC BY-ND 4.0"
+                   href="https://creativecommons.org/licenses/by-nd/4.0/deed.zh-hans"><i
+                        class="icon ri-creative-commons-line"></i>CC BY-ND 4.0</a>
+            </div>
+            <div class="level-item" th:case="cc-by-sa">
+                <h6>[[#{main.copyright.license}]]</h6>
+                <a rel="noopener" target="_blank" title="CC BY-SA 4.0" aria-label="CC BY-SA 4.0"
+                   href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hans"><i
+                        class="icon ri-creative-commons-line"></i>CC BY-SA 4.0</a>
+            </div>
+            <div class="level-item" th:case="repost">
+                <h6>[[#{main.copyright.repost}]]</h6>
+                <a rel="noopener" target="_blank" th:title="${postCopyrightRepostName}" th:aria-label="${postCopyrightRepostName}"
+                   th:href="${postCopyrightRepostUrl}"><i
+                        class="icon ri-external-link-line"></i>[[${postCopyrightRepostName}]]</a>
+            </div>
+        </th:block>
     </div>
 </div>
