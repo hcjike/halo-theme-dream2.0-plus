@@ -20,6 +20,45 @@ spec:
         - value: ""
           label:  跟随默认配置
     - $formkit: select
+      name: copyright
+      id: copyright
+      label: 版权协议
+      value: ''
+      help: '版权协议，当前配置将覆盖主题中的默认配置。'
+      options:
+        - value: 'cc-by'
+          label: CC BY 4.0
+        - value: 'cc-by-nc'
+          label: CC BY-NC 4.0
+        - value: 'cc-by-nc-nd'
+          label: CC BY-NC-ND 4.0
+        - value: 'cc-by-nc-sa'
+          label: CC BY-NC-SA 4.0
+        - value: 'cc-by-nd'
+          label: CC BY-ND 4.0
+        - value: 'cc-by-sa'
+          label: CC BY-SA 4.0
+        - value: 'repost'
+          label: 转载
+        - value: ''
+          label: 跟随默认配置
+    - $formkit: text
+      name: copyright_repost_name
+      if: $get(copyright).value === 'repost'
+      label: 版权协议-转载名称
+      validation: required
+      value: ""
+      placeholder: '请输入转载名称'
+      help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
+    - $formkit: text
+      name: copyright_repost_url
+      if: $get(copyright).value === 'repost'
+      label: 版权协议-转载链接
+      validation: required
+      value: ""
+      placeholder: '请输入转载链接'
+      help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
+    - $formkit: select
       name: thumbnail_mode
       label: 文章列表缩略图模式
       value: "none"
@@ -93,6 +132,45 @@ spec:
           label:  关闭
         - value: ""
           label:  跟随默认配置
+    - $formkit: select
+      name: copyright
+      id: copyright
+      label: 版权协议
+      value: ''
+      help: '版权协议，当前配置将覆盖主题中的默认配置。'
+      options:
+        - value: 'cc-by'
+          label: CC BY 4.0
+        - value: 'cc-by-nc'
+          label: CC BY-NC 4.0
+        - value: 'cc-by-nc-nd'
+          label: CC BY-NC-ND 4.0
+        - value: 'cc-by-nc-sa'
+          label: CC BY-NC-SA 4.0
+        - value: 'cc-by-nd'
+          label: CC BY-ND 4.0
+        - value: 'cc-by-sa'
+          label: CC BY-SA 4.0
+        - value: 'repost'
+          label: 转载
+        - value: ''
+          label: 跟随默认配置
+    - $formkit: text
+      name: copyright_repost_name
+      if: $get(copyright).value === 'repost'
+      label: 版权协议-转载名称
+      validation: required
+      value: ""
+      placeholder: '请输入转载名称'
+      help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
+    - $formkit: text
+      name: copyright_repost_url
+      if: $get(copyright).value === 'repost'
+      label: 版权协议-转载链接
+      validation: required
+      value: ""
+      placeholder: '请输入转载链接'
+      help: '版权协议选择为"转载"时，必须填写转载名称和转载链接。'
     - $formkit: text
       name: tips
       label:  文章提示

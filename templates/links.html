@@ -45,7 +45,13 @@
                                         <div class="link-desc"
                                              th:text="${#strings.defaultString(link.spec.description, #messages.msg('page.links.link.description.default'))}"></div>
                                     </a>
-                                    <span class="status"></span>
+                                    <th:block th:if="${pluginFinder.available('PluginLinks', '>=2.1.0') && link.status?.verification != null}" >
+                                        <span class="status"
+                                              th:with="state1 = ${link.status?.verification?.access?.state?.name()},
+                                                      lastCheckedAt1 = ${link.status?.verification?.lastCheckedAt}"
+                                              th:title="${#messages.msg('page.links.link.last_checked_at', #dates.format(lastCheckedAt1, 'yyyy-MM-dd HH:mm'))}"
+                                              th:classappend="${state1 == 'ACCESSIBLE' ? 'online' : (state1 == 'INACCESSIBLE' ? 'offline' : 'checking')}"></span>
+                                    </th:block>
                                 </li>
                             </ul>
                         </div>

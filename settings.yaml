@@ -860,6 +860,24 @@ spec:
           label: 开启文章版权声明
           value: true
           help: '如果文章或页面元数据配置了“开启文章版权声明”项，则当前配置将被覆盖。'
+        - $formkit: select
+          name: default_copyright
+          label: 默认版权协议
+          value: 'cc-by'
+          help: '默认版权协议，如果文章元数据配置了“版权协议”项，则当前配置将被覆盖。'
+          options:
+            - value: 'cc-by'
+              label: CC BY 4.0
+            - value: 'cc-by-nc'
+              label: CC BY-NC 4.0
+            - value: 'cc-by-nc-nd'
+              label: CC BY-NC-ND 4.0
+            - value: 'cc-by-nc-sa'
+              label: CC BY-NC-SA 4.0
+            - value: 'cc-by-nd'
+              label: CC BY-ND 4.0
+            - value: 'cc-by-sa'
+              label: CC BY-SA 4.0
         - $formkit: switch
           onValue: true
           offValue: false
