@@ -42,15 +42,30 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Reinstall Node.js and npm
+      - name: Reinstall Node.js and npm (v24 with latest CLI)
         run: |
           sudo apt-get remove -y nodejs npm
-          curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+          curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
           sudo apt-get install -y nodejs
+          
+          # 确保 npm 是最新版本
+          sudo npm install -g npm@latest
+          
+          # 安装常用的 CLI 工具
+          sudo npm install -g @angular/cli@latest
+          sudo npm install -g @vue/cli@latest
+          sudo npm install -g create-react-app
+          
+          # 验证版本
+          node --version
+          npm --version
+          ng --version
+          vue --version
+          npx create-react-app --version
 
       - name: npm ci
         run: npm ci
