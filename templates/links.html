@@ -6,9 +6,17 @@
               th:with="defaultAvatar = ${#strings.defaultString(theme.config.page_config.links_default_avatar, #theme.assets('/img/avatar.svg'))}">
         <script>
           function setSafeSrc(element, url) {
-            // 允许：http/https/data:image 协议 或 相对路径（以/开头）
-            var isSafe = /^(https?|data:image\/[a-z]+;base64|\/)/i.test(url)
-            element.src = isSafe ? encodeURI(url) : '' // 不安全则清空
+            // 空值检查：防止 url 为空或 undefined 时报错
+            if (!url) { element.src = ''; return; }
+            
+            // 安全协议检查：只允许 http/https/data:image/相对路径
+            var isSafe = /^(https?|data:image\/[a-z]+;base64|\/)/i.test(url);
+            if (!isSafe) { element.src = ''; return; }
+            
+            // 编码检测：检查URL是否已包含 %XX 格式的编码字符
+            // 如果已编码则直接使用，避免双重编码导致 400 Bad Request
+            // 如果未编码则使用 encodeURI() 处理中文等特殊字符
+            element.src = /%[0-9A-Fa-f]{2}/.test(url) ? url : encodeURI(url);
           }
         </script>
         <div class="card">
