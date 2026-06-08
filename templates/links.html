@@ -13,7 +13,7 @@
             var isSafe = /^(https?|data:image\/[a-z]+;base64|\/)/i.test(url);
             if (!isSafe) { element.src = ''; return; }
             
-            // 编码检测：检查URL是否已包含 %XX 格式的编码字符
+            // 编码检测：检查URL是否已包含百分号编码格式的字符
             // 如果已编码则直接使用，避免双重编码导致 400 Bad Request
             // 如果未编码则使用 encodeURI() 处理中文等特殊字符
             element.src = /%[0-9A-Fa-f]{2}/.test(url) ? url : encodeURI(url);
