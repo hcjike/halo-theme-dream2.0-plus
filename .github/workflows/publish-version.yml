@@ -13,7 +13,7 @@ jobs:
 
   # 非正式版执行时，不发布到商店
   cd:
-    uses: hcjike/reusable-workflows/.github/workflows/theme-cd.yaml@v3
+    uses: hcjike/reusable-workflows/.github/workflows/theme-cd.yaml@v4
     secrets:
       halo-pat: ${{ secrets.HALO_PAT }}
     permissions:
@@ -21,8 +21,6 @@ jobs:
     with:
       app-id: app-HrMpM
       skip-appstore-release: ${{ (github.event.release.prerelease || contains(github.event.release.tag_name, 'beta') || contains(github.event.release.tag_name, 'alpha')) }}
-      pnpm-version: 10
-      node-version: 22
 
   # 若cd任务未执行、发布的版本是预览版、发布的标签名含有'beta'字样，则此任务也不执行
   npm-publish:
