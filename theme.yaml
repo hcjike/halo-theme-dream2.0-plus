@@ -21,6 +21,10 @@ spec:
         description: 支持安全链接页面配置
         screenshot:
         file: security_link.html
+      - name: RSS订阅页面模版
+        description: 请确保已安装 2.2.0 或以上版本的链接插件，并在设置中同时开启「RSS 订阅」和「公开 RSS 订阅动态」，功能才可正常使用。
+        screenshot:
+        file: friends_link.html
   # 主题描述
   description: '梦之城，童话梦境'
   # 主题logo地址
