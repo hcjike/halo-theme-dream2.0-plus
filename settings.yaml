@@ -1452,6 +1452,14 @@ spec:
           validation: required
           placeholder: '请选择一个页面作为友链页面的评论区ID'
           help: '指定一个“自定义页面”用于友链页面的评论区ID，被指定的页面评论区将作为友链的评论区。'
+        - $formkit: number
+          name: link_feed_count
+          label: RSS订阅页面 - 展示最新订阅数量
+          placeholder: 请输入数量数值
+          help: '指定显示的最新订阅数量。默认 30，小于等于 0 时也按 30 处理，最多 100 条。'
+          min: 0
+          max: 100
+          value: 30
         - $formkit: switch
           onValue: true
           offValue: false

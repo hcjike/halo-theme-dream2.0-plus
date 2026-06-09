@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<th:block
+        th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.friends.browser.title', singlePage.spec.title, site.title)}, canonical = @{/friends}, content = ~{::content}, isPost = true, hideSidebar = false)}"
+        th:with="isJournals = true, enableShare = false, baseEnableComment = false"
+        xmlns:th="https://www.thymeleaf.org">
+    <th:block th:fragment="content" th:with="rawCount = ${theme.config.page_config.link_feed_count ?: 30},
+                                              linkFeeds = ${linkFeedFinder.list({
+                                                                                limit: rawCount
+                                                                              })}">
+        <div class="widget card friends" th:each="friend : ${linkFeeds.items}">
+            <div class="card-content main">
+                <h2 class="title"><a th:href="${friend.url}" target="_blank" th:text="${friend.title}"></a></h2>
+                <div class="main-content not-toc" th:text="${friend.summary}"></div>
+                <hr/>
+                <div class="meta">
+                    <a class="has-link-grey" th:href="${friend.authorUrl}" target="_blank"
+                       th:aria-label="${friend.author}" th:title="${friend.author}">
+                        <img th:if="${!#strings.isEmpty(friend.authorLogo)}" th:src="${friend.authorLogo}" alt="avatar">
+                        <span th:text="${friend.author}"></span>
+                    </a>
+                    <em th:text="${#messages.msg('page.friends.publish', #dates.format(friend.publishedAt, theme.config.basic_info.global_time_format))}"></em>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</th:block>
