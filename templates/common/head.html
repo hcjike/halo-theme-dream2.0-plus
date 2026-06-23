@@ -6,22 +6,8 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="applicable-device" content="pc,mobile">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="author" th:content="${site.title}">
-  <meta name="site" th:content="${site.url}">
   <meta name="referrer" th:attr="content=${theme.config.basic_info.referrer_policy}">
   <meta http-equiv="Referrer-Policy" th:attr="content=${theme.config.basic_info.referrer_policy}">
-  <meta property="og:type" content="website">
-  <meta property="og:title" th:content="${showTitle}">
-  <meta property="og:url" th:content="${#strings.isEmpty(canonical) ? '' : #strings.startsWith(canonical, 'http') ? canonical : (site.url + canonical).replaceAll('(?<!:)//', '/')}">
-  <meta property="og:site_name" th:content="${title}">
-  <meta property="og:description" th:content="${description}">
-  <meta property="og:locale" content="zh">
-  <meta property="og:image" th:content="@{${#strings.isEmpty(site.favicon) ? '' : #strings.startsWith(site.favicon,'http') ? site.favicon : (site.url + site.favicon).replaceAll('(?<!:)//', '/')}}">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" th:content="${showTitle}">
-  <meta name="twitter:description" th:content="${description}">
-  <meta name="twitter:image" th:content="@{${#strings.isEmpty(site.favicon) ? '' : #strings.startsWith(site.favicon,'http') ? site.favicon : (site.url + site.favicon).replaceAll('(?<!:)//', '/')}}">
-  <meta name="twitter:url" th:content="${#strings.isEmpty(canonical) ? '' : #strings.startsWith(canonical, 'http') ? canonical : (site.url + canonical).replaceAll('(?<!:)//', '/')}">
 
   <th:block th:if="${theme.config.pwa.enable_pwa}">
     <link rel="manifest" th:href="${theme.config.pwa.manifest_file}"/>
@@ -31,8 +17,6 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" th:content="${theme.config.pwa.apple_status_bar_style}"/>
   </th:block>
-
-  <link rel="canonical" th:href="${#strings.isEmpty(canonical) ? '' : #strings.startsWith(canonical, 'http') ? canonical : (site.url + canonical).replaceAll('(?<!:)//', '/')}"/>
 
   <link rel="preload stylesheet" as="style" th:href="@{/assets/css/theme.min.css(mew=${theme.spec.version})}">
   <link rel="preload stylesheet" as="style" th:href="@{/assets/lib/remixicon@4.9.1/remixicon.min.css}">
