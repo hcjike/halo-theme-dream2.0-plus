@@ -140,7 +140,7 @@ task('js', () => {
 })
 
 task('zip', () => {
-  const target = ['./templates/**', './*.yaml', 'README.md', 'LICENSE' , './i18n/**']
+  const target = ['./templates/**', './*.yaml', 'README.md', 'LICENSE' , './i18n/**', './screenshot.webp']
   return src(target, {base: '.'})
     .pipe(zip('theme-dream2-plus' + (version ? ('-' + version) : '') + '.zip'))
     .pipe(dest(distPath))
