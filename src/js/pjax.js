@@ -193,6 +193,8 @@ document.addEventListener('pjax:success', async function (event) {
   commonContext.initCarousel()
   /** 关闭画廊 **/
   commonContext.closeFancybox()
+  /* 控制是否显示Banner */
+  commonContext.showBanner()
   window.DProgress && DProgress.done()
 })
 
@@ -205,20 +207,6 @@ document.addEventListener('pjax:error', function (event) {
 document.addEventListener('pjax:complete', function (event) {
   console.log('pjax:complete')
 
-  // 获取当前页面的标题、路径和 URL
-  const currentTitle = document.title
-  const currentPath = window.location.pathname
-  const currentUrl = window.location.href
-
-  if (window.history && window.history.replaceState) {
-    // 更新历史记录状态
-    window.history.replaceState(
-      {url: currentUrl, title: currentTitle, path: currentPath},
-      currentTitle,
-      currentUrl
-    )
-  }
-
   //动画模式
   if (DreamConfig.pjax_animation_style === 'scale') {
     document.documentElement.classList.remove('pjax-loading')
@@ -227,5 +215,3 @@ document.addEventListener('pjax:complete', function (event) {
     if (el) el.classList.remove('active')
   }
 })
-
-// popstate 事件由 Pjax 库内部处理，无需手动监听
