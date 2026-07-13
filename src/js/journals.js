@@ -42,17 +42,17 @@ const journalContext = {
     })
   },
 }
-window.journalPjax = function (serialNumber) {
+window.journalPjax = function () {
   if ($('.card.journal').length === 0) return
   Object.keys(journalContext).forEach(
-    (c) => window.pjaxSerialNumber === serialNumber && journalContext[c]()
+    (c) => journalContext[c]()
   )
 }
 !(function () {
-  !window.pjaxSerialNumber && journalContext.initEvent()
-  !window.pjaxSerialNumber && journalContext.initLike()
+  journalContext.initEvent()
+  journalContext.initLike()
 
   document.addEventListener('DOMContentLoaded', function () {
-    !window.pjaxSerialNumber && journalContext.foldJournals()
+    journalContext.foldJournals()
   })
 })()
