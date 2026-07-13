@@ -43,8 +43,35 @@ jobs:
       - name: Push master to Gitee
         run: |
           echo "Pushing master branch to Gitee..."
-          git push ${{ env.GITEE_REPO }} master:master --force --no-verify
-          echo "✅ Master branch pushed to Gitee"
+          
+          # 方法1: 直接强制推送
+          if git push ${{ env.GITEE_REPO }} master:master --force --no-verify; then
+            echo "✅ Master branch pushed to Gitee (method 1)"
+          
+          # 方法2: 如果失败，使用更彻底的方法
+          else
+            echo "Method 1 failed, trying alternative method..."
+          
+            # 创建临时 bare 仓库
+            TEMP_DIR=$(mktemp -d)
+            cd $TEMP_DIR
+          
+            # 克隆 bare 仓库
+            git clone --bare https://github.com/${{ github.repository }}.git .
+          
+            # 配置用户
+            git config user.name "GitHub Actions Bot"
+            git config user.email "github-actions@github.com"
+          
+            # 只推送 master 分支
+            git push ${{ env.GITEE_REPO }} +refs/heads/master:refs/heads/master --no-verify
+          
+            echo "✅ Master branch pushed to Gitee (alternative method)"
+          
+            # 清理
+            cd /
+            rm -rf $TEMP_DIR
+          fi
 
       - name: Push master to Gitea
         run: |
