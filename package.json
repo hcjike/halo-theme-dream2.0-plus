@@ -55,6 +55,7 @@
     "webpack-stream": "^7.0.0"
   },
   "dependencies": {
+    "@sliphua/pjax": "^2.4.0",
     "html2canvas": "^1.4.1",
     "qrcode": "^1.5.1",
     "remixicon": "^4.9.1"

@@ -226,21 +226,21 @@ const postContext = {
   },
 }
 
-window.postPjax = function (serialNumber) {
+window.postPjax = function () {
   if ($('.main-content').length === 0) return
   Object.keys(postContext).forEach(
-    (c) => window.pjaxSerialNumber === serialNumber && postContext[c]()
+    (c) => postContext[c]()
   )
 }
 !(function () {
   const advances = ['initAiSummaryLocation', 'initEvent', 'initCodeBlock', 'initLiterature', 'initLike', 'foldImage', 'initMermaid']
   Object.keys(postContext).forEach(
-    (c) => !window.pjaxSerialNumber && advances.includes(c) && postContext[c]()
+    (c) => advances.includes(c) && postContext[c]()
   )
 
   document.addEventListener('DOMContentLoaded', function () {
     Object.keys(postContext).forEach(
-      (c) => !window.pjaxSerialNumber && !advances.includes(c) && postContext[c]()
+      (c) => !advances.includes(c) && postContext[c]()
     )
   })
 })()
