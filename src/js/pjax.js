@@ -4,10 +4,6 @@ const jsLoadCompletes = new Set(Array.from(document.querySelectorAll('script[src
 
 const pjaxAnimationValidStyles = ['multi-cube', 'wave-pulse', 'orbit-system']
 
-// pjax请求时进行界面预处理
-const initPjax = () => {
-}
-
 const syncLoadScripts = (scripts, i, resolve) => {
   if (i >= scripts.length) {
     resolve && resolve()
@@ -33,7 +29,6 @@ const syncLoadScripts = (scripts, i, resolve) => {
 }
 
 // 存储从新页面文档中提取的待加载资源
-let pendingCssLoads = []
 let pendingJsLoads = []
 let pendingHeadElements = []
 
@@ -42,7 +37,6 @@ let pendingHeadElements = []
  * 使用 Pjax 的 hooks.document 钩子，在 DOM 切换前拦截解析后的新页面文档
  */
 const loadResourcesFromDoc = (newDoc) => {
-  pendingCssLoads = []
   pendingJsLoads = []
   pendingHeadElements = []
 
@@ -60,7 +54,20 @@ const loadResourcesFromDoc = (newDoc) => {
     const href = link.getAttribute('href')
     const isStaticPath = href && href.startsWith('/plugins')
     if ((isDataPjax || isStaticPath) && !cssLoadCompletes.has(href) && !cssLoading.has(href)) {
-      pendingCssLoads.push({link: link, href: href})
+      cssLoading.add(href)
+      const newLink = link.cloneNode(true)
+      document.head.appendChild(newLink)
+      console.log('加载css ' + href)
+      newLink.onload = function () {
+        cssLoading.delete(href)
+        cssLoadCompletes.add(href)
+        window.DProgress && DProgress.inc()
+        console.log('加载css完成 ' + href)
+      }
+      newLink.onerror = function () {
+        cssLoading.delete(href)
+        console.log('加载css失败 ' + href)
+      }
     }
   })
 
@@ -75,23 +82,6 @@ const loadResourcesFromDoc = (newDoc) => {
     }
   })
 
-  // 立即加载 CSS（异步）
-  pendingCssLoads.forEach(function (item) {
-    cssLoading.add(item.href)
-    const newLink = item.link.cloneNode(true)
-    document.head.appendChild(newLink)
-    console.log('加载css ' + item.href)
-    newLink.onload = function () {
-      cssLoading.delete(item.href)
-      cssLoadCompletes.add(item.href)
-      window.DProgress && DProgress.inc()
-      console.log('加载css完成 ' + item.href)
-    }
-    newLink.onerror = function () {
-      cssLoading.delete(item.href)
-      console.log('加载css失败 ' + item.href)
-    }
-  })
 }
 
 // 初始化 Pjax 实例
@@ -123,8 +113,7 @@ document.addEventListener('pjax:send', function (event) {
     const el = document.querySelector('.pjax-animation-container')
     if (el) el.classList.add('active')
   }
-  window.DProgress && DProgress.start()
-  window.DProgress && DProgress.inc()
+  window.DProgress && DProgress.start() && DProgress.inc()
 })
 
 // pjax:success - 内容替换成功后
@@ -135,8 +124,6 @@ document.addEventListener('pjax:success', async function (event) {
   commonContext.initGallery()
   /* 重新加载目录和公告 */
   commonContext.initTocAndNotice()
-  /* 初始化pjax加载 */
-  initPjax()
 
   /* 从新加载的 DOM 中获取数据 */
   const newContainer = document.querySelector('.dream2-container-content-main')
