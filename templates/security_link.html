@@ -4,7 +4,7 @@
       th:with="urlCode = ${param.target},
                url = ${#strings.defaultString(#uris.unescapePath(urlCode), '/')},
                title = ${#messages.msg('page.security_link.browser.title', singlePage.spec.title, site.title)},
-               contributor = ${contributorFinder.getContributor(theme.config.basic_info.metadata_name)},
+               contributor = ${singlePage.status.permalink},
                enableComment = false, isPost = false, canonical = ${theme.config.security_link_config.security_link_url}">
 <head>
     <meta charset="utf-8"/>
