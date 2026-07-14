@@ -180,6 +180,12 @@ document.addEventListener('pjax:success', async function (event) {
   window.postPjax && window.postPjax()
   /* 刷新人生倒计时 */
   commonContext.initTimeCount()
+  /* 导航高亮 */
+  document
+    .querySelectorAll('.navbar-nav .current, .panel-side-menu .current')
+    .forEach(el => el.classList.remove('current'))
+  commonContext.initNavbar()
+  /* 处理banner显示 */
   /* 初始化任务列表，禁止点击 */
   commonContext.iniTaskItemDisabled()
   /* 初始化轮播 */
