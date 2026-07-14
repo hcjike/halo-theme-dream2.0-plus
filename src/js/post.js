@@ -202,16 +202,6 @@ const postContext = {
     }
     postContextInitial = true
   },
-  /* 初始化Mermaid */
-  initMermaid() {
-    if (typeof mermaid === 'undefined' || mermaid === null) {
-      return
-    }
-    mermaid.initialize({startOnLoad: true})
-    mermaid.run({
-      querySelector: 'text-diagram[data-type=mermaid]',
-    })
-  },
   /* 初始化AI总结位置 */
   initAiSummaryLocation() {
     const aiSummaryWidget = document.querySelector('ai-summary-widget')
@@ -233,7 +223,7 @@ window.postPjax = function () {
   )
 }
 !(function () {
-  const advances = ['initAiSummaryLocation', 'initEvent', 'initCodeBlock', 'initLiterature', 'initLike', 'foldImage', 'initMermaid']
+  const advances = ['initAiSummaryLocation', 'initEvent', 'initCodeBlock', 'initLiterature', 'initLike', 'foldImage']
   Object.keys(postContext).forEach(
     (c) => advances.includes(c) && postContext[c]()
   )
