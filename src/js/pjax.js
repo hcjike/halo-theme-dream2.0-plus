@@ -1,4 +1,5 @@
 const cssLoadCompletes = new Set(Array.from(document.querySelectorAll('link[href*=".css"]'), item => item.getAttribute('href')))
+const cssLoading = new Set()
 const jsLoadCompletes = new Set(Array.from(document.querySelectorAll('script[src*=".js"]'), item => item.getAttribute('src')))
 
 const pjaxAnimationValidStyles = ['multi-cube', 'wave-pulse', 'orbit-system']
@@ -58,7 +59,7 @@ const loadResourcesFromDoc = (newDoc) => {
     const isDataPjax = link.hasAttribute('data-pjax')
     const href = link.getAttribute('href')
     const isStaticPath = href && href.startsWith('/plugins')
-    if ((isDataPjax || isStaticPath) && !cssLoadCompletes.has(href)) {
+    if ((isDataPjax || isStaticPath) && !cssLoadCompletes.has(href) && !cssLoading.has(href)) {
       pendingCssLoads.push({link: link, href: href})
     }
   })
@@ -76,13 +77,19 @@ const loadResourcesFromDoc = (newDoc) => {
 
   // 立即加载 CSS（异步）
   pendingCssLoads.forEach(function (item) {
+    cssLoading.add(item.href)
     const newLink = item.link.cloneNode(true)
     document.head.appendChild(newLink)
     console.log('加载css ' + item.href)
     newLink.onload = function () {
+      cssLoading.delete(item.href)
       cssLoadCompletes.add(item.href)
       window.DProgress && DProgress.inc()
       console.log('加载css完成 ' + item.href)
+    }
+    newLink.onerror = function () {
+      cssLoading.delete(item.href)
+      console.log('加载css失败 ' + item.href)
     }
   })
 }
@@ -96,7 +103,7 @@ const pjax = new Pjax({
   scrollTo: 0,
   scrollRestoration: true,
   timeout: 8000,
-  scripts: 'script[data-pjax]',
+  scripts: false,
   hooks: {
     // 拦截解析后的新页面文档，提取 CSS/JS 资源
     document: (doc) => {
@@ -117,6 +124,7 @@ document.addEventListener('pjax:send', function (event) {
     if (el) el.classList.add('active')
   }
   window.DProgress && DProgress.start()
+  window.DProgress && DProgress.inc()
 })
 
 // pjax:success - 内容替换成功后
@@ -166,10 +174,8 @@ document.addEventListener('pjax:success', async function (event) {
           console.log('异步无序js失败 ' + src)
         })
     })
-    // defer 脚本同步顺序加载
-    new Promise(() => {
-      syncLoadScripts(pendingJsLoads.filter(s => s.hasAttribute('defer')), 0)
-    })
+    // defer 脚本同步顺序加载（无需等待完成）
+    syncLoadScripts(pendingJsLoads.filter(s => s.hasAttribute('defer')), 0)
     // 同步脚本顺序加载
     const syncScripts = pendingJsLoads.filter(s => !s.hasAttribute('async') && !s.hasAttribute('defer'))
     if (syncScripts.length > 0) {
