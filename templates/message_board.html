@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<th:block
+        th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.friends.browser.title', singlePage.spec.title, site.title)}, canonical = ${singlePage.status.permalink}, content = ~{::content}, isPost = false, hideSidebar = false)}"
+        th:with="isJournals = false, enableShare = false, baseEnableComment = false,
+        enableComment = ${singlePage.spec.allowComment},"
+        xmlns:th="https://www.thymeleaf.org">
+    <th:block th:fragment="content"
+              th:with="ref = ${theme.config.page_config.message_board_comment_source == 'all' ? null : { group: 'content.halo.run', version: 'v1alpha1', kind: 'singlePage', name: singlePage.metadata.name }},
+                       comments = ${commentFinder.list(ref, 1, theme.config.page_config.message_board_comment_count)}">
+
+        <div class="card card-content journal">
+            <div class="card-tab">
+                <div>
+                    [[${singlePage.spec.title}]]
+                </div>
+            </div>
+            <div>
+                [(${theme.config.page_config.message_board_desc})]
+            </div>
+        </div>
+
+        <div class="message-board">
+            <div class="message-board-wrapper" id="messageBoard">
+                <th:block th:if="${!comments.items.isEmpty()}">
+                    <div class="message-tile" th:each="comment,iterStat : ${comments.items}"
+                         th:attr="data-index=${iterStat.index}">
+                        <div class="message-tile-header"
+                             th:with="emailHash = ${comment.spec.owner.annotations != null ? comment.spec.owner.annotations['email-hash'] : ''},
+                                  userA = ${comment.owner.avatar},
+                                  img = ${#strings.isEmpty(userA) && !#strings.isEmpty(emailHash) ? #strings.replace(theme.config.sidebar.providerMirror, '{hash}', emailHash) : userA}">
+                            <img width="36" height="36" class="message-tile-avatar" th:unless="${#strings.isEmpty(img)}" th:src="${img}" th:alt="${comment.owner.displayName}"/>
+                            <div th:if="${#strings.isEmpty(img)}" class="message-tile-no-avatar">
+                                <span class="avatar-info">[[${#strings.substring(comment.owner.displayName, 0, 1)}]]</span>
+                            </div>
+                            <div>
+                                <div class="message-tile-name" th:text="${comment.owner.displayName}"></div>
+                                <div class="message-tile-time"
+                                     th:text="${#dates.format(comment.metadata.creationTimestamp, theme.config.basic_info.global_time_format)}"></div>
+                            </div>
+                        </div>
+                        <div class="message-tile-content" th:utext="${comment.spec.content}"></div>
+                        <div class="message-tile-reply-count" th:if="${comment.status.replyCount > 0}">
+                            <i class="ri-chat-reply-line"></i>
+                            <span th:text="${#messages.msg('page.message_board.reply', comment.status.replyCount)}"></span>
+                        </div>
+                    </div>
+                </th:block>
+                <th:block th:if="${comments.items.isEmpty()}">
+                    <div style="text-align:center;color:var(--dark-b);padding:60px 0;font-size:1.1rem;">
+                        <i class="ri-message-2-line" style="font-size:3em;display:block;margin-bottom:12px;"></i>
+                        [[#{page.message_board.empty.tip}]]
+                    </div>
+                </th:block>
+            </div>
+
+            <div class="message-board-comment">
+                <div class="card card-content comment-wrapper-z-index" id="comment-wrapper"
+                     th:if="${singlePage.spec.allowComment}">
+                    <h3 class="comment-title">[[#{global.comment_title}]]</h3>
+                    <halo:comment
+                            group="content.halo.run"
+                            th:kind="singlePage"
+                            th:attr="name=${singlePage.metadata.name}"
+                    />
+                </div>
+            </div>
+        </div>
+
+        <script data-pjax th:src="@{/assets/js/message-board.min.js(mew=${theme.spec.version})}"></script>
+    </th:block>
+</th:block>
