@@ -1556,7 +1556,7 @@ spec:
           value: 'current'
           options:
             - value: 'all'
-              label: 所有评论
+              label: 全站评论
             - value: 'current'
               label: 当前页面
         - $formkit: number
