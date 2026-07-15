@@ -1549,6 +1549,30 @@ spec:
               value: 10
               height: 45px
               help: '搜索页面-搜索结果最大显示数量，搜索表单、热门文章风格有效。'
+        - $formkit: select
+          name: message_board_comment_source
+          label: 留言板-评论来源
+          help: '支持在全站评论与使用留言板模板的当前页面评论间切换。'
+          value: 'current'
+          options:
+            - value: 'all'
+              label: 所有评论
+            - value: 'current'
+              label: 当前页面
+        - $formkit: number
+          name: message_board_comment_count
+          label: 留言板-显示最新评论数量
+          value: 20
+          validation: required
+          help: '设置展示的最新评论数量（不含回复）。建议填写 1–50 之间的整数，数值过大会影响加载速度。'
+        - $formkit: code
+          name: message_board_desc
+          validation: required
+          label: 留言板-留言说明
+          language: html
+          value: '理性发言，友善交流；拒绝谩骂与广告，共建清净留言区。'
+          height: 100px
+          help: '填写留言说明，支持 HTML 格式。'
     - group: enhance
       label: '增强功能'
       formSchema:

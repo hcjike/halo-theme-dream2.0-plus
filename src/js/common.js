@@ -212,6 +212,10 @@ const commonContext = {
   },
   /* 导航条高亮 */
   initNavbar() {
+    document
+      .querySelectorAll('.navbar-nav .current, .panel-side-menu .current')
+      .forEach(el => el.classList.remove('current'))
+
     const $nav_menus = $('.navbar-nav a')
     const $nav_side_menus = $('.panel-side-menu .link')
     let activeIndex = 0

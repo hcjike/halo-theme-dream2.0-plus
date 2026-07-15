@@ -25,6 +25,10 @@ spec:
         description: 请确保已安装 2.2.0 或以上版本的链接插件，并在设置中同时开启「RSS 订阅」和「公开 RSS 订阅动态」，功能才可正常使用。
         screenshot:
         file: friends_link.html
+      - name: 留言板页面模版
+        description: 留言板页面，展示 halo 评论数据。
+        screenshot:
+        file: message_board.html
   # 主题描述
   description: '梦之城，童话梦境'
   # 主题logo地址
