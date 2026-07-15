@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <th:block
         th:insert="~{common/layout :: layout (showTitle = ${#messages.msg('page.friends.browser.title', singlePage.spec.title, site.title)}, canonical = ${singlePage.status.permalink}, content = ~{::content}, isPost = false, hideSidebar = false)}"
-        th:with="isJournals = false, enableShare = false, baseEnableComment = false,
-        enableComment = ${singlePage.spec.allowComment},"
+        th:with="isJournals = false, enableShare = false, baseEnableComment = ${singlePage.spec.allowComment}"
         xmlns:th="https://www.thymeleaf.org">
     <th:block th:fragment="content"
               th:with="ref = ${theme.config.page_config.message_board_comment_source == 'all' ? null : { group: 'content.halo.run', version: 'v1alpha1', kind: 'singlePage', name: singlePage.metadata.name }},
@@ -53,9 +52,8 @@
                 </th:block>
             </div>
 
-            <div class="message-board-comment">
-                <div class="card card-content comment-wrapper-z-index" id="comment-wrapper"
-                     th:if="${singlePage.spec.allowComment}">
+            <div class="message-board-comment" th:if="${enableComment}">
+                <div class="card card-content comment-wrapper-z-index" id="comment-wrapper">
                     <h3 class="comment-title">[[#{global.comment_title}]]</h3>
                     <halo:comment
                             group="content.halo.run"
