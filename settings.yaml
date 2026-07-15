@@ -2146,7 +2146,6 @@ spec:
       formSchema:
         - $formkit: select
           name: show_pop_notice
-          id: show_pop_notice
           label: 显示弹窗通知
           value: 'false'
           help: '控制是否显示弹窗通知，切换风格会重新触发显示通知内容。使用“自定义通知”请参考文档中“主题设置 - 弹窗通知 - 自定义通知”部分书写html内容。'
@@ -2161,7 +2160,6 @@ spec:
               label: 自定义通知
         - $formkit: code
           name: pop_notice_content
-          if: $get(show_pop_notice).value !== 'false'
           language: html
           validation: required
           height: 180px
@@ -2169,7 +2167,6 @@ spec:
           label: 通知的内容，支持html
           help: '显示通知的内容，支持html，若内容发生变更则重新显示。注：支持设置属性 onclick="closePopupNotice();" 关闭通知。'
         - $formkit: select
-          if: $get(show_pop_notice).value !== 'false'
           name: pop_notice_show_mode
           label: 通知显示模式
           help: '首次显示：仅首次访问时弹出通知；会话级关闭：用户关闭后当前窗口不再显示；永久关闭：用户关闭后不再显示该通知。'
@@ -2183,34 +2180,32 @@ spec:
               label: 永久关闭
         - $formkit: text
           name: pop_notice_title
-          if: $get(show_pop_notice).value !== 'false' && $get(show_pop_notice).value !== 'custom'
           label: 通知标题
-          help: '显示侧知的标题信息，留空时隐藏。'
+          help: '显示侧知的标题信息，留空时隐藏。非【自定义通知】和【不显示】生效。'
           value: '通知'
         - $formkit: text
           name: pop_notice_btn
-          if: $get(show_pop_notice).value !== 'false' && $get(show_pop_notice).value !== 'custom'
           label: 通知按键内容
-          help: '显示通知的按键内容，留空时隐藏，隐藏后必须在通知内容中设置属性 onclick="closePopupNotice();" 关闭通知或者设置“通知显示时间”来自动关闭通知。'
+          help: '显示通知的按键内容，留空时隐藏，隐藏后必须在通知内容中设置属性 onclick="closePopupNotice();" 关闭通知或者设置“通知显示时间”来自动关闭通知。非【自定义通知】和【不显示】生效。'
           value: '我知道了'
         - $formkit: number
           name: pop_notice_show_time
-          if: $get(show_pop_notice).value !== 'false' && $get(show_pop_notice).value !== 'custom'
           label: 通知显示时间
-          help: '控制通知显示时间，单位：秒。小于等于 0 不启用。'
+          value: 10
+          help: '控制通知显示时间，单位：秒。小于等于 0 不启用。非【自定义通知】和【不显示】生效。'
         - $formkit: select
           name: pop_notice_orientation
-          if: $get(show_pop_notice).value === 'side'
           label: 侧边通知弹出方向-水平方向
           value: 'right'
+          help: '仅【侧边通知】生效。'
           options:
             - value: 'right'
               label: 右侧
             - value: 'left'
               label: 左侧
         - $formkit: select
-          if: $get(show_pop_notice).value === 'side'
           name: pop_notice_vertical
+          help: '仅【侧边通知】生效。'
           label: 侧边通知弹出方向-垂直方向
           value: 'top'
           options:
