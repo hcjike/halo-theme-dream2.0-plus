@@ -34,12 +34,6 @@
                         class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a>
             </li>
         </th:block>
-        <li sec:authorize="hasRole('ROLE_super-role')" th:if="${pos}" th:case="edit">
-            <a target="_blank" th:title="#{main.article.button.edit}"
-               th:aria-label="#{main.article.button.edit}"
-               th:href="@{|/console/${isPost ? 'posts' : 'single-pages'}/editor?name=${post.metadata.name}|}"><i
-                    class="ri-edit-2-line"></i>[[#{main.article.button.edit}]]</a>
-        </li>
         <th:block th:case="owner">
             <li class="owner" sec:authorize="hasRole('ROLE_super-role')"
                 th:with="userAvatar = ${#strings.isEmpty(post.owner.avatar) ? #theme.assets('/img/avatar.svg') : post.owner.avatar},
