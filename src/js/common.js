@@ -169,6 +169,16 @@ const commonContext = {
       }
     })
   },
+  /* 初始化Mermaid */
+  initMermaid() {
+    if (typeof mermaid === 'undefined' || mermaid === null) {
+      return
+    }
+    mermaid.initialize({startOnLoad: true})
+    mermaid.run({
+      querySelector: 'text-diagram[data-type=mermaid]',
+    })
+  },
   /* 初始化主题模式（仅用户模式） */
   initMode() {
     //检查是否将暗黑模式保存到 localStorage
@@ -894,7 +904,7 @@ let timeLifeHour = -1
 
 !(function () {
   const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'initEffects', 'iniTaskItemDisabled']
-  const omits = ['showThemeVersion']
+  const omits = ['showThemeVersion', 'initMermaid']
 
   Object.keys(commonContext).forEach(
     (c) => !loads.includes(c) && !omits.includes(c) && commonContext[c]()
