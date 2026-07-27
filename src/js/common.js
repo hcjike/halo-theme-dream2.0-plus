@@ -418,6 +418,8 @@ const commonContext = {
       .siblings('.panel')
       .addClass('in')
     $('.navbar-slideout-menu .panel').on('click', function (e) {
+      /* 如果点击目标是链接，不阻止冒泡，让 Pjax 正常处理导航 */
+      if (e.target.closest('a[href]')) return
       e.stopPropagation()
       const $this = $(this)
       const panelBox = $this.parent().parent()
