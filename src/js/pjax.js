@@ -114,6 +114,8 @@ document.addEventListener('pjax:send', function (event) {
     if (el) el.classList.add('active')
   }
   window.DProgress && DProgress.start() && DProgress.inc()
+  /* 移动端关闭抽屉弹窗 */
+  commonContext.mobileCloseNavbarMask()
 })
 
 // pjax:success - 内容替换成功后
