@@ -254,6 +254,10 @@ const commonContext = {
     // 高亮移动端
     $nav_side_menus.eq(activeIndex).addClass('current')
   },
+  // 移动端关闭抽屉弹窗
+  mobileCloseNavbarMask(){
+    document.querySelector('html.disable-scroll') && document.querySelector('.navbar-mask').click()
+  },
   /* 搜索框弹窗 */
   searchDialog() {
     const $result = $('.navbar-search .result')
