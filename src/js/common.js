@@ -910,6 +910,13 @@ const commonContext = {
         return
       }
 
+      const mode = $widget.attr('data-mode') || 'countdown'
+      $widget.find('.count-left .text').text(
+        mode === 'countdown'
+          ? (DreamConfig.countdown_distance)
+          : (DreamConfig.countdown_passed)
+      )
+
       const name = $widget.attr('data-name')
       if (name) {
         const $name = $widget.find('.count-left .name')
@@ -957,11 +964,6 @@ const commonContext = {
           const displayDate = formatDate(targetDate, cycle)
 
           /* 更新左侧 */
-          $widget.find('.count-left .text').text(
-            mode === 'countdown'
-              ? (DreamConfig.countdown_distance)
-              : (DreamConfig.countdown_passed)
-          )
           $widget.find('.count-left .time').text(days === 0 ? DreamConfig.countdown_today : days)
           $widget.find('.count-left .date').text(displayDate)
         }
