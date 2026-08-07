@@ -1023,7 +1023,7 @@ spec:
                 - value: 'timelife'
                   label: 人生倒计时
                 - value: 'countdown'
-                  label: 自定义倒计时
+                  label: 纪念日
                 - value: 'wechat'
                   label: 微信公众号
                 - value: 'custom'
@@ -1258,22 +1258,17 @@ spec:
           help: '按YYYY/MM/dd HH:mm:ss格式输入时间进行倒计时，非时间格式则直接显示文本。'
         - $formkit: text
           name: countdown_name
-          label: 自定义倒数日-名称
+          label: 自定义纪念日-名称
           placeholder: '如：生日、春节、纪念日...'
           help: '自定义节日或纪念日的名称。'
-          value: '倒计时'
-        - $formkit: switch
-          name: countdown_show_title
-          label: 自定义倒数日-显示卡片标题
-          help: '开启后显示卡片标题栏（含图标和标题文字），关闭后仅显示倒计时内容。'
-          value: false
+          value: '纪念日'
         - $formkit: date
           name: countdown_date
-          label: 自定义倒数日-日期
-          help: '自定义节日或纪念日的日期。'
+          label: 自定义纪念日-日期
+          help: '自定义节日或纪念日的日期。未设置日期时只显示右侧时间倒计时。'
         - $formkit: select
           name: countdown_cycle
-          label: 自定义倒数日-循环方式
+          label: 自定义纪念日-循环方式
           value: 'yearly'
           help: '设置倒计时的循环周期。不循环仅计算一次，每年循环按月日匹配，每月循环按日匹配。'
           options:
@@ -1285,7 +1280,7 @@ spec:
               label: 每月循环
         - $formkit: select
           name: countdown_mode
-          label: 自定义倒数日-计算方式
+          label: 自定义纪念日-计算方式
           value: 'countdown'
           help: '倒数表示距离目标还有多少天，正数表示已经过去多少天。'
           options:

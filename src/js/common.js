@@ -17,6 +17,7 @@ const commonContext = {
     // 按顺序插入元素到目标容器
     function insertSequentially($target, elementsArray, callback) {
       let index = 0
+
       function insertNext() {
         if (index < elementsArray.length) {
           const el = elementsArray[index]
@@ -28,6 +29,7 @@ const commonContext = {
           callback()
         }
       }
+
       insertNext()
     }
 
@@ -255,7 +257,7 @@ const commonContext = {
     $nav_side_menus.eq(activeIndex).addClass('current')
   },
   // 移动端关闭抽屉弹窗
-  mobileCloseNavbarMask(){
+  mobileCloseNavbarMask() {
     document.querySelector('html.disable-scroll') && document.querySelector('.navbar-mask').click()
   },
   /* 搜索框弹窗 */
@@ -741,10 +743,10 @@ const commonContext = {
     }
 
     const dayText = {
-      day: DreamConfig.countdown_today || '今日',
-      week: DreamConfig.countdown_week || '本周',
-      month: DreamConfig.countdown_month || '本月',
-      year: DreamConfig.countdown_year || '本年',
+      day: DreamConfig.countdown_today,
+      week: DreamConfig.countdown_week,
+      month: DreamConfig.countdown_month,
+      year: DreamConfig.countdown_year,
     }
 
     /* 获取时间剩余（今日/本周/本月/本年的进度和剩余） */
@@ -896,15 +898,43 @@ const commonContext = {
       return date.getFullYear() + '-' + monthDay
     }
 
+    /* 初始化倒计时（静态属性，仅执行一次） */
+    $('.countdown').each(function () {
+      const $widget = $(this)
+      const dateStr = $widget.attr('data-date')
+
+      /* 未设置data-date时，隐藏左侧，仅渲染右侧进度条 */
+      if (!dateStr) {
+        $widget.find('.count-left').hide()
+        $widget.find('.count-right').addClass('not-margin')
+        return
+      }
+
+      const name = $widget.attr('data-name')
+      if (name) {
+        const $name = $widget.find('.count-left .name')
+        const $inner = $widget.find('.name-inner')
+        const innerEl = $inner[0]
+        const clipEl = $widget.find('.name-clip')[0]
+        $inner.text(name)
+        $name.attr('title', name)
+        // 检测溢出，设置滚动距离并启动CSS动画
+        const textWidth = innerEl.scrollWidth
+        const containerWidth = clipEl.clientWidth
+        if (textWidth > containerWidth) {
+          innerEl.style.setProperty('--distance', (textWidth - containerWidth + 5) + 'px')
+          innerEl.classList.add('marquee')
+        }
+      }
+    })
+
     /* 渲染倒计时 */
     const renderCountdown = () => {
       $('.countdown').each(function () {
         const $widget = $(this)
-        const name = $widget.attr('data-name') || '倒计时'
-        const dateStr = $widget.attr('data-date')
         const cycle = $widget.attr('data-cycle') || 'yearly'
         const mode = $widget.attr('data-mode') || 'countdown'
-
+        const dateStr = $widget.attr('data-date')
         if (!dateStr) return
 
         const now = new Date()
@@ -915,23 +945,32 @@ const commonContext = {
           ? getDaysBetween(now, targetDate)
           : getDaysBetween(targetDate, now)
 
-        const displayDate = formatDate(targetDate, cycle)
+        if (days < 0) {
+          /* 倒计时已结束，隐藏左侧，仅渲染右侧进度条 */
+          $widget.find('.count-left').hide()
+          $widget.find('.count-right').addClass('not-margin')
+        } else {
+          /* 恢复显示 */
+          $widget.find('.count-left').show()
+          $widget.find('.count-right').removeClass('not-margin')
 
-        /* 更新左侧 */
-        $widget.find('.count-left .text').text(
-          mode === 'countdown'
-            ? (DreamConfig.countdown_distance || '距离')
-            : (DreamConfig.countdown_passed || '已经过去')
-        )
-        $widget.find('.count-left .name').text(name)
-        $widget.find('.count-left .time').text(days)
-        $widget.find('.count-left .date').text(displayDate)
+          const displayDate = formatDate(targetDate, cycle)
+
+          /* 更新左侧 */
+          $widget.find('.count-left .text').text(
+            mode === 'countdown'
+              ? (DreamConfig.countdown_distance)
+              : (DreamConfig.countdown_passed)
+          )
+          $widget.find('.count-left .time').text(days === 0 ? DreamConfig.countdown_today : days)
+          $widget.find('.count-left .date').text(displayDate)
+        }
 
         /* 更新右侧进度条 */
         const remainData = getTimeRemaining()
-        const remainText = DreamConfig.countdown_remaining || '还剩'
-        const hourText = DreamConfig.countdown_hour || '小时'
-        const dayUnitText = DreamConfig.countdown_day_unit || '天'
+        const remainText = DreamConfig.countdown_remaining
+        const hourText = DreamConfig.countdown_hour
+        const dayUnitText = DreamConfig.countdown_day_unit
         let html = ''
 
         for (const [tag, item] of Object.entries(remainData)) {

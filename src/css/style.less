@@ -3573,6 +3573,8 @@ details[open] > summary::before {
     }
 
     .count-left {
+      max-width: 35%;
+      min-width: 0;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -3581,25 +3583,48 @@ details[open] > summary::before {
       margin-right: 0.8rem;
 
       .text {
-        font-size: 14px;
-        color: #3c3c43cc;
+        font-size: 1rem;
+        color: var(--main);
       }
 
       .name {
+        display: block;
+        align-self: stretch;
         font-weight: bold;
-        font-size: 18px;
+        font-size: 1.3rem;
         margin-top: 2px;
+        user-select: none;
+
+        .name-clip {
+          overflow: hidden;
+          display: block;
+          width: 100%;
+        }
+
+        .name-inner {
+          display: inline-block;
+          white-space: nowrap;
+
+          &.marquee {
+            animation: name-marquee 6s linear infinite;
+          }
+        }
+
+        @keyframes name-marquee {
+          0%, 20% { transform: translateX(0); }
+          80%, 100% { transform: translateX(calc(-1 * var(--distance, 0px))); }
+        }
       }
 
       .time {
-        font-size: 30px;
+        font-size: 1.6rem;
         font-weight: bold;
         margin: 4px 0;
-        color: #425aef;
+        color: var(--theme);
       }
 
       .date {
-        font-size: 12px;
+        font-size: 0.8rem;
         opacity: 0.6;
       }
 
@@ -3608,8 +3633,8 @@ details[open] > summary::before {
         position: absolute;
         right: -0.8rem;
         width: 2px;
-        height: 80%;
-        background-color: #e3e8f7;
+        height: 100%;
+        background-color: var(--light-b);
       }
     }
 
@@ -3617,6 +3642,10 @@ details[open] > summary::before {
       flex: 1;
       width: 100%;
       margin-left: 0.8rem;
+
+      &.not-margin {
+        margin-left: 0;
+      }
 
       .count-item {
         display: flex;
@@ -3626,10 +3655,10 @@ details[open] > summary::before {
         margin: 6px 0;
 
         .item-name {
-          font-size: 14px;
+          font-size: 1rem;
           margin-right: 0.8rem;
           white-space: nowrap;
-          color: #3c3c43cc;
+          color: var(--main);
         }
 
         .item-progress {
@@ -3641,19 +3670,19 @@ details[open] > summary::before {
           height: 100%;
           width: 100%;
           border-radius: 8px;
-          background-color: #4259ef0d;
+          background-color: var(--light-b);
           overflow: hidden;
 
           .progress-bar {
             height: 100%;
             border-radius: 8px;
-            background-color: #425aef;
+            background-color: var(--theme);
           }
 
           .percentage,
           .remaining {
             position: absolute;
-            font-size: 12px;
+            font-size: 0.8rem;
             margin: 0 6px;
             transition: opacity 0.3s, transform 0.3s;
             white-space: nowrap;
@@ -3669,17 +3698,17 @@ details[open] > summary::before {
           }
 
           .percentage {
-            color: #363636;
+            color: var(--main);
           }
 
           .remaining {
             opacity: 0;
             transform: translateX(10px);
-            color: #363636;
+            color: var(--main);
 
             .tip {
               opacity: 0.6;
-              font-size: 10px;
+              font-size: 0.8rem;
               margin: 0 2px;
             }
           }
@@ -3696,47 +3725,6 @@ details[open] > summary::before {
       .percentage {
         transform: translateX(-10px) !important;
         opacity: 0 !important;
-      }
-    }
-
-    /* 深色模式覆盖（全部文字白色，确保清晰可读） */
-    html.dark & {
-      .count-left {
-        .text {
-          color: #fff;
-        }
-
-        .name {
-          color: #fff;
-        }
-
-        .time {
-          color: #fff;
-        }
-
-        .date {
-          color: #fff;
-        }
-
-        &::after {
-          background-color: #3d3d3f;
-        }
-      }
-
-      .count-right .count-item {
-        .item-name {
-          color: #fff;
-        }
-
-        .item-progress {
-          .percentage {
-            color: #fff;
-          }
-
-          .remaining {
-            color: #fff;
-          }
-        }
       }
     }
   }
