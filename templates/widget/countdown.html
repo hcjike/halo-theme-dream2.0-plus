@@ -1,0 +1,36 @@
+<div xmlns:th="https://www.thymeleaf.org"
+     th:fragment="widget (sidebar, index)"
+     th:data-index="${index}"
+     th:data-position="${sidebar.position}"
+     th:class="'card widget countdown ' + ${sidebar.hide}"
+     th:data-name="${theme.config.sidebar.countdown_name}"
+     th:data-date="${theme.config.sidebar.countdown_date}"
+     th:data-cycle="${theme.config.sidebar.countdown_cycle}"
+     th:data-mode="${theme.config.sidebar.countdown_mode}">
+
+    <div class="card-title" th:if="${!#strings.isEmpty(sidebar.title)}"
+         th:with="iconContent = ${#strings.defaultString(sidebar.icon_new?.value, 'ri-calendar-todo-line')},
+                    iconSvg = ${#strings.startsWith(iconContent, '<svg')}">
+        <i class="card-title-label"
+           th:unless="${iconSvg}"
+           th:classappend="${iconContent}"></i>
+        <th:block th:if="${iconSvg}" th:utext="${iconContent}"></th:block>
+        <span th:text="${sidebar.title}"></span>
+    </div>
+
+    <div class="card-content">
+        <div class="count-down">
+            <div class="count-left">
+                <span class="text"></span>
+                <span class="name" th:title="${theme.config.sidebar.countdown_name}">
+                    <span class="name-clip">
+                        <span class="name-inner" th:text="${theme.config.sidebar.countdown_name}"></span>
+                    </span>
+                </span>
+                <span class="time">0</span>
+                <span class="date"></span>
+            </div>
+            <div class="count-right"></div>
+        </div>
+    </div>
+</div>
