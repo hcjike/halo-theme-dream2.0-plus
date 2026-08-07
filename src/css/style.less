@@ -3562,6 +3562,174 @@ details[open] > summary::before {
     }
   }
 
+  /*自定义倒计时（原样照搬 countdown.html 样式）*/
+
+  &.countdown {
+
+    .count-down {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .count-left {
+      max-width: 35%;
+      min-width: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      margin-right: 0.8rem;
+
+      .text {
+        font-size: 1rem;
+        color: var(--main);
+      }
+
+      .name {
+        display: block;
+        align-self: stretch;
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-top: 2px;
+        text-align: center;
+        user-select: none;
+
+        .name-clip {
+          overflow: hidden;
+          display: block;
+          width: 100%;
+        }
+
+        .name-inner {
+          display: inline-block;
+          white-space: nowrap;
+
+          &.marquee {
+            animation: name-marquee 6s linear infinite;
+          }
+        }
+
+        @keyframes name-marquee {
+          0%, 20% { transform: translateX(0); }
+          80%, 100% { transform: translateX(calc(-1 * var(--distance, 0px))); }
+        }
+      }
+
+      .time {
+        font-size: 1.6rem;
+        font-weight: bold;
+        margin: 4px 0;
+        color: var(--theme);
+      }
+
+      .date {
+        font-size: 0.8rem;
+        opacity: 0.6;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        right: -0.8rem;
+        width: 2px;
+        height: 100%;
+        background-color: var(--light-b);
+      }
+    }
+
+    .count-right {
+      flex: 1;
+      width: 100%;
+      margin-left: 0.8rem;
+
+      &.not-margin {
+        margin-left: 0;
+      }
+
+      .count-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 24px;
+        margin: 6px 0;
+
+        .item-name {
+          font-size: 1rem;
+          margin-right: 0.8rem;
+          white-space: nowrap;
+          color: var(--main);
+        }
+
+        .item-progress {
+          position: relative;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          height: 100%;
+          width: 100%;
+          border-radius: 8px;
+          background-color: var(--light-b);
+          overflow: hidden;
+
+          .progress-bar {
+            height: 100%;
+            border-radius: 8px;
+            background-color: var(--theme);
+          }
+
+          .percentage,
+          .remaining {
+            position: absolute;
+            font-size: 0.8rem;
+            margin: 0 6px;
+            transition: opacity 0.3s, transform 0.3s;
+            white-space: nowrap;
+          }
+
+          .percentage.many,
+          .remaining.many {
+            color: #fff;
+
+            .tip {
+              opacity: 0.8;
+            }
+          }
+
+          .percentage {
+            color: var(--main);
+          }
+
+          .remaining {
+            opacity: 0;
+            transform: translateX(10px);
+            color: var(--main);
+
+            .tip {
+              opacity: 0.6;
+              font-size: 0.8rem;
+              margin: 0 2px;
+            }
+          }
+        }
+      }
+    }
+
+    &:hover .count-right {
+      .remaining {
+        transform: translateX(0) !important;
+        opacity: 1 !important;
+      }
+
+      .percentage {
+        transform: translateX(-10px) !important;
+        opacity: 0 !important;
+      }
+    }
+  }
+
   /*微信公众号*/
 
   &.wechat {
