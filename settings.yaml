@@ -1022,6 +1022,8 @@ spec:
                   label: 文章标签云模块
                 - value: 'timelife'
                   label: 人生倒计时
+                - value: 'countdown'
+                  label: 自定义倒计时
                 - value: 'wechat'
                   label: 微信公众号
                 - value: 'custom'
@@ -1090,7 +1092,7 @@ spec:
               offValue: false
               name: ad_tag_close
               if: $value.type === 'ad_piece'
-              label: 侧边栏广告-点击“广告”标签可关闭广告
+              label: 侧边栏广告-点击"广告"标签可关闭广告
         - $formkit: switch
           onValue: true
           offValue: false
@@ -1254,6 +1256,43 @@ spec:
           label: 侧边栏恋爱墙-恋爱时间
           placeholder: 'YYYY/MM/dd HH:mm:ss'
           help: '按YYYY/MM/dd HH:mm:ss格式输入时间进行倒计时，非时间格式则直接显示文本。'
+        - $formkit: text
+          name: countdown_name
+          label: 自定义倒数日-名称
+          placeholder: '如：生日、春节、纪念日...'
+          help: '自定义节日或纪念日的名称。'
+          value: '倒计时'
+        - $formkit: switch
+          name: countdown_show_title
+          label: 自定义倒数日-显示卡片标题
+          help: '开启后显示卡片标题栏（含图标和标题文字），关闭后仅显示倒计时内容。'
+          value: false
+        - $formkit: date
+          name: countdown_date
+          label: 自定义倒数日-日期
+          help: '自定义节日或纪念日的日期。'
+        - $formkit: select
+          name: countdown_cycle
+          label: 自定义倒数日-循环方式
+          value: 'yearly'
+          help: '设置倒计时的循环周期。不循环仅计算一次，每年循环按月日匹配，每月循环按日匹配。'
+          options:
+            - value: 'none'
+              label: 不循环（仅一次）
+            - value: 'yearly'
+              label: 每年循环
+            - value: 'monthly'
+              label: 每月循环
+        - $formkit: select
+          name: countdown_mode
+          label: 自定义倒数日-计算方式
+          value: 'countdown'
+          help: '倒数表示距离目标还有多少天，正数表示已经过去多少天。'
+          options:
+            - value: 'countdown'
+              label: 倒数（距离还有多少天）
+            - value: 'countup'
+              label: 正数（已经过去多少天）
         - $formkit: text
           name: meting_api
           label: 侧边栏音乐-自建API

@@ -734,6 +734,228 @@ const commonContext = {
     })
     $('.aside-timelife').html(htmlStr)
   },
+  /* 激活侧边栏自定义倒计时 */
+  initCustomCountdown() {
+    if (!$('.countdown').length) {
+      return
+    }
+
+    const dayText = {
+      day: DreamConfig.countdown_today || '今日',
+      week: DreamConfig.countdown_week || '本周',
+      month: DreamConfig.countdown_month || '本月',
+      year: DreamConfig.countdown_year || '本年',
+    }
+
+    /* 获取时间剩余（今日/本周/本月/本年的进度和剩余） */
+    const getTimeRemaining = () => {
+      const now = new Date()
+
+      const getDifference = (unit) => {
+        let start, end, total, passed, isDay
+
+        if (unit === 'day') {
+          isDay = true
+          start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+          total = 24
+          passed = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600
+        } else if (unit === 'week') {
+          isDay = false
+          const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay()
+          start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek + 1)
+          end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 7)
+          total = 7
+          passed = (now - start) / (end - start) * 7
+        } else if (unit === 'month') {
+          isDay = false
+          start = new Date(now.getFullYear(), now.getMonth(), 1)
+          end = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+          total = Math.round((end - start) / 86400000)
+          passed = (now - start) / (end - start) * total
+        } else {
+          isDay = false
+          start = new Date(now.getFullYear(), 0, 1)
+          end = new Date(now.getFullYear() + 1, 0, 1)
+          total = Math.round((end - start) / 86400000)
+          passed = (now - start) / (end - start) * total
+        }
+
+        const remaining = total - passed
+        const percentage = ((passed / total) * 100).toFixed(2)
+
+        return {
+          name: dayText[unit],
+          total: Math.round(total),
+          passed: Math.round(passed),
+          remaining: Math.round(remaining),
+          percentage: percentage,
+          unit: isDay ? 'hour' : 'day',
+        }
+      }
+
+      return {
+        day: getDifference('day'),
+        week: getDifference('week'),
+        month: getDifference('month'),
+        year: getDifference('year'),
+      }
+    }
+
+    /* 计算两个日期之间的日历天数 */
+    const getDaysBetween = (date1, date2) => {
+      const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate())
+      const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate())
+      return Math.round((d2 - d1) / 86400000)
+    }
+
+    /* 获取某月的天数 */
+    const getDaysInMonth = (year, month) => {
+      return new Date(year, month + 1, 0).getDate()
+    }
+
+    /* 根据循环方式和计算方式计算目标日期 */
+    const calculateTargetDate = (dateStr, cycle, mode) => {
+      const now = new Date()
+      const target = new Date(dateStr)
+      if (isNaN(target.getTime())) return null
+
+      if (cycle === 'none') {
+        return target
+      }
+
+      const targetMonth = target.getMonth()
+      const targetDay = target.getDate()
+
+      if (mode === 'countdown') {
+        /* 倒数：找下一个匹配日期 */
+        if (cycle === 'yearly') {
+          let next = new Date(now.getFullYear(), targetMonth, targetDay)
+          if (getDaysBetween(now, next) < 0) {
+            next = new Date(now.getFullYear() + 1, targetMonth, targetDay)
+          }
+          return next
+        } else if (cycle === 'monthly') {
+          /* 按月循环：月份替换为当月，日不超过当月天数 */
+          let useMonth = now.getMonth()
+          let useYear = now.getFullYear()
+          let maxDay = getDaysInMonth(useYear, useMonth)
+          let useDay = Math.min(targetDay, maxDay)
+          let next = new Date(useYear, useMonth, useDay)
+          if (getDaysBetween(now, next) < 0) {
+            useMonth = useMonth + 1
+            if (useMonth > 11) {
+              useMonth = 0
+              useYear = useYear + 1
+            }
+            maxDay = getDaysInMonth(useYear, useMonth)
+            useDay = Math.min(targetDay, maxDay)
+            next = new Date(useYear, useMonth, useDay)
+          }
+          return next
+        }
+      } else {
+        /* 正数：找上一个匹配日期 */
+        if (cycle === 'yearly') {
+          let last = new Date(now.getFullYear(), targetMonth, targetDay)
+          if (getDaysBetween(now, last) > 0) {
+            last = new Date(now.getFullYear() - 1, targetMonth, targetDay)
+          }
+          return last
+        } else if (cycle === 'monthly') {
+          /* 按月循环：月份替换为当月，日不超过当月天数 */
+          let useMonth = now.getMonth()
+          let useYear = now.getFullYear()
+          let maxDay = getDaysInMonth(useYear, useMonth)
+          let useDay = Math.min(targetDay, maxDay)
+          let last = new Date(useYear, useMonth, useDay)
+          if (getDaysBetween(now, last) > 0) {
+            useMonth = useMonth - 1
+            if (useMonth < 0) {
+              useMonth = 11
+              useYear = useYear - 1
+            }
+            maxDay = getDaysInMonth(useYear, useMonth)
+            useDay = Math.min(targetDay, maxDay)
+            last = new Date(useYear, useMonth, useDay)
+          }
+          return last
+        }
+      }
+
+      return target
+    }
+
+    /* 格式化日期，按月循环只显示月-日，其他显示完整 YYYY-MM-DD */
+    const formatDate = (date, cycle) => {
+      const monthDay = String(date.getMonth() + 1).padStart(2, '0') + '-' +
+        String(date.getDate()).padStart(2, '0')
+      if (cycle === 'monthly') {
+        return monthDay
+      }
+      return date.getFullYear() + '-' + monthDay
+    }
+
+    /* 渲染倒计时 */
+    const renderCountdown = () => {
+      $('.countdown').each(function () {
+        const $widget = $(this)
+        const name = $widget.attr('data-name') || '倒计时'
+        const dateStr = $widget.attr('data-date')
+        const cycle = $widget.attr('data-cycle') || 'yearly'
+        const mode = $widget.attr('data-mode') || 'countdown'
+
+        if (!dateStr) return
+
+        const now = new Date()
+        const targetDate = calculateTargetDate(dateStr, cycle, mode)
+        if (!targetDate) return
+
+        const days = mode === 'countdown'
+          ? getDaysBetween(now, targetDate)
+          : getDaysBetween(targetDate, now)
+
+        const displayDate = formatDate(targetDate, cycle)
+
+        /* 更新左侧 */
+        $widget.find('.count-left .text').text(
+          mode === 'countdown'
+            ? (DreamConfig.countdown_distance || '距离')
+            : (DreamConfig.countdown_passed || '已经过去')
+        )
+        $widget.find('.count-left .name').text(name)
+        $widget.find('.count-left .time').text(days)
+        $widget.find('.count-left .date').text(displayDate)
+
+        /* 更新右侧进度条 */
+        const remainData = getTimeRemaining()
+        const remainText = DreamConfig.countdown_remaining || '还剩'
+        const hourText = DreamConfig.countdown_hour || '小时'
+        const dayUnitText = DreamConfig.countdown_day_unit || '天'
+        let html = ''
+
+        for (const [tag, item] of Object.entries(remainData)) {
+          const pct = parseFloat(item.percentage)
+          const unitText = item.unit === 'hour' ? hourText : dayUnitText
+          html += `
+            <div class="count-item">
+              <div class="item-name">${item.name}</div>
+              <div class="item-progress">
+                <div class="progress-bar" style="width: ${item.percentage}%; opacity: ${item.percentage / 100};"></div>
+                <span class="percentage ${pct >= 46 ? 'many' : ''}">${item.percentage}%</span>
+                <span class="remaining ${pct >= 60 ? 'many' : ''}">
+                  <span class="tip">${remainText}</span>${item.remaining}<span class="tip">${unitText}</span>
+                </span>
+              </div>
+            </div>`
+        }
+        $widget.find('.count-right').html(html)
+      })
+    }
+
+    renderCountdown()
+    setInterval(renderCountdown, 1000)
+  },
   /* 安全链接 */
   initSecurityLink() {
     if (!DreamConfig.enable_security_link || !DreamConfig.security_link_url || DreamConfig.security_link_url.length === 0) {
