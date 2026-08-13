@@ -7,75 +7,82 @@
         <script>
           function setSafeSrc(element, url) {
             // 空值检查：防止 url 为空或 undefined 时报错
-            if (!url) { element.src = ''; return; }
-            
+            if (!url) {
+              element.src = ''
+              return
+            }
+
             // 安全协议检查：只允许 http/https/data:image/相对路径
-            var isSafe = /^(https?|data:image\/[a-z]+;base64|\/)/i.test(url);
-            if (!isSafe) { element.src = ''; return; }
-            
+            var isSafe = /^(https?|data:image\/[a-z]+;base64|\/)/i.test(url)
+            if (!isSafe) {
+              element.src = ''
+              return
+            }
+
             // 检查URL是否已编码（包含百分号编码字符）
-            element.src = encodeURI(decodeURI(url));
+            element.src = encodeURI(decodeURI(url))
           }
 
           // 验证码倒计时
-          var captchaTimer = null;
+          var captchaTimer = null
+
           function refreshCaptcha() {
-            var img = document.getElementById('link-application-captcha');
-            var overlay = document.getElementById('captcha-expired-overlay');
-            if (img) img.src = '/links/apply/captcha?t=' + Date.now();
-            if (overlay) overlay.style.display = 'none';
-            if (captchaTimer) clearInterval(captchaTimer);
-            var remaining = 5;
-            captchaTimer = setInterval(function() {
-              remaining--;
+            var img = document.getElementById('link-application-captcha')
+            var overlay = document.getElementById('captcha-expired-overlay')
+            if (img) img.src = '/links/apply/captcha?t=' + Date.now()
+            if (overlay) overlay.style.display = 'none'
+            if (captchaTimer) clearInterval(captchaTimer)
+            var remaining = 300
+            captchaTimer = setInterval(function () {
+              remaining--
               if (remaining <= 0) {
-                clearInterval(captchaTimer);
-                captchaTimer = null;
-                if (overlay) overlay.style.display = 'flex';
+                clearInterval(captchaTimer)
+                captchaTimer = null
+                if (overlay) overlay.style.display = 'flex'
               }
-            }, 1000);
+            }, 1000)
           }
 
           // 初始化验证码倒计时
-          (function() {
+          (function () {
             if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', refreshCaptcha);
+              document.addEventListener('DOMContentLoaded', refreshCaptcha)
             } else {
-              requestAnimationFrame(refreshCaptcha);
+              requestAnimationFrame(refreshCaptcha)
             }
           })();
 
           // 友链申请结果处理
-          (function() {
-            var params = new URLSearchParams(window.location.search);
-            var applied = params.get('applied');
-            if (!applied) return;
+          (function () {
+            var params = new URLSearchParams(window.location.search)
+            var applied = params.get('applied')
+            if (!applied) return
 
-            var successMsg = '[[#{page.links.apply.success}]]';
-            var errorMsg = '[[#{page.links.apply.error}]]';
+            var successMsg = '[[#{page.links.apply.success}]]'
+            var errorMsg = '[[#{page.links.apply.error}]]'
 
             function applyLinkResult() {
               if (applied === 'success') {
-                Qmsg.success(successMsg);
+                Qmsg.success(successMsg)
               } else if (applied === 'error' || applied === 'disabled') {
-                var msg = params.get('message');
-                Qmsg.error(msg || errorMsg);
+                var msg = params.get('message')
+                Qmsg.error(msg || errorMsg)
               }
               // 表单字段回填
-              var field = params.get('field');
-              var value = params.get('value');
+              var field = params.get('field')
+              var value = params.get('value')
               if (field && value) {
-                var input = document.querySelector('[name="' + field + '"]');
-                if (input) input.value = value;
+                var input = document.querySelector('[name="' + field + '"]')
+                if (input) input.value = value
               }
             }
 
             if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', applyLinkResult);
+              document.addEventListener('DOMContentLoaded', applyLinkResult)
             } else {
-              requestAnimationFrame(applyLinkResult);
+              requestAnimationFrame(applyLinkResult)
             }
-          })();
+          })()
         </script>
         <div class="card">
             <div th:if="${!#strings.isEmpty(theme.config.page_config.links_thumbnail)}" class="card-image cover-image"
@@ -111,7 +118,8 @@
                                         <div class="link-desc"
                                              th:text="${#strings.defaultString(link.spec.description, #messages.msg('page.links.link.description.default'))}"></div>
                                     </a>
-                                    <th:block th:if="${pluginFinder.available('PluginLinks', '>=2.1.0') && link.status?.verification != null}" >
+                                    <th:block
+                                            th:if="${pluginFinder.available('PluginLinks', '>=2.1.0') && link.status?.verification != null}">
                                         <span class="status"
                                               th:with="state1 = ${link.status?.verification?.access?.state?.name()},
                                                       lastCheckedAt1 = ${link.status?.verification?.lastCheckedAt}"
@@ -150,7 +158,8 @@
                     <div th:if="${!#strings.isEmpty(theme.config.page_config.links_info)}"
                          th:utext="${theme.config.page_config.links_info}"></div>
                     <!-- 匿名申请友链表单 -->
-                    <div th:if="${linkApplicationEnabled}" class="links link-apply-section">
+                    <div th:if="${pluginFinder.available('PluginLinks', '>=2.3.0') && linkApplicationEnabled}"
+                         id="plugin-links-apply-section" class="links link-apply-section">
                         <h3 class="link-apply-title">
                             <i class="ri-link"></i>
                             <span>[[#{page.links.apply.title}]]</span>
@@ -197,15 +206,7 @@
                                     </label>
                                     <textarea id="link-description" name="description" rows="2"
                                               th:placeholder="#{page.links.apply.field.description.placeholder}"
-                                              ></textarea>
-                                </div>
-                                <div class="link-apply-item link-apply-item-full">
-                                    <label for="link-backlink">
-                                        <span>[[#{page.links.apply.field.backlink}]]</span>
-                                    </label>
-                                    <input id="link-backlink" name="backlink" type="url"
-                                           placeholder="https://"
-                                           value="">
+                                    ></textarea>
                                 </div>
                                 <div class="link-apply-item link-apply-item-full">
                                     <label for="link-feedUrls">
@@ -213,9 +214,17 @@
                                     </label>
                                     <textarea id="link-feedUrls" name="feedUrls" rows="2"
                                               th:placeholder="#{page.links.apply.field.feedUrls.placeholder}"
-                                              ></textarea>
+                                    ></textarea>
                                 </div>
-                                <div class="link-apply-item link-apply-item-full link-apply-captcha">
+                                <div class="link-apply-item">
+                                    <label for="link-backlink">
+                                        <span>[[#{page.links.apply.field.backlink}]]</span>
+                                    </label>
+                                    <input id="link-backlink" name="backlink" type="url"
+                                           placeholder="https://"
+                                           value="">
+                                </div>
+                                <div class="link-apply-item link-apply-captcha">
                                     <label for="link-captchaCode">
                                         <span>[[#{page.links.apply.field.captcha}]]</span>
                                         <em class="required">*</em>
@@ -232,7 +241,9 @@
                                                  th:title="#{page.links.apply.field.captcha.title}"
                                                  onclick="refreshCaptcha()"
                                                  width="140" height="40">
-                                            <div id="captcha-expired-overlay" class="captcha-expired" onclick="refreshCaptcha()" th:title="#{page.links.apply.field.captcha.title}">
+                                            <div id="captcha-expired-overlay" class="captcha-expired"
+                                                 onclick="refreshCaptcha()"
+                                                 th:title="#{page.links.apply.field.captcha.title}">
                                                 <span>[[#{page.links.apply.field.captcha.expired}]]</span>
                                             </div>
                                         </div>
