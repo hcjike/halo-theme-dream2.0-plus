@@ -5625,37 +5625,6 @@ text-diagram[data-type="mermaid"] {
     -webkit-box-orient: vertical;
   }
 
-  /* 友链申请结果提示 */
-  .link-apply-msg {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    line-height: 1.5;
-    width: 100%;
-    float: left;
-
-    i {
-      font-size: 17px;
-      flex-shrink: 0;
-    }
-
-    &.link-apply-success {
-      background: rgba(46, 204, 113, 0.08);
-      border: 1px solid rgba(46, 204, 113, 0.25);
-      color: #27ae60;
-    }
-
-    &.link-apply-error {
-      background: rgba(231, 76, 60, 0.08);
-      border: 1px solid rgba(231, 76, 60, 0.25);
-      color: #c0392b;
-    }
-  }
-
   /* 友链申请表单 */
   .link-apply-section {
     margin-top: 20px;
@@ -5748,9 +5717,15 @@ text-diagram[data-type="mermaid"] {
       min-width: 0;
     }
 
-    img {
+    .captcha-img-wrapper {
+      position: relative;
       flex-shrink: 0;
-      height: 38px;
+      height: 40px;
+    }
+
+    img {
+      display: block;
+      height: 40px;
       border-radius: 6px;
       border: 1px solid var(--light-b);
       cursor: pointer;
@@ -5759,6 +5734,33 @@ text-diagram[data-type="mermaid"] {
 
       &:hover {
         opacity: 0.75;
+      }
+    }
+
+    .captcha-expired {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 6px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      span {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: center;
+        padding: 0 4px;
+        letter-spacing: 0.5px;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.65);
       }
     }
   }
