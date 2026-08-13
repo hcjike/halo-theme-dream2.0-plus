@@ -7,15 +7,82 @@
         <script>
           function setSafeSrc(element, url) {
             // 空值检查：防止 url 为空或 undefined 时报错
-            if (!url) { element.src = ''; return; }
-            
+            if (!url) {
+              element.src = ''
+              return
+            }
+
             // 安全协议检查：只允许 http/https/data:image/相对路径
-            var isSafe = /^(https?|data:image\/[a-z]+;base64|\/)/i.test(url);
-            if (!isSafe) { element.src = ''; return; }
-            
+            var isSafe = /^(https?|data:image\/[a-z]+;base64|\/)/i.test(url)
+            if (!isSafe) {
+              element.src = ''
+              return
+            }
+
             // 检查URL是否已编码（包含百分号编码字符）
-            element.src = encodeURI(decodeURI(url));
+            element.src = encodeURI(decodeURI(url))
           }
+
+          // 验证码倒计时
+          var captchaTimer = null
+
+          function refreshCaptcha() {
+            var img = document.getElementById('link-application-captcha')
+            var overlay = document.getElementById('captcha-expired-overlay')
+            if (img) img.src = '/links/apply/captcha?t=' + Date.now()
+            if (overlay) overlay.style.display = 'none'
+            if (captchaTimer) clearInterval(captchaTimer)
+            var remaining = 300
+            captchaTimer = setInterval(function () {
+              remaining--
+              if (remaining <= 0) {
+                clearInterval(captchaTimer)
+                captchaTimer = null
+                if (overlay) overlay.style.display = 'flex'
+              }
+            }, 1000)
+          }
+
+          // 初始化验证码倒计时
+          (function () {
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', refreshCaptcha)
+            } else {
+              requestAnimationFrame(refreshCaptcha)
+            }
+          })();
+
+          // 友链申请结果处理
+          (function () {
+            var params = new URLSearchParams(window.location.search)
+            var applied = params.get('applied')
+            if (!applied) return
+
+            var successMsg = '[[#{page.links.apply.success}]]'
+            var errorMsg = '[[#{page.links.apply.error}]]'
+
+            function applyLinkResult() {
+              if (applied === 'success') {
+                Qmsg.success(successMsg)
+              } else if (applied === 'error' || applied === 'disabled') {
+                var msg = params.get('message')
+                Qmsg.error(msg || errorMsg)
+              }
+              // 表单字段回填
+              var field = params.get('field')
+              var value = params.get('value')
+              if (field && value) {
+                var input = document.querySelector('[name="' + field + '"]')
+                if (input) input.value = value
+              }
+            }
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', applyLinkResult)
+            } else {
+              requestAnimationFrame(applyLinkResult)
+            }
+          })()
         </script>
         <div class="card">
             <div th:if="${!#strings.isEmpty(theme.config.page_config.links_thumbnail)}" class="card-image cover-image"
@@ -51,7 +118,8 @@
                                         <div class="link-desc"
                                              th:text="${#strings.defaultString(link.spec.description, #messages.msg('page.links.link.description.default'))}"></div>
                                     </a>
-                                    <th:block th:if="${pluginFinder.available('PluginLinks', '>=2.1.0') && link.status?.verification != null}" >
+                                    <th:block
+                                            th:if="${pluginFinder.available('PluginLinks', '>=2.1.0') && link.status?.verification != null}">
                                         <span class="status"
                                               th:with="state1 = ${link.status?.verification?.access?.state?.name()},
                                                       lastCheckedAt1 = ${link.status?.verification?.lastCheckedAt}"
@@ -89,6 +157,107 @@
                     </th:block>
                     <div th:if="${!#strings.isEmpty(theme.config.page_config.links_info)}"
                          th:utext="${theme.config.page_config.links_info}"></div>
+                    <!-- 匿名申请友链表单 -->
+                    <div th:if="${pluginFinder.available('PluginLinks', '>=2.3.0') && linkApplicationEnabled}"
+                         id="plugin-links-apply-section" class="links link-apply-section">
+                        <h3 class="link-apply-title">
+                            <i class="ri-link"></i>
+                            <span>[[#{page.links.apply.title}]]</span>
+                        </h3>
+                        <form id="link-application-form" method="post" th:action="@{/links/apply/submit}">
+                            <div class="link-apply-grid">
+                                <div class="link-apply-item">
+                                    <label for="link-url">
+                                        <span>[[#{page.links.apply.field.url}]]</span>
+                                        <em class="required">*</em>
+                                    </label>
+                                    <input id="link-url" name="url" type="url" required
+                                           placeholder="https://"
+                                           value="">
+                                </div>
+                                <div class="link-apply-item">
+                                    <label for="link-displayName">
+                                        <span>[[#{page.links.apply.field.displayName}]]</span>
+                                        <em class="required">*</em>
+                                    </label>
+                                    <input id="link-displayName" name="displayName" type="text" required
+                                           th:placeholder="#{page.links.apply.field.displayName.placeholder}"
+                                           value="">
+                                </div>
+                                <div class="link-apply-item">
+                                    <label for="link-logo">
+                                        <span>[[#{page.links.apply.field.logo}]]</span>
+                                    </label>
+                                    <input id="link-logo" name="logo" type="url"
+                                           placeholder="https://"
+                                           value="">
+                                </div>
+                                <div class="link-apply-item">
+                                    <label for="link-email">
+                                        <span>[[#{page.links.apply.field.email}]]</span>
+                                    </label>
+                                    <input id="link-email" name="email" type="email"
+                                           placeholder="name@example.com"
+                                           value="">
+                                </div>
+                                <div class="link-apply-item link-apply-item-full">
+                                    <label for="link-description">
+                                        <span>[[#{page.links.apply.field.description}]]</span>
+                                    </label>
+                                    <textarea id="link-description" name="description" rows="2"
+                                              th:placeholder="#{page.links.apply.field.description.placeholder}"
+                                    ></textarea>
+                                </div>
+                                <div class="link-apply-item link-apply-item-full">
+                                    <label for="link-feedUrls">
+                                        <span>[[#{page.links.apply.field.feedUrls}]]</span>
+                                    </label>
+                                    <textarea id="link-feedUrls" name="feedUrls" rows="2"
+                                              th:placeholder="#{page.links.apply.field.feedUrls.placeholder}"
+                                    ></textarea>
+                                </div>
+                                <div class="link-apply-item">
+                                    <label for="link-backlink">
+                                        <span>[[#{page.links.apply.field.backlink}]]</span>
+                                    </label>
+                                    <input id="link-backlink" name="backlink" type="url"
+                                           placeholder="https://"
+                                           value="">
+                                </div>
+                                <div class="link-apply-item link-apply-captcha">
+                                    <label for="link-captchaCode">
+                                        <span>[[#{page.links.apply.field.captcha}]]</span>
+                                        <em class="required">*</em>
+                                    </label>
+                                    <div class="captcha-row">
+                                        <input id="link-captchaCode" name="captchaCode" type="text" required
+                                               minlength="5" maxlength="5" autocomplete="off"
+                                               th:placeholder="#{page.links.apply.field.captcha.placeholder}">
+                                        <div class="captcha-img-wrapper">
+                                            <img id="link-application-captcha"
+                                                 class="not-gallery"
+                                                 th:src="@{/links/apply/captcha}"
+                                                 th:alt="#{page.links.apply.field.captcha.alt}"
+                                                 th:title="#{page.links.apply.field.captcha.title}"
+                                                 onclick="refreshCaptcha()"
+                                                 width="140" height="40">
+                                            <div id="captcha-expired-overlay" class="captcha-expired"
+                                                 onclick="refreshCaptcha()"
+                                                 th:title="#{page.links.apply.field.captcha.title}">
+                                                <span>[[#{page.links.apply.field.captcha.expired}]]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="link-apply-item link-apply-item-submit">
+                                    <button type="submit" class="link-apply-submit-btn">
+                                        <i class="ri-send-plane-line"></i>
+                                        <span>[[#{page.links.apply.submit}]]</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
