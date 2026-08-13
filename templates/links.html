@@ -25,6 +25,7 @@
 
           // 验证码倒计时
           var captchaTimer = null
+          var expiredText = '[[#{page.links.apply.field.captcha.expired}]]'
 
           function refreshCaptcha() {
             var img = document.getElementById('link-application-captcha')
@@ -38,19 +39,13 @@
               if (remaining <= 0) {
                 clearInterval(captchaTimer)
                 captchaTimer = null
-                if (overlay) overlay.style.display = 'flex'
+                if (overlay) {
+                  overlay.style.display = ''
+                  overlay.querySelector('span').textContent = expiredText
+                }
               }
             }, 1000)
           }
-
-          // 初始化验证码倒计时
-          (function () {
-            if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', refreshCaptcha)
-            } else {
-              requestAnimationFrame(refreshCaptcha)
-            }
-          })();
 
           // 友链申请结果处理
           (function () {
@@ -236,7 +231,7 @@
                                         <div class="captcha-img-wrapper">
                                             <img id="link-application-captcha"
                                                  class="not-gallery"
-                                                 th:src="@{/links/apply/captcha}"
+                                                 src=""
                                                  th:alt="#{page.links.apply.field.captcha.alt}"
                                                  th:title="#{page.links.apply.field.captcha.title}"
                                                  onclick="refreshCaptcha()"
@@ -244,7 +239,7 @@
                                             <div id="captcha-expired-overlay" class="captcha-expired"
                                                  onclick="refreshCaptcha()"
                                                  th:title="#{page.links.apply.field.captcha.title}">
-                                                <span>[[#{page.links.apply.field.captcha.expired}]]</span>
+                                                <span>[[#{page.links.apply.field.captcha.click}]]</span>
                                             </div>
                                         </div>
                                     </div>

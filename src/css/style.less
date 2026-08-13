@@ -5743,29 +5743,31 @@ text-diagram[data-type="mermaid"] {
     }
 
     .captcha-expired {
-      display: none;
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.45);
       border-radius: 6px;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
 
       span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         color: rgba(255, 255, 255, 0.7);
         font-size: 0.9rem;
         font-weight: 500;
         text-align: center;
         padding: 0 4px;
         letter-spacing: 0.5px;
+        white-space: nowrap;
       }
 
       &:hover {
-        background: rgba(0, 0, 0, 0.65);
+        background: rgba(0, 0, 0, 0.55);
       }
     }
   }
