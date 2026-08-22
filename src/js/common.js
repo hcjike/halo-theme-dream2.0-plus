@@ -10,7 +10,7 @@ const commonContext = {
     const $rightCol = $('.column-right')
     const $mobileCol = $('.column-slideout-mobile-toc-menu')
 
-    if (!$rightCol.length || !$leftCol.length) return
+    // if (!$rightCol.length || !$leftCol.length) return
 
     const $window = $(window)
 
@@ -70,6 +70,11 @@ const commonContext = {
         })
       }
 
+      // 检测是否只有一侧有 widget
+      const onlyLeft = allLeftItems.length > 0 && allRightItems.length === 0
+      const onlyRight = allRightItems.length > 0 && allLeftItems.length === 0
+      const isOneSided = onlyLeft || onlyRight
+
       if (windowWidth < BREAKPOINT_MOBILE && hasMobileCol) {
         // 移动端（< 768 且 mobileCol 存在）：合并所有 widget 到 mobileCol，全局排序
         const allItems = sortByIndex(allLeftItems.concat(allRightItems))
@@ -77,15 +82,31 @@ const commonContext = {
         $rightCol.empty()
         $mobileCol.empty()
         insertSequentially($mobileCol, allItems)
+      } else if (isOneSided) {
+        // 单侧情况：平板和 PC 端 widget 已在正确容器中，仅处理从移动端回来的情况
+        const allItems = sortByIndex(allLeftItems.concat(allRightItems))
+        if (onlyLeft && !$leftCol.children().filter(function () {
+          return $(this).attr('data-position') === 'left'
+        }).length) {
+          // 所有 left widget 在 mobileCol 中，移回 leftCol
+          $mobileCol.empty()
+          insertSequentially($leftCol, allItems)
+        } else if (onlyRight && !$rightCol.children().filter(function () {
+          return $(this).attr('data-position') === 'right'
+        }).length) {
+          // 所有 right widget 在 mobileCol 中，移回 rightCol
+          $mobileCol.empty()
+          insertSequentially($rightCol, allItems)
+        }
       } else if (windowWidth < BREAKPOINT) {
-        // 平板（768 <= width < 1216，或 mobileCol 不存在）：合并所有 widget 到 leftCol，全局排序
+        // 平板双侧（768 <= width < 1216，或 mobileCol 不存在）：合并所有 widget 到 leftCol，全局排序
         const allItems = sortByIndex(allLeftItems.concat(allRightItems))
         $leftCol.empty()
         $rightCol.empty()
         if (hasMobileCol) $mobileCol.empty()
         insertSequentially($leftCol, allItems)
       } else {
-        // 大屏（>= 1216）：left items 回 leftCol，right items 回 rightCol，各自容器内排序
+        // 大屏双侧（>= 1216）：left items 回 leftCol，right items 回 rightCol，各自容器内排序
         sortByIndex(allLeftItems)
         sortByIndex(allRightItems)
         $leftCol.empty()
