@@ -8,7 +8,7 @@ const commonContext = {
     const BREAKPOINT_MOBILE = 768
     const $leftCol = $('.column-left')
     const $rightCol = $('.column-right')
-    const $mobileCol = $('.column-slideout-mobile')
+    const $mobileCol = $('.column-slideout-mobile-toc-menu')
 
     if (!$rightCol.length || !$leftCol.length) return
 
@@ -1099,20 +1099,14 @@ const commonContext = {
   },
   /* 控制是否显示Banner */
   showBanner(pathname = location.pathname) {
-    const bannerElement = document.querySelector('.banner')
-    const sectionElement = document.querySelector('.section')
-    if (bannerElement) {
-      if (pathname !== '/') {
-        bannerElement.classList.add('hidden')
-        if (sectionElement && DreamConfig.header_fixed) {
-          sectionElement.classList.add('section-top')
-        }
-      } else {
-        bannerElement.classList.remove('hidden')
-        if (sectionElement && DreamConfig.header_fixed) {
-          sectionElement.classList.remove('section-top')
-        }
-      }
+    const isHome = pathname === '/'
+    document.querySelectorAll('.banner').forEach(el => {
+      el.classList.toggle('hidden', !isHome)
+    })
+    if (DreamConfig.header_fixed) {
+      document.querySelectorAll('.section').forEach(el => {
+        el.classList.toggle('section-top', !isHome)
+      })
     }
   },
   /* 自动播放Banner视频 */

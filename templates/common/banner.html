@@ -1,6 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
-     th:fragment="banner" th:class="|banner${theme.config.basic_style.banner_hide_mask ? ' hide-mask' : ''}
-                                    ${(theme.config.basic_style.banner_full_screen ? (theme.config.basic_info.header_fixed ? ' header-fixed-full' : ' full') : '')}|">
+     th:fragment="banner"
+     th:class="'banner' + (${theme.config.basic_style.banner_hide_mask} ? ' hide-mask' : '')"
+     th:classappend="${theme.config.basic_style.banner_full_screen} ? (${theme.config.basic_info.header_fixed} ? 'header-fixed-full' : 'full') : ''">
     <script>
       (function () {
         if (location.pathname !== '/') {
