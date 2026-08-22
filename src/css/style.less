@@ -4775,6 +4775,22 @@ details[open] > summary::before {
       }
     }
 
+    & .column-slideout-mobile-toc-menu {
+      display: flex !important;
+      flex-direction: column !important;
+      margin-bottom: 15px !important;
+      padding: 0 !important;
+
+      & > .card:not(.is-hidden-not-desktop):not(.is-hidden-all) ~ .card {
+        margin-top: 0 !important;
+        margin-bottom: 15px !important;
+      }
+
+      & > .is-mobile-not-supported {
+        display: none !important;
+      }
+    }
+
   }
 
   .swiper-button-prev,
