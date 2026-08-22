@@ -1104,7 +1104,7 @@ const commonContext = {
       el.classList.toggle('hidden', !isHome)
     })
     if (DreamConfig.header_fixed) {
-      document.querySelectorAll('.section').forEach(el => {
+      document.querySelectorAll('section.section').forEach(el => {
         el.classList.toggle('section-top', !isHome)
       })
     }
