@@ -62,33 +62,32 @@ const commonContext = {
         }).toArray() : [])
 
       // 按 data-index 升序排序
-      allLeftItems.sort((a, b) => {
-        const indexA = parseInt($(a).attr('data-index'), 10) || 0
-        const indexB = parseInt($(b).attr('data-index'), 10) || 0
-        return indexA - indexB
-      })
-      allRightItems.sort((a, b) => {
-        const indexA = parseInt($(a).attr('data-index'), 10) || 0
-        const indexB = parseInt($(b).attr('data-index'), 10) || 0
-        return indexA - indexB
-      })
+      function sortByIndex(items) {
+        return items.sort((a, b) => {
+          const indexA = parseInt($(a).attr('data-index'), 10) || 0
+          const indexB = parseInt($(b).attr('data-index'), 10) || 0
+          return indexA - indexB
+        })
+      }
 
       if (windowWidth < BREAKPOINT_MOBILE && hasMobileCol) {
-        // 移动端（< 768 且 mobileCol 存在）：合并所有 widget 到 mobileCol
-        const allItems = allLeftItems.concat(allRightItems)
+        // 移动端（< 768 且 mobileCol 存在）：合并所有 widget 到 mobileCol，全局排序
+        const allItems = sortByIndex(allLeftItems.concat(allRightItems))
         $leftCol.empty()
         $rightCol.empty()
         $mobileCol.empty()
         insertSequentially($mobileCol, allItems)
       } else if (windowWidth < BREAKPOINT) {
-        // 平板（768 <= width < 1216，或 mobileCol 不存在）：合并所有 widget 到 leftCol
-        const allItems = allLeftItems.concat(allRightItems)
+        // 平板（768 <= width < 1216，或 mobileCol 不存在）：合并所有 widget 到 leftCol，全局排序
+        const allItems = sortByIndex(allLeftItems.concat(allRightItems))
         $leftCol.empty()
         $rightCol.empty()
         if (hasMobileCol) $mobileCol.empty()
         insertSequentially($leftCol, allItems)
       } else {
-        // 大屏（>= 1216）：left items 回 leftCol，right items 回 rightCol
+        // 大屏（>= 1216）：left items 回 leftCol，right items 回 rightCol，各自容器内排序
+        sortByIndex(allLeftItems)
+        sortByIndex(allRightItems)
         $leftCol.empty()
         $rightCol.empty()
         if (hasMobileCol) $mobileCol.empty()
