@@ -2,7 +2,7 @@
      th:fragment="widget (sidebar, index)"
      th:data-index="${index}"
      th:data-position="${sidebar.position}"
-     th:class="'card widget profile ' + ${sidebar.hide}">
+     th:class="'card widget profile is-mobile-not-supported ' + ${sidebar.hide}">
     <div class="card-content">
         <nav class="level">
             <div class="level-item" style="flex-direction: column;">

@@ -5,8 +5,10 @@ const commonContext = {
   /* 初始化widget */
   initWidget() {
     const BREAKPOINT = 1216
+    const BREAKPOINT_MOBILE = 768
     const $leftCol = $('.column-left')
     const $rightCol = $('.column-right')
+    const $mobileCol = $('.column-slideout-mobile')
 
     if (!$rightCol.length || !$leftCol.length) return
 
@@ -35,63 +37,70 @@ const commonContext = {
 
     function checkWidgetPosition() {
       const windowWidth = $window.width()
+      const hasMobileCol = $mobileCol.length > 0
 
-      // 小屏：判断 leftCol 里是否已经有从 rightCol 移过来的 data-position="right" 元素
-      const isMovedToLeft = $leftCol.children().filter(function () {
-        return $(this).attr('data-position') === 'right'
-      }).length > 0
-
-      // 大屏：判断 rightCol 里是否已经有从 leftCol 移回来的 data-position="right" 元素
-      const isMovedToRight = $rightCol.children().filter(function () {
-        return $(this).attr('data-position') === 'right'
-      }).length > 0
-
-      if (windowWidth < BREAKPOINT && !isMovedToLeft) {
-        // 小屏：合并 leftCol(data-position="left") 和 rightCol(data-position="right")，按 data-index 升序
-        const $leftItems = $leftCol.children().filter(function () {
+      // 从所有容器中收集 data-position="left" 的元素
+      const allLeftItems = $leftCol.children().filter(function () {
+        return $(this).attr('data-position') === 'left'
+      }).toArray()
+        .concat($rightCol.children().filter(function () {
           return $(this).attr('data-position') === 'left'
-        })
-        const $rightItems = $rightCol.children().filter(function () {
+        }).toArray())
+        .concat(hasMobileCol ? $mobileCol.children().filter(function () {
+          return $(this).attr('data-position') === 'left'
+        }).toArray() : [])
+
+      // 从所有容器中收集 data-position="right" 的元素
+      const allRightItems = $leftCol.children().filter(function () {
+        return $(this).attr('data-position') === 'right'
+      }).toArray()
+        .concat($rightCol.children().filter(function () {
           return $(this).attr('data-position') === 'right'
-        })
+        }).toArray())
+        .concat(hasMobileCol ? $mobileCol.children().filter(function () {
+          return $(this).attr('data-position') === 'right'
+        }).toArray() : [])
 
-        // 合并为数组
-        const allItems = $leftItems.toArray().concat($rightItems.toArray())
+      // 按 data-index 升序排序
+      allLeftItems.sort((a, b) => {
+        const indexA = parseInt($(a).attr('data-index'), 10) || 0
+        const indexB = parseInt($(b).attr('data-index'), 10) || 0
+        return indexA - indexB
+      })
+      allRightItems.sort((a, b) => {
+        const indexA = parseInt($(a).attr('data-index'), 10) || 0
+        const indexB = parseInt($(b).attr('data-index'), 10) || 0
+        return indexA - indexB
+      })
 
-        // 按 data-index 升序排序
-        allItems.sort((a, b) => {
-          const indexA = parseInt($(a).attr('data-index'), 10) || 0
-          const indexB = parseInt($(b).attr('data-index'), 10) || 0
-          return indexA - indexB
-        })
-
-        // 清空 leftCol，按顺序插入
+      if (windowWidth < BREAKPOINT_MOBILE && hasMobileCol) {
+        // 移动端（< 768 且 mobileCol 存在）：合并所有 widget 到 mobileCol
+        const allItems = allLeftItems.concat(allRightItems)
         $leftCol.empty()
-        insertSequentially($leftCol, allItems, () => {
-          // 可选：移动完成回调
-        })
-      } else if (windowWidth >= BREAKPOINT && isMovedToLeft) {
-        // 大屏：只移动 leftCol 里的 data-position="right" 元素回 rightCol，按 data-index 升序
-        const $rightItemsInLeft = $leftCol.children().filter(function () {
-          return $(this).attr('data-position') === 'right'
-        })
-
-        // 按 data-index 升序排序
-        const sortedRightItems = $rightItemsInLeft.toArray().sort((a, b) => {
-          const indexA = parseInt($(a).attr('data-index'), 10) || 0
-          const indexB = parseInt($(b).attr('data-index'), 10) || 0
-          return indexA - indexB
-        })
-
-        // 清空 leftCol 里的这些元素，按顺序插入 rightCol
-        $leftCol.children().filter(function () {
-          return $(this).attr('data-position') === 'right'
-        }).detach() // 先移除
-
-        insertSequentially($rightCol, sortedRightItems, () => {
-          // 可选：移回完成回调
-        })
+        $rightCol.empty()
+        $mobileCol.empty()
+        insertSequentially($mobileCol, allItems)
+      } else if (windowWidth < BREAKPOINT) {
+        // 平板（768 <= width < 1216，或 mobileCol 不存在）：合并所有 widget 到 leftCol
+        const allItems = allLeftItems.concat(allRightItems)
+        $leftCol.empty()
+        $rightCol.empty()
+        if (hasMobileCol) $mobileCol.empty()
+        insertSequentially($leftCol, allItems)
+      } else {
+        // 大屏（>= 1216）：left items 回 leftCol，right items 回 rightCol
+        $leftCol.empty()
+        $rightCol.empty()
+        if (hasMobileCol) $mobileCol.empty()
+        insertSequentially($leftCol, allLeftItems)
+        insertSequentially($rightCol, allRightItems)
       }
+
+      // 根据 data-index 设置 CSS order，确保各容器内视觉顺序与 data-index 一致
+      const allWidgets = allLeftItems.concat(allRightItems)
+      allWidgets.forEach(el => {
+        el.style.order = el.getAttribute('data-index') || '0'
+      })
     }
 
     // 初始检查
@@ -314,7 +323,6 @@ const commonContext = {
           e.stopPropagation()
           $(this).toggleClass('active')
           $(document).one('click', () => $(this).removeClass('active'))
-          e.stopPropagation()
         })
       }
     })

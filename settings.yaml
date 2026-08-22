@@ -1096,6 +1096,13 @@ spec:
         - $formkit: switch
           onValue: true
           offValue: false
+          name: enable_mobile_toc_menu
+          label: 将侧边栏模块移至移动端抽屉式菜单
+          help: '开启后侧边栏模块将显示在移动端抽屉式菜单中。“信息模块”和“目录模块”始终不显示。'
+          value: false
+        - $formkit: switch
+          onValue: true
+          offValue: false
           name: enable_color_character
           label: 侧边栏信息-开启彩字切换
           help: '开启后侧边栏信息模块会根据配置的彩字内容显示彩字切换效果。'
