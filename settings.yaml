@@ -1097,7 +1097,7 @@ spec:
           onValue: true
           offValue: false
           name: enable_mobile_toc_menu
-          label: 将侧边栏模块移至移动端抽屉式菜单
+          label: 移动端-将侧边栏模块移至移动端抽屉式菜单
           help: '开启后侧边栏模块将显示在移动端抽屉式菜单中。“信息模块”和“目录模块”始终不显示。'
           value: false
         - $formkit: switch
