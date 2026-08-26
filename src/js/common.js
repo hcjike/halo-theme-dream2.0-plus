@@ -1120,12 +1120,14 @@ const commonContext = {
   /* 控制是否显示Banner */
   showBanner(pathname = location.pathname) {
     const isHome = pathname === '/'
+    const bannerExists = document.querySelector('.banner') !== null
     document.querySelectorAll('.banner').forEach(el => {
       el.classList.toggle('hidden', !isHome)
     })
     if (DreamConfig.header_fixed) {
+      const shouldAddTop = !isHome || !bannerExists
       document.querySelectorAll('section.section').forEach(el => {
-        el.classList.toggle('section-top', !isHome)
+        el.classList.toggle('section-top', shouldAddTop)
       })
     }
   },

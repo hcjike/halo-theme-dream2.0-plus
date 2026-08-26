@@ -9,6 +9,7 @@
   <th:block th:with="stats = ${siteStatsFinder.getStats()}">
     <th:block th:replace="~{common/head :: head}"/>
     <body>
+    <th:block th:replace="~{common/theme_config}"/>
     <th:block th:replace="~{common/navbar}"/>
     <th:block th:if="${theme.config.basic_style.enable_banner != 'false'}">
       <th:block th:replace="~{common/banner :: banner}"/>
