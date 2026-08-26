@@ -20,9 +20,13 @@
 
 ## 主题文档
 > [halo-theme-dream2.0 主题设置](https://www.hcjike.com/docs/halo-theme-dream2.0)
+> 
 > [插件相关配置](https://www.hcjike.com/docs/halo-theme-dream2.0/theme/setting/plugins)
+> 
 > [新版朋友圈配置说明](https://www.hcjike.com/archives/NCUHxYWz)
+> 
 > [留言板配置说明](https://www.hcjike.com/archives/Up0w1lxf)
+> 
 > [配置全局默认版权协议](https://www.hcjike.com/archives/uFXXQxld)
 
 **温馨提示：若您遇到问题，请首先查阅相关文档。对于文档中已明确说明的事项，将不再另行答复。**
