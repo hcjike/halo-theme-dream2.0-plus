@@ -2436,6 +2436,12 @@ details[open] > summary::before {
   }
 }
 
+/* 头部固定时，若banner缺失（相邻）或路由非/时banner被隐藏，收紧section顶部内边距 */
+header.navbar.fixed + section.section,
+header.navbar.fixed ~ .banner.hidden + section.section {
+  padding-top: 2rem;
+}
+
 .item-dropdown {
   position: relative;
 
@@ -2493,10 +2499,6 @@ details[open] > summary::before {
 
 .section {
   padding: 6rem 0.75rem 3rem 0.75rem;
-
-  &.section-top {
-    padding-top: 2rem !important;
-  }
 
   .container > .tips {
     margin-bottom: 1rem;
@@ -4816,10 +4818,6 @@ details[open] > summary::before {
     padding-top: 5rem;
     padding-bottom: 2rem;
 
-    &.section-top {
-      padding-top: 1rem !important;
-    }
-
     .container > .tips {
       margin-left: -0.25rem;
       margin-right: -0.25rem;
@@ -4845,6 +4843,11 @@ details[open] > summary::before {
         margin-top: 1rem;
       }
     }
+  }
+
+  header.navbar.fixed + section.section,
+  header.navbar.fixed ~ .banner.hidden + section.section {
+    padding-top: 1rem;
   }
 
   .footer-container {
