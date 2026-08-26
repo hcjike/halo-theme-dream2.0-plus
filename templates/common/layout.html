@@ -14,7 +14,7 @@
     <th:block th:if="${theme.config.basic_style.enable_banner != 'false'}">
       <th:block th:replace="~{common/banner :: banner}"/>
     </th:block>
-    <section class="section" th:classappend="${theme.config.basic_info.header_fixed && !theme.config.basic_style.banner_full_screen ? 'section-top' : ''}">
+    <section class="section">
       <div th:class="${theme.config.basic_style.sidebar_column != 'all' ? 'container two-column dream2-container-content-main' : 'container dream2-container-content-main' }"
            th:classappend="${hideSidebar ? 'hide-sidebar' : ''}">
         <div class="columns">

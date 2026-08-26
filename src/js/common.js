@@ -1117,19 +1117,12 @@ const commonContext = {
     window.logger(`%c页面加载耗时：${Math.round(performance.now())}ms | Theme By Dream2 Plus ${DreamConfig.theme_version} | https://github.com/hcjike/halo-theme-dream2.0-plus`,
       'color:#fff; background: linear-gradient(270deg, #986fee, #8695e6, #68b7dd, #18d7d3); padding: 8px 15px; border-radius: 0 15px 0 15px')
   },
-  /* 控制是否显示Banner */
+  /* 控制是否显示Banner（section顶部内边距由CSS兄弟选择器根据hidden状态处理） */
   showBanner(pathname = location.pathname) {
     const isHome = pathname === '/'
-    const bannerExists = document.querySelector('.banner') !== null
     document.querySelectorAll('.banner').forEach(el => {
       el.classList.toggle('hidden', !isHome)
     })
-    if (DreamConfig.header_fixed) {
-      const shouldAddTop = !isHome || !bannerExists
-      document.querySelectorAll('section.section').forEach(el => {
-        el.classList.toggle('section-top', shouldAddTop)
-      })
-    }
   },
   /* 自动播放Banner视频 */
   playBannerVideo() {
