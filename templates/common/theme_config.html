@@ -1,0 +1,251 @@
+<th:block xmlns:th="https://www.thymeleaf.org">
+  <script th:inline="javascript">
+    window.logger = console.log;
+    [(${theme.config.enhance.enable_debug ? '' : '
+    console.logStorage = [];
+    console.log = function (message, ...optionalParams) {
+      console.logStorage.push(()=>window.logger(message, optionalParams));
+      if (console.logStorage.length > 100) {
+        console.logStorage.shift()
+      }
+    };
+    console.logPrint = function () {
+      for (let logItem of console.logStorage) {
+        logItem();
+      }
+    };'})]
+    [(${#strings.isEmpty(theme.config.basic_info.copy_explain) ? '' : '
+    document.addEventListener("copy", function (event) {
+      let clipboardData = event.clipboardData || window.clipboardData;
+      if (!clipboardData) { return; }
+      let text = window.getSelection().toString();
+      if (text) {
+        event.preventDefault();
+        clipboardData.setData("text/plain", text + "\\n' + #strings.escapeJavaScript(theme.config.basic_info.copy_explain) + '");
+      }
+    });'})]
+    /** 主题配置 */
+    const DreamConfig = {};
+    /** 站点名 */
+    DreamConfig["site_title"] = [[${site.title}]];
+    /** 灰色模式 */
+    DreamConfig["gray_mode"] = [[${theme.config.enhance.gray_mode_group.enable_gray_mode}]];
+    /** 定义多语言资源 */
+    DreamConfig["site_time_expression"]=[[#{footer.site_time.desc}]];
+    DreamConfig['love_time_template'] = [[#{widget.love.time.template}]];
+    DreamConfig["love_time_template_year"] = [[#{widget.love.time.template_year}]];
+    DreamConfig["timelife_template"] = [
+      {
+        title: [[#{widget.timelife.hour.title}]],
+        endTitle: [[#{widget.timelife.hour.end_title}]],
+        num: 0,
+        percent: '0%',
+      },
+      {
+        title: [[#{widget.timelife.week.title}]],
+        endTitle: [[#{widget.timelife.week.end_title}]],
+        num: 0,
+        percent: '0%',
+      },
+      {
+        title: [[#{widget.timelife.month.title}]],
+        endTitle: [[#{widget.timelife.month.end_title}]],
+        num: 0,
+        percent: '0%',
+      },
+      {
+        title: [[#{widget.timelife.year.title}]],
+        endTitle: [[#{widget.timelife.year.end_title}]],
+        num: 0,
+        percent: '0%',
+      },
+    ]
+    /** 自定义倒计时 */
+    DreamConfig["countdown_distance"] = [[#{widget.countdown.distance}]];
+    DreamConfig["countdown_passed"] = [[#{widget.countdown.passed}]];
+    DreamConfig["countdown_today"] = [[#{widget.countdown.today}]];
+    DreamConfig["countdown_week"] = [[#{widget.countdown.week}]];
+    DreamConfig["countdown_month"] = [[#{widget.countdown.month}]];
+    DreamConfig["countdown_year"] = [[#{widget.countdown.year}]];
+    DreamConfig["countdown_remaining"] = [[#{widget.countdown.remaining}]];
+    DreamConfig["countdown_hour"] = [[#{widget.countdown.hour}]];
+    DreamConfig["countdown_day_unit"] = [[#{widget.countdown.day_unit}]];
+    /** 禁止debug资源 */
+    DreamConfig["ban_debug_tips"] = [[#{js.ban_debug.tips}]];
+    DreamConfig["ban_debug_back_home"] = [[#{js.ban_debug.back_home}]];
+    /** 分享 */
+    DreamConfig["dshare_qq_name"] = [[#{js.dshare.qq.name}]];
+    DreamConfig["dshare_qzone_name"] = [[#{js.dshare.qzone.name}]];
+    DreamConfig["dshare_wechat_name"] = [[#{js.dshare.wechat.name}]];
+    DreamConfig["dshare_wechat_qr_title"] = [[#{js.dshare.wechat.qr.title}]];
+    DreamConfig["dshare_weibo_name"] = [[#{js.dshare.weibo.name}]];
+    DreamConfig["dshare_douban_name"] = [[#{js.dshare.douban.name}]];
+    DreamConfig["dshare_linkedin_name"] = [[#{js.dshare.linkedin.name}]];
+    DreamConfig["dshare_facebook_name"] = [[#{js.dshare.facebook.name}]];
+    DreamConfig["dshare_twitter_name"] = [[#{js.dshare.twitter.name}]];
+    DreamConfig["dshare_google_name"] = [[#{js.dshare.google.name}]];
+    DreamConfig["dshare_link_name"] = [[#{js.dshare.link.name}]];
+    DreamConfig["dshare_poster_name"] = [[#{js.dshare.poster.name}]];
+    DreamConfig["dshare_poster_title"] = [[#{js.dshare.poster.title}]];
+    DreamConfig["dshare_poster_tip"] = [[#{js.dshare.poster.tip}]];
+    DreamConfig["dshare_poster_button_name"] = [[#{js.dshare.poster.button.name}]];
+    /** 瞬间分享标题 */
+    DreamConfig["journals_share_title"] = [[#{js.journals.share.title}]];
+    /** 主题扩展组件的资源 */
+    DreamConfig["mew_subtitle_default_title"] = [[#{js.mew_subtitle.default.title}]];
+    DreamConfig["mew_music_not_enabled_tip"] = [[#{js.mew_music.not_enabled.tip}]];
+    DreamConfig["mew_music_default_name"] = [[#{js.mew_music.default.name}]];
+    DreamConfig["mew_music_default_artist"] = [[#{js.mew_music.default.artist}]];
+    DreamConfig["mew_music_not_music_tip"] = [[#{js.mew_music.not_music.tip}]];
+    DreamConfig["mew_bilibili_not_bvid_tip"] = [[#{js.mew_bilibili.not_bvid.tip}]];
+    DreamConfig["mew_tabs_not_tab_tip"] = [[#{js.mew_tabs.not_tab.tip}]];
+    DreamConfig["mew_tabs_default_title"] = [[#{js.mew_tabs.default.title}]];
+    DreamConfig["mew_cloud_title"] = [[#{js.mew_cloud.title}]];
+    DreamConfig["mew_cloud_default_name"] = [[#{js.mew_cloud.default.name}]];
+    DreamConfig["mew_cloud_360_name"] = [[#{js.mew_cloud.360.name}]];
+    DreamConfig["mew_cloud_115_name"] = [[#{js.mew_cloud.115.name}]];
+    DreamConfig["mew_cloud_123_name"] = [[#{js.mew_cloud.123.name}]];
+    DreamConfig["mew_cloud_kk_name"] = [[#{js.mew_cloud.kk.name}]];
+    DreamConfig["mew_cloud_xl_name"] = [[#{js.mew_cloud.xl.name}]];
+    DreamConfig["mew_cloud_onedrive_name"] = [[#{js.mew_cloud.onedrive.name}]];
+    DreamConfig["mew_cloud_yd_name"] = [[#{js.mew_cloud.yd.name}]];
+    DreamConfig["mew_cloud_ty_name"] = [[#{js.mew_cloud.ty.name}]];
+    DreamConfig["mew_cloud_lt_name"] = [[#{js.mew_cloud.lt.name}]];
+    DreamConfig["mew_cloud_uc_name"] = [[#{js.mew_cloud.uc.name}]];
+    DreamConfig["mew_cloud_pan_name"] = [[#{js.mew_cloud.pan.name}]];
+    DreamConfig["mew_cloud_oss_name"] = [[#{js.mew_cloud.oss.name}]];
+    DreamConfig["mew_cloud_bd_name"] = [[#{js.mew_cloud.bd.name}]];
+    DreamConfig["mew_cloud_wy_name"] = [[#{js.mew_cloud.wy.name}]];
+    DreamConfig["mew_cloud_ali_name"] = [[#{js.mew_cloud.ali.name}]];
+    DreamConfig["mew_cloud_github_name"] = [[#{js.mew_cloud.github.name}]];
+    DreamConfig["mew_cloud_gitee_name"] = [[#{js.mew_cloud.gitee.name}]];
+    DreamConfig["mew_cloud_gitlab_name"] = [[#{js.mew_cloud.gitlab.name}]];
+    DreamConfig["mew_cloud_gitea_name"] = [[#{js.mew_cloud.gitea.name}]];
+    DreamConfig["mew_cloud_git_name"] = [[#{js.mew_cloud.git.name}]];
+    DreamConfig["mew_cloud_lz_name"] = [[#{js.mew_cloud.lz.name}]];
+    DreamConfig["mew_cloud_source"] = [[#{js.mew_cloud.source}]];
+    DreamConfig["mew_cloud_extraction"] = [[#{js.mew_cloud.extraction}]];
+
+    /** 一些通用多语言变量 */
+    DreamConfig["global_copy_name"] = [[#{global.copy.name}]];
+    DreamConfig["global_copy_success"] = [[#{global.copy.success}]];
+    DreamConfig["global_browser_not_supported"] = [[#{global.browser.not_supported}]];
+    DreamConfig["global_request_fail"] = [[#{global.request.fail}]];
+    DreamConfig["global_like_success"] = [[#{global.like.success}]];
+    /** 配置自定义灰色模式时段 */
+    let gray_mode_time_list = []
+    let custom_gray_mode_time_list = [[${theme.config.enhance.gray_mode_group.gray_mode_time_list}]];
+    if(custom_gray_mode_time_list) {
+      for (let time of custom_gray_mode_time_list) {
+        let type = time.realNode.time_span;
+        let desc = time.realNode.time_span_desc;
+        gray_mode_time_list.push({time: type, desc: desc});
+      }
+    }
+    DreamConfig["shiki_enable"] = [[${pluginFinder.available('shiki')}]];
+    DreamConfig["header_fixed"] = [[${theme.config.basic_info.header_fixed}]];
+    DreamConfig["gray_mode_time_list"] = gray_mode_time_list;
+    DreamConfig["pjax_state"] = [[${theme.config.enhance.enable_pjax}]];
+    DreamConfig["pjax_animation_style"] = [[${theme.config.enhance.pjax_config.animation_style}]];
+    /** 配置分享方式 */
+    DreamConfig["post_share_sites"] = [[${theme.config.post.custom_post_share}]];
+    /** 配置灯笼特效文本 */
+    let effects_lantern_left = [[${theme.config.enhance.effects_lantern.effects_lantern_left}]];
+    let effects_lantern_right = [[${theme.config.enhance.effects_lantern.effects_lantern_right}]];
+    if(effects_lantern_left && effects_lantern_left.length > 1) {
+      effects_lantern_left = effects_lantern_left.charAt(0);
+    }
+    if(effects_lantern_right && effects_lantern_right.length > 1) {
+      effects_lantern_right = effects_lantern_right.charAt(0);
+    }
+    DreamConfig["effects_lantern_left"] = effects_lantern_left;
+    DreamConfig["effects_lantern_right"] = effects_lantern_right;
+    DreamConfig["show_ai_summary"] = [[${theme.config.post.show_ai_summary}]];
+    /** 安全链接配置 */
+    DreamConfig["enable_security_link"] = [[${theme.config.security_link_config.enable_security_link}]];
+    DreamConfig['security_link_url'] = [[${theme.config.security_link_config.enable_security_link ? singlePageFinder.getByName(theme.config.security_link_config.security_link_single_page)?.status?.permalink : ''}]]
+    let whitelistStr = [[${theme.config.security_link_config.whitelist_domains}]]
+    let hostname = window.location.hostname
+    if (whitelistStr) {
+      DreamConfig['security_link_whitelist'] = whitelistStr.split('\n').map(domain => domain.toLowerCase().trim()).filter(domain => domain.length > 0)
+      if (DreamConfig['security_link_whitelist'].indexOf(hostname) === -1) {
+        DreamConfig['security_link_whitelist'].push(hostname)
+      }
+    } else {
+      DreamConfig['security_link_whitelist'] = [hostname]
+    }
+    /** 配置主题模式 */
+    DreamConfig["default_theme"] = [[${theme.config.basic_style.default_theme}]];
+    DreamConfig["theme_version"] = [[${theme.spec.version}]];
+    DreamConfig["theme_base"] = "[(${#theme.assets('/')})]".replace(/\?.*$/, '');
+    /** 移动端特效开关 */
+    DreamConfig["mobile_special_effects"] = [[${theme.config.enhance.mobile_special_effects}]];
+    [(${!#strings.isEmpty(theme.config.post.code_fold_line)?'DreamConfig["code_fold_line"] = "' + theme.config.post.code_fold_line + '";': ''})]
+      [(${!#strings.isEmpty(theme.config.basic_info.document_hidden_title)?'DreamConfig["document_hidden_title"] = "' + #strings.escapeJavaScript(theme.config.basic_info.document_hidden_title) + '";': ''})]
+      [(${!#strings.isEmpty(theme.config.basic_info.document_visible_title)?'DreamConfig["document_visible_title"] = "' + #strings.escapeJavaScript(theme.config.basic_info.document_visible_title) + '";' : ''})]
+      [(${!#strings.isEmpty(theme.config.basic_info.website_time)?'DreamConfig["website_time"] = "' + theme.config.basic_info.website_time + '";' : ''})]
+      [(${(theme.config.sidebar.enable_color_character && !#strings.isEmpty(theme.config.sidebar.color_character))? 'DreamConfig["spark_input_content"] = ["' + #strings.escapeJavaScript(theme.config.sidebar.color_character).replace('\\n', '","') + '"]' : ''})]
+      DreamConfig["notice_show_mode"] = '[(${theme.config.sidebar.notice_show_mode})]';
+      [(${(!#strings.isEmpty(theme.config.post.img_fold_height) && #numbers.sequence(theme.config.post.img_fold_height,theme.config.post.img_fold_height)[0] >= 400)?'DreamConfig["img_fold_height"] = ' + theme.config.post.img_fold_height + ';': ''})]
+      [(${(!#strings.isEmpty(theme.config.page_config.journals_fold_height) && #numbers.sequence(theme.config.page_config.journals_fold_height,theme.config.page_config.journals_fold_height)[0] >= 260)?'DreamConfig["journals_fold_height"] = ' + theme.config.page_config.journals_fold_height + ';': ''})]
+      [(${theme.config.enhance.cursor_move != 'none'?'DreamConfig["cursor_move"] = "' + theme.config.enhance.cursor_move + '";': ''})]
+      [(${theme.config.enhance.cursor_click != 'none'?'DreamConfig["cursor_click"] = "' + theme.config.enhance.cursor_click + '";': ''})]
+      [(${theme.config.enhance.effects_lantern_mode != 'none'?'DreamConfig["effects_lantern_mode"] = "' + theme.config.enhance.effects_lantern_mode + '";': ''})]
+      [(${theme.config.enhance.effects_sakura_mode != 'none'?'DreamConfig["effects_sakura_mode"] = "' + theme.config.enhance.effects_sakura_mode + '";': ''})]
+      [(${theme.config.enhance.effects_snowflake_mode != 'none'?'DreamConfig["effects_snowflake_mode"] = "' + theme.config.enhance.effects_snowflake_mode + '";': ''})]
+      [(${theme.config.enhance.effects_universe_mode != 'none'?'DreamConfig["effects_universe_mode"] = "' + theme.config.enhance.effects_universe_mode + '";': ''})]
+      [(${theme.config.enhance.effects_circle_magic_mode != 'none'?'DreamConfig["effects_circle_magic_mode"] = "' + theme.config.enhance.effects_circle_magic_mode + '";': ''})]
+      [(${theme.config.enhance.effects_quantum_silk_thread_mode != 'none'?'DreamConfig["effects_quantum_silk_thread_mode"] = "' + theme.config.enhance.effects_quantum_silk_thread_mode + '";': ''})]
+      [(${theme.config.enhance.effects_rain_mode != 'none'?'DreamConfig["effects_rain_mode"] = "' + theme.config.enhance.effects_rain_mode + '";': ''})]
+      [(${theme.config.basic_style.load_progress != 'none'?'DreamConfig["load_progress"] = "' + theme.config.basic_style.load_progress + '";': ''})]
+      [(${!#strings.isEmpty(theme.config.page_config.journals_share_image)?'DreamConfig["journals_share_image"] = "' + theme.config.page_config.journals_share_image + '";': ''})]
+      [(${!#strings.isEmpty(theme.config.sidebar.meting_api)?'var meting_api = "' + theme.config.sidebar.meting_api + '";': ''})]
+
+    (function () {
+      //初始化灰色模式
+      sessionStorage.removeItem('gray-mode')
+      sessionStorage.removeItem('gray-mode-message')
+      if (DreamConfig.gray_mode === true) {
+        document.documentElement.classList.add('gray-mode')
+        sessionStorage.setItem('gray-mode', 'true')
+      } else if (DreamConfig.gray_mode === 'custom' && DreamConfig.gray_mode_time_list) {
+        const now = new Date()
+        const month = now.getMonth() + 1
+        const day = now.getDate()
+        const isDateInRange = (currentMonth, currentDay, timeRange) => {
+          let find = false
+          const timeParts = timeRange.time.split('|').map(part => part.trim());
+          const [startDate, endDate] = timeParts.length >= 2 ? timeParts : [timeParts[0], timeParts[0]];
+          if (!startDate || !endDate) {
+            return find
+          }
+          const [startMonth, startDay] = startDate.split('/').map(part => part.trim()).map(Number)
+          const [endMonth, endDay] = endDate.split('/').map(part => part.trim()).map(Number)
+          if (!startMonth || !startDay || !endMonth || !endDay) {
+            return find
+          }
+          const start = new Date(now.getFullYear(), startMonth - 1, startDay)
+          const end = new Date(now.getFullYear(), endMonth - 1, endDay)
+          const current = new Date(now.getFullYear(), currentMonth - 1, currentDay)
+          find = current >= start && current <= end
+          if (find) {
+            sessionStorage.setItem('gray-mode', 'true')
+            sessionStorage.setItem('gray-mode-message', timeRange.desc)
+          }
+          return find
+        }
+
+        for (const timeRange of DreamConfig.gray_mode_time_list) {
+          try {
+            if (isDateInRange(month, day, timeRange)) {
+              document.documentElement.classList.add('gray-mode')
+              break
+            }
+          } catch (e) {
+            console.log(e)
+          }
+        }
+      }
+    })()
+  </script>
+</th:block>
