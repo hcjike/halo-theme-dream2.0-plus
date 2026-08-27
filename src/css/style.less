@@ -6454,7 +6454,7 @@ text-diagram[data-type="mermaid"] {
   &-header {
     padding: 18px 16px;
     background:
-      radial-gradient(rgba(120, 144, 180, 0.06) 1px, transparent 1.6px),
+      radial-gradient(rgba(120, 144, 180, 0.14) 1.2px, transparent 1.8px),
       var(--bg-a);
     background-size: 18px 18px, 100% 100%;
     border: 1px solid var(--light-b);
@@ -6499,7 +6499,7 @@ text-diagram[data-type="mermaid"] {
     padding: 16px;
     // 细点纹理底板，颜色随主题变量自动适配暗色模式
     background:
-      radial-gradient(rgba(120, 144, 180, 0.06) 1px, transparent 1.6px),
+      radial-gradient(rgba(120, 144, 180, 0.14) 1.2px, transparent 1.8px),
       var(--bg-a);
     background-size: 18px 18px, 100% 100%;
     border: 1px solid var(--light-b);
@@ -6507,25 +6507,30 @@ text-diagram[data-type="mermaid"] {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
 
-  &-body {
-    columns: 230px;
-    column-gap: 16px;
-    padding: 4px 2px;
+  // 固定高度视口，内部轨道携带两份列表向上循环滚动，容器尺寸不随内容变化
+  &-marquee {
     max-height: calc(100vh - 160px);
-    overflow-y: auto;
+    overflow: hidden;
 
-    &::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: var(--light-b);
-      border-radius: 4px;
+    &:hover .message-board-track.is-animating {
+      animation-play-state: paused;
     }
   }
 
+  &-track {
+    &.is-animating {
+      animation: message-board-scroll 60s linear infinite;
+    }
+  }
+
+  &-body {
+    columns: 230px;
+    column-gap: 16px;
+    // 底部内边距充当循环接缝间距，保证两份列表首尾衔接无缝
+    padding: 4px 2px 20px;
+  }
+
   &-empty {
-    column-span: all;
     text-align: center;
     color: var(--dark-b);
     padding: 70px 20px;
@@ -6541,6 +6546,17 @@ text-diagram[data-type="mermaid"] {
 
   &-comment {
     margin-top: 1.4rem;
+  }
+}
+
+// 轨道上滚一整份列表高度（-50%），终点即起点，实现无缝循环
+@keyframes message-board-scroll {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-50%);
   }
 }
 
@@ -6683,11 +6699,9 @@ text-diagram[data-type="mermaid"] {
   }
 
   .message-board-body {
-    // 移动端单列堆叠，取消内部滚动，随页面自然滑动
+    // 移动端单列堆叠，循环滚动保留，随视口高度自动轮播
     columns: auto;
-    padding: 2px 0;
-    max-height: none;
-    overflow-y: visible;
+    padding: 2px 0 16px;
   }
 
   .message-board-wrapper {
@@ -6704,5 +6718,12 @@ text-diagram[data-type="mermaid"] {
     &-name {
       max-width: 120px;
     }
+  }
+}
+
+// 用户偏好减少动效时停止自动滚动，静态展示第一份列表
+@media (prefers-reduced-motion: reduce) {
+  .message-board-track.is-animating {
+    animation: none;
   }
 }
