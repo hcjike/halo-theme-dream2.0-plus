@@ -6448,53 +6448,94 @@ text-diagram[data-type="mermaid"] {
 
 //留言板
 .message-board {
-  margin-top: 1.4rem !important;
-  min-height: 500px;
+  margin-top: 0;
 
-  &-wrapper {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    padding: 10px;
-    border-radius: var(--radius-wrap);
+  // 头部面板：居中大标题 + 副标题 + 留言数，与下方墙体同款纹理底板
+  &-header {
+    padding: 18px 16px;
     background:
-      radial-gradient(circle at 20% 30%, rgba(80, 191, 255, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(155, 89, 182, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(107, 203, 119, 0.04) 0%, transparent 60%),
+      radial-gradient(rgba(120, 144, 180, 0.06) 1px, transparent 1.6px),
       var(--bg-a);
+    background-size: 18px 18px, 100% 100%;
     border: 1px solid var(--light-b);
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.02);
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--light-b) 1px, transparent 1px),
-        linear-gradient(90deg, var(--light-b) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.3;
-      pointer-events: none;
-      z-index: 0;
-    }
+    border-radius: var(--radius-wrap);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
 
   &-title {
-    margin-bottom: 12px;
-    display: inline-block;
-    background: linear-gradient(135deg, var(--theme), rgba(155, 89, 182, 0.85));
-    color: var(--light-a);
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 6px 20px;
-    border-radius: 6px;
-    letter-spacing: 1px;
-    box-shadow: 0 2px 10px rgba(80, 191, 255, 0.3);
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--main);
+    letter-spacing: 2px;
+  }
+
+  &-desc {
+    text-align: center;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--dark-b);
+    margin-top: 8px;
+
+    p {
+      margin: 0;
+    }
+
+    a {
+      color: var(--theme);
+    }
+  }
+
+  &-count {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--dark-b);
+    margin-top: 10px;
+  }
+
+  &-wrapper {
+    width: 100%;
+    margin-top: 14px;
+    padding: 16px;
+    // 细点纹理底板，颜色随主题变量自动适配暗色模式
+    background:
+      radial-gradient(rgba(120, 144, 180, 0.06) 1px, transparent 1.6px),
+      var(--bg-a);
+    background-size: 18px 18px, 100% 100%;
+    border: 1px solid var(--light-b);
+    border-radius: var(--radius-wrap);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  &-body {
+    columns: 230px;
+    column-gap: 16px;
+    padding: 4px 2px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--light-b);
+      border-radius: 4px;
+    }
+  }
+
+  &-empty {
+    column-span: all;
+    text-align: center;
+    color: var(--dark-b);
+    padding: 70px 20px;
+    font-size: 1.05rem;
 
     i {
-      margin-right: 4px;
-      vertical-align: middle;
-      font-size: 1em;
+      display: block;
+      font-size: 3em;
+      margin-bottom: 14px;
+      opacity: 0.5;
     }
   }
 
@@ -6503,43 +6544,28 @@ text-diagram[data-type="mermaid"] {
   }
 }
 
-.message-tile {
-  position: absolute;
-  width: 200px;
-  min-height: 100px;
-  max-height: 220px;
-  background: var(--background);
-  border-radius: var(--radius-wrap);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.1);
+.message-item {
+  display: inline-block;
+  width: 100%;
+  break-inside: avoid;
+  margin: 0 0 16px;
   padding: 14px 16px;
-  cursor: grab;
-  user-select: none;
-  transition: box-shadow 0.25s, transform 0.25s;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
+  background: var(--background);
+  border: 1px solid var(--light-b);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s, box-shadow 0.25s;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
-    transform: scale(1.03);
-    z-index: 10;
-  }
-
-  &.dragging {
-    cursor: grabbing;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), 0 0 4px rgba(0, 0, 0, 0.15);
-    transform: scale(1.06) rotate(1.5deg);
-    z-index: 100;
-    transition: box-shadow 0.15s;
-    opacity: 0.92;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   }
 
   &-header {
     display: flex;
     align-items: center;
+    gap: 8px;
     margin-bottom: 10px;
-    gap: 10px;
   }
 
   &-avatar {
@@ -6548,48 +6574,6 @@ text-diagram[data-type="mermaid"] {
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
-    border: 2px solid var(--light-b);
-  }
-
-  &-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--dark-c);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &-time {
-    font-size: 0.75rem;
-    color: var(--dark-b);
-    margin-top: 2px;
-  }
-
-  &-content {
-    font-size: 0.88rem;
-    color: var(--main);
-    line-height: 1.55;
-    word-break: break-word;
-    overflow-y: auto;
-    flex: 1;
-
-    &::-webkit-scrollbar {
-      width: 3px;
-    }
-  }
-
-  &-reply-count {
-    margin-top: 8px;
-    font-size: 0.75rem;
-    color: var(--dark-b);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    i {
-      font-size: 0.85rem;
-    }
   }
 
   &-no-avatar {
@@ -6602,37 +6586,123 @@ text-diagram[data-type="mermaid"] {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 2px solid var(--light-b);
 
     .avatar-info {
       font-size: 0.95rem;
       color: var(--dark-c);
-      font-weight: 500;
+      font-weight: 600;
     }
   }
 
-  // 磁贴颜色主题
-  &:nth-child(6n+1) {
-    border-left: 3px solid #50bfff;
+  &-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  &:nth-child(6n+2) {
-    border-left: 3px solid #ff6b6b;
+  &-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
   }
 
-  &:nth-child(6n+3) {
-    border-left: 3px solid #ffd93d;
+  &-badge {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--theme);
+    background: rgba(80, 191, 255, 0.1);
+    border: 1px solid rgba(80, 191, 255, 0.35);
+    padding: 0 6px;
+    border-radius: 8px;
+    white-space: nowrap;
   }
 
-  &:nth-child(6n+4) {
-    border-left: 3px solid #6bcb77;
+  &-time {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--dark-b);
+    white-space: nowrap;
   }
 
-  &:nth-child(6n+5) {
-    border-left: 3px solid #9b59b6;
+  &-content {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--main);
+    word-break: break-word;
+
+    p {
+      margin: 0;
+    }
+
+    p + p {
+      margin-top: 6px;
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 6px;
+    }
   }
 
-  &:nth-child(6n+6) {
-    border-left: 3px solid #ff9f43;
+  &-reply {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--dark-b);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    i {
+      font-size: 0.8rem;
+    }
+  }
+
+  // 博主留言：昵称主题色，头像主题色描边
+  &.is-owner {
+    .message-item-name {
+      color: var(--theme);
+    }
+
+    .message-item-avatar,
+    .message-item-no-avatar {
+      border: 2px solid var(--theme);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .message-board-title {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+  }
+
+  .message-board-body {
+    // 移动端单列堆叠，取消内部滚动，随页面自然滑动
+    columns: auto;
+    padding: 2px 0;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .message-board-wrapper {
+    padding: 12px;
+  }
+
+  .message-board-header {
+    padding: 14px 12px;
+  }
+
+  .message-item {
+    padding: 12px 14px;
+
+    &-name {
+      max-width: 120px;
+    }
   }
 }
