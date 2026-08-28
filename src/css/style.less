@@ -6507,7 +6507,7 @@ text-diagram[data-type="mermaid"] {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
 
-  // 固定高度视口，内部轨道携带两份列表向上循环滚动，容器尺寸不随内容变化
+  // 视口高度 = min(一份列表高度, 屏幕可视高度)，内容不足一屏时不会露出第二份造成重复
   &-marquee {
     max-height: calc(100vh - 160px);
     overflow: hidden;
@@ -6518,16 +6518,35 @@ text-diagram[data-type="mermaid"] {
   }
 
   &-track {
+    position: relative;
+
     &.is-animating {
       animation: message-board-scroll 60s linear infinite;
+    }
+
+    // 第二份绝对定位挂在第一份正下方，不撑大视口，仅作为循环衔接的补充内容
+    .message-board-body.is-copy {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
     }
   }
 
   &-body {
-    columns: 230px;
-    column-gap: 16px;
-    // 底部内边距充当循环接缝间距，保证两份列表首尾衔接无缝
-    padding: 4px 2px 20px;
+    display: flex;
+    gap: 10px;
+    // 底部内边距与顶部内边距之和等于卡片间距，保证循环接缝均匀无缝
+    padding: 2px 2px 8px;
+  }
+
+  // 三列瀑布流：留言按取模轮询分配，超高卡片只影响所在列，不会阻塞后续列填充
+  &-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
   &-empty {
@@ -6549,22 +6568,19 @@ text-diagram[data-type="mermaid"] {
   }
 }
 
-// 轨道上滚一整份列表高度（-50%），终点即起点，实现无缝循环
+// 轨道上滚一整份列表高度（轨道自身高度即第一份高度），终点即起点，实现无缝循环
 @keyframes message-board-scroll {
   from {
     transform: translateY(0);
   }
 
   to {
-    transform: translateY(-50%);
+    transform: translateY(-100%);
   }
 }
 
 .message-item {
-  display: inline-block;
-  width: 100%;
-  break-inside: avoid;
-  margin: 0 0 16px;
+  margin: 0;
   padding: 14px 16px;
   background: var(--background);
   border: 1px solid var(--light-b);
@@ -6700,8 +6716,13 @@ text-diagram[data-type="mermaid"] {
 
   .message-board-body {
     // 移动端单列堆叠，循环滚动保留，随视口高度自动轮播
-    columns: auto;
-    padding: 2px 0 16px;
+    flex-direction: column;
+    padding: 2px 0 8px;
+  }
+
+  // 列容器退出布局，卡片回到 body 直接流中，保持原始时间顺序
+  .message-board-col {
+    display: contents;
   }
 
   .message-board-wrapper {

@@ -24,8 +24,11 @@
                          th:classappend="${comments.items.size() > 8 ? ' is-animating' : ''}"
                          th:style="|animation-duration: ${comments.items.size() * 6 + 15}s|">
                         <div class="message-board-body" th:each="copy : ${#numbers.sequence(0, 1)}"
+                             th:classappend="${copy == 1 ? ' is-copy' : ''}"
                              th:attr="aria-hidden=${copy == 1 ? 'true' : null}">
+                            <div class="message-board-col" th:each="col : ${#numbers.sequence(0, 2)}">
                             <div class="message-item" th:each="comment,iterStat : ${comments.items}"
+                                 th:if="${iterStat.index % 3 == col}"
                                  th:classappend="${comment.owner.kind == 'User' ? ' is-owner' : ''}"
                                  th:attr="data-index=${iterStat.index}"
                                  th:with="emailHash = ${comment.spec.owner.annotations != null ? comment.spec.owner.annotations['email-hash'] : ''},
@@ -48,6 +51,7 @@
                                     <i class="ri-chat-reply-line"></i>
                                     <span th:text="${#messages.msg('page.message_board.reply', comment.status.replyCount)}"></span>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
