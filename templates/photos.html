@@ -10,14 +10,14 @@
                 <a th:each="group : ${groups}" th:aria-label="${group.spec.displayName}" th:title="${group.spec.displayName}" th:class="${#strings.equals(param.group, group.metadata.name)? 'item active' : 'item'}" th:href="@{/photos(group=${group.metadata.name})}" th:text="${group.spec.displayName}"></a>
             </div>
         </div>
-        <div class="photos-gallery load-block loading">
+        <div class="photos-gallery load-block">
             <div th:each="photo : ${photos.items}" th:href="${photo.spec.url}" data-fancybox="gallery" data-options='{"hash": false}' th:data-caption="${#strings.defaultString(photo.spec.description, photo.spec.displayName)}">
-                <img width="100%" height="100%" th:src="${thumbnail.gen(photo.spec.url, 'xl')}"
+                <img th:src="${thumbnail.gen(photo.spec.url, 'xl')}"
                      th:srcset="|${thumbnail.gen(photo.spec.url, 's')} 400w,
                                  ${thumbnail.gen(photo.spec.url, 'm')} 800w,
                                  ${thumbnail.gen(photo.spec.url, 'l')} 1200w,
                                  ${thumbnail.gen(photo.spec.url, 'xl')} 1600w|"
-                     sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, (max-width: 1200px) 1200px, (max-width: 1600px) 1600px" th:alt="${photo.spec.displayName}"/>
+                     sizes="(max-width: 768px) 50vw, 33vw" th:alt="${photo.spec.displayName}"/>
                 <div class="info">
                     <div>
                         <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M834.9 913.6H189.7c-69.2 0-125.5-56.3-125.5-125.5V381.5c0-69.2 56.3-125.5 125.5-125.5h14.7c14.4 0 27.3-8.6 32.9-21.8l19.2-45.1c19.7-46.3 65-76.3 115.4-76.3h280.6c50.4 0 95.7 30 115.4 76.3l19.2 45c5.7 13.2 18.6 21.8 33 21.8h14.7c69.2 0 125.5 56.3 125.5 125.5V788c0.1 69.3-56.2 125.6-125.4 125.6z m-645.2-568c-19.8 0-35.8 16.1-35.8 35.8V788c0 19.8 16.1 35.8 35.8 35.8h645.2c19.8 0 35.8-16.1 35.8-35.8V381.5c0-19.8-16.1-35.8-35.8-35.8h-14.7c-50.4 0-95.7-30-115.4-76.3l-19.2-45c-5.6-13.2-18.6-21.8-33-21.8H372c-14.4 0-27.3 8.6-33 21.8l-19.2 45c-19.7 46.3-65 76.3-115.4 76.3h-14.7z"></path><path d="M512.3 742.8c-97.4 0-176.6-79.2-176.6-176.6s79.2-176.6 176.6-176.6 176.6 79.2 176.6 176.6-79.2 176.6-176.6 176.6z m0-263.6c-48 0-87 39-87 87s39 87 87 87 87-39 87-87-39-87-87-87z"></path></svg>
@@ -32,27 +32,5 @@
             </div>
         </div>
         <th:block th:replace="~{main/pagination :: pagination (${photos}, '/photos')}"/>
-        <script>
-            var timer = setInterval(() => {
-                if($.fn.justifiedGallery) {
-                  clearInterval(timer);
-                    $('.photos-gallery')
-                      .justifiedGallery({
-                          rowHeight: 200,
-                          maxRowHeight: false,
-                          maxRowsCount: 0,
-                          sizeRangeSuffixes: {},
-                          lastRow: 'nojustify',
-                          captions: false,
-                          waitThumbnailsLoad: true, //等待图片加载完，这样就可以根据图片比例展示，如果为false，则都是统一比例
-                          margins: 10,
-                          extension: /\.(jpe?g|png|gif|bmp|webp)$/,
-                          cssAnimation: false,
-                      })
-                    $('.photos-gallery.loading').removeClass('loading')
-                    clearInterval(timer);
-                }
-            }, 500);
-        </script>
     </th:block>
 </th:block>
