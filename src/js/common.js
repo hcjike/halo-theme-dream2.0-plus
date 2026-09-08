@@ -219,14 +219,20 @@ const commonContext = {
       cssAnimation: false,
     })
   },
-  /* 初始化Mermaid */
+  /* 初始化Mermaid：只渲染尚未渲染的 text-diagram，避免插件已渲染后对产物重复执行而报错 */
   initMermaid() {
     if (typeof mermaid === 'undefined' || mermaid === null) {
       return
     }
     mermaid.initialize({startOnLoad: true})
-    mermaid.run({
-      querySelector: 'text-diagram[data-type=mermaid]',
+    const targets = Array.from(document.querySelectorAll('text-diagram[data-type=mermaid]'))
+      .filter(el => !el.querySelector('svg'))
+    targets.forEach((el, index) => {
+      const code = el.textContent.trim()
+      if (!code) return
+      mermaid.render(`mermaid-dream-${Date.now()}-${index}`, code)
+        .then(({svg}) => { el.innerHTML = svg })
+        .catch(error => console.error('mermaid 渲染失败:', error))
     })
   },
   /* 初始化主题模式（仅用户模式） */

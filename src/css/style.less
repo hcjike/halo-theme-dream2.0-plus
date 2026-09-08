@@ -4343,6 +4343,14 @@ header.navbar.fixed ~ .banner.hidden + section.section {
         box-shadow: 0 34px 20px -24px rgb(136 161 206 / 30%);
       }
     }
+
+    /* 隔离正文排版（行高/字距/断词）对节点文字的继承干扰，避免文字溢出节点框 */
+    foreignObject div {
+      line-height: normal !important;
+      letter-spacing: normal !important;
+      word-break: normal !important;
+      white-space: normal !important;
+    }
   }
 
   .katex {
@@ -5504,7 +5512,30 @@ header.navbar.fixed ~ .banner.hidden + section.section {
 /* 文本绘图 */
 text-diagram[data-type="mermaid"] {
   display: flex;
-  justify-content: center;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  /* 禁止 svg 被容器宽度压缩，保持 mermaid 布局与渲染 1:1 一致，避免节点文字溢出被裁；图窄于容器时居中，宽于容器时可横向滚动查看 */
+  & > svg {
+    flex-shrink: 0;
+    margin: 0 auto;
+  }
+
+  /* 隔离正文排版（行高/字距/断词）对节点文字的继承干扰，保持与 mermaid 度量环境一致，避免文字溢出节点框 */
+  foreignObject div {
+    line-height: normal !important;
+    letter-spacing: normal !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+}
+
+/* 含文本绘图的卡片不做入场/切换缩放动画：动画 scale(0.8) 期间插件渲染会量出偏小的文字宽度，导致文字溢出节点框被裁 */
+:is(.card, .load-block):has(text-diagram[data-type="mermaid"]) {
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
 }
 
 /* 友链界面 */
