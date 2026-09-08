@@ -200,6 +200,25 @@ const commonContext = {
       }
     })
   },
+  /* 照片页 JustifiedGallery 布局：行内图片就绪后整行一次性铺出，无闪烁无加载动画 */
+  initPhotosGallery() {
+    const $gallery = $('.photos-gallery')
+    // 非照片页、插件库未就绪或已初始化过则跳过
+    if ($gallery.length === 0 || !$.fn.justifiedGallery || $gallery.hasClass('justified-gallery')) return
+    $gallery.justifiedGallery({
+      rowHeight: 200,
+      maxRowHeight: false,
+      maxRowsCount: 0,
+      sizeRangeSuffixes: {},
+      lastRow: 'nojustify',
+      captions: false,
+      // 等待图片真实加载获得宽高比，已显示的布局不再变动
+      waitThumbnailsLoad: true,
+      margins: 10,
+      extension: /\.(jpe?g|png|gif|bmp|webp)$/,
+      cssAnimation: false,
+    })
+  },
   /* 初始化Mermaid */
   initMermaid() {
     if (typeof mermaid === 'undefined' || mermaid === null) {
@@ -1189,7 +1208,7 @@ window.commonContext = commonContext
 let timeLifeHour = -1
 
 !(function () {
-  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'initEffects', 'iniTaskItemDisabled']
+  const loads = ['initCarousel', 'sparkInput', 'websiteTime', 'initEffects', 'iniTaskItemDisabled', 'initPhotosGallery']
   const omits = ['showThemeVersion', 'initMermaid']
 
   Object.keys(commonContext).forEach(

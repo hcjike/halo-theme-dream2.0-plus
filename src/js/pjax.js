@@ -176,6 +176,8 @@ document.addEventListener('pjax:success', async function (event) {
 
   console.log('全部处理完成')
 
+  /* 相册页等待图片加载完成后显示 */
+  commonContext.initPhotosGallery()
   /* 初始化日志界面 */
   window.journalPjax && window.journalPjax()
   /* 初始化文章界面 */
