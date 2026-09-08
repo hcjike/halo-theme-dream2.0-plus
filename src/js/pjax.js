@@ -214,4 +214,18 @@ document.addEventListener('pjax:complete', function (event) {
     const el = document.querySelector('.pjax-animation-container')
     if (el) el.classList.remove('active')
   }
+
+  /* 文本绘图：等缩放动画过渡结束后再渲染（scale 期间度量会偏小导致文字溢出节点框）
+     同时等待 mermaid 库就绪，最多重试 30 次（6s） */
+  let mermaidRetry = 30
+  const tryInitMermaid = () => {
+    if (typeof mermaid !== 'undefined') {
+      commonContext.initMermaid()
+      return
+    }
+    if (mermaidRetry-- > 0) {
+      setTimeout(tryInitMermaid, 200)
+    }
+  }
+  setTimeout(tryInitMermaid, 350)
 })
