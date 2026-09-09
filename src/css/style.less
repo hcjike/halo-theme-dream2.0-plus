@@ -2446,6 +2446,11 @@ details[open] > summary::before {
   }
 }
 
+/* 初始加载时禁用 banner 过渡，避免首帧渲染产生可见的折叠/展开动画 */
+html.banner-no-transition .banner {
+  transition: none !important;
+}
+
 /* 头部固定时，若banner缺失（相邻）或路由非/时banner被隐藏，收紧section顶部内边距 */
 header.navbar.fixed + section.section,
 header.navbar.fixed ~ .banner.hidden + section.section {
