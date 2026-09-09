@@ -61,14 +61,14 @@ ai-summary-widget {
 
 }
 
-.load-block {
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+.column-main, .load-block {
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
 }
 
-.card, .load-block {
+.column-side {
   opacity: 0;
-  transform: scale(0.8);
-  transform-origin: center top;
+  transition: opacity 0.2s ease-out;
 }
 
 .tips {
@@ -120,18 +120,23 @@ html {
       }
     }
 
-    .card, .load-block {
+    .column-main {
       opacity: 1;
-      transform: none;
+    }
+
+    .load-block {
+      opacity: 1;
+    }
+
+    .column-side {
+      opacity: 1;
     }
   }
 
-  &.pjax-loading .column-main .card, &.pjax-loading .load-block {
-    opacity: 0.8;
-    transform: scale(0.8);
-    transform-origin: center top;
-    will-change: transform, opacity; /* 添加这行 */
-    backface-visibility: hidden; /* 也可以尝试添加这行 */
+  &.pjax-loading .column-main,
+  &.pjax-loading .load-block {
+    opacity: 0;
+    will-change: opacity;
   }
 
   &.disable-scroll {
@@ -2505,7 +2510,7 @@ header.navbar.fixed ~ .banner.hidden + section.section {
   }
 
   .card {
-    transition: background-color 0.5s ease, opacity 0.3s ease-out, transform 0.3s ease-out, backdrop-filter 0.3s ease-out;
+    transition: background-color 0.5s ease, backdrop-filter 0.3s ease-out;
     color: var(--dark-c);
     max-width: 100%;
     position: relative;
@@ -5531,12 +5536,7 @@ text-diagram[data-type="mermaid"] {
   }
 }
 
-/* 含文本绘图的卡片不做入场/切换缩放动画：动画 scale(0.8) 期间插件渲染会量出偏小的文字宽度，导致文字溢出节点框被裁 */
-:is(.card, .load-block):has(text-diagram[data-type="mermaid"]) {
-  transform: none !important;
-  opacity: 1 !important;
-  transition: none !important;
-}
+/* clip-path 动画不影响元素实际尺寸，Mermaid 渲染度量不受干扰，无需豁免 */
 
 /* 友链界面 */
 .links:not(.widget) {
