@@ -4,9 +4,20 @@
      th:classappend="${theme.config.basic_style.banner_full_screen} ? (${theme.config.basic_info.header_fixed} ? 'header-fixed-full' : 'full') : ''">
     <script>
       (function () {
+        var html = document.documentElement
+        var banner = document.querySelector('.banner')
+        if (!banner) return
+        // 初始加载时禁用 transition，避免首帧渲染产生折叠/展开动画
+        html.classList.add('banner-no-transition')
         if (location.pathname !== '/') {
-          document.querySelector('.banner').classList.add('hidden')
+          banner.classList.add('hidden')
         }
+        // 等待首帧渲染完成后恢复 transition
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            html.classList.remove('banner-no-transition')
+          })
+        })
       })()
     </script>
     <video preload="auto" loop autoplay muted playsinline webkit-playsinline width="100%" height="100%"

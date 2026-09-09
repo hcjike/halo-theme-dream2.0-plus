@@ -231,13 +231,6 @@ spec:
             - label: 总是发送完整URL(即使HTTPS→HTTP)
               value: 'unsafe-url'
         - $formkit: switch
-          onValue: true
-          offValue: false
-          name: page_switch_animation
-          label: 页面加载动画
-          value: true
-          help: '开启后，打开站点页面时显示过渡动画效果，使浏览更流畅。关闭可提升响应速度。'
-        - $formkit: switch
           name: header_fixed
           label: 固定标题栏
           onValue: true
@@ -1736,7 +1729,7 @@ spec:
                 - value: 'none'
                   label: 无动画
                 - value: 'scale'
-                  label: 缩放动画
+                  label: 默认动画
                 - value: 'multi-cube'
                   label: 旋转多维方块动画
                 - value: 'wave-pulse'
@@ -2187,6 +2180,7 @@ spec:
       formSchema:
         - $formkit: select
           name: show_pop_notice
+          id: show_pop_notice
           label: 显示弹窗通知
           value: 'false'
           help: '控制是否显示弹窗通知，切换风格会重新触发显示通知内容。使用“自定义通知”请参考文档中“主题设置 - 弹窗通知 - 自定义通知”部分书写html内容。'
@@ -2201,6 +2195,7 @@ spec:
               label: 自定义通知
         - $formkit: code
           name: pop_notice_content
+          if: $get(show_pop_notice).value != 'false'
           language: html
           validation: required
           height: 180px
@@ -2209,6 +2204,7 @@ spec:
           help: '显示通知的内容，支持html，若内容发生变更则重新显示。注：支持设置属性 onclick="closePopupNotice();" 关闭通知。'
         - $formkit: select
           name: pop_notice_show_mode
+          if: $get(show_pop_notice).value != 'false'
           label: 通知显示模式
           help: '首次显示：仅首次访问时弹出通知；会话级关闭：用户关闭后当前窗口不再显示；永久关闭：用户关闭后不再显示该通知。'
           value: 'forever'
@@ -2221,21 +2217,25 @@ spec:
               label: 永久关闭
         - $formkit: text
           name: pop_notice_title
+          if: $get(show_pop_notice).value == 'side' || $get(show_pop_notice).value == 'stagnant'
           label: 通知标题
           help: '显示侧知的标题信息，留空时隐藏。非【自定义通知】和【不显示】生效。'
           value: '通知'
         - $formkit: text
           name: pop_notice_btn
+          if: $get(show_pop_notice).value == 'side' || $get(show_pop_notice).value == 'stagnant'
           label: 通知按键内容
           help: '显示通知的按键内容，留空时隐藏，隐藏后必须在通知内容中设置属性 onclick="closePopupNotice();" 关闭通知或者设置“通知显示时间”来自动关闭通知。非【自定义通知】和【不显示】生效。'
           value: '我知道了'
         - $formkit: number
           name: pop_notice_show_time
+          if: $get(show_pop_notice).value == 'side' || $get(show_pop_notice).value == 'stagnant'
           label: 通知显示时间
           value: 10
           help: '控制通知显示时间，单位：秒。小于等于 0 不启用。非【自定义通知】和【不显示】生效。'
         - $formkit: select
           name: pop_notice_orientation
+          if: $get(show_pop_notice).value == 'side'
           label: 侧边通知弹出方向-水平方向
           value: 'right'
           help: '仅【侧边通知】生效。'
@@ -2246,6 +2246,7 @@ spec:
               label: 左侧
         - $formkit: select
           name: pop_notice_vertical
+          if: $get(show_pop_notice).value == 'side'
           help: '仅【侧边通知】生效。'
           label: 侧边通知弹出方向-垂直方向
           value: 'top'
