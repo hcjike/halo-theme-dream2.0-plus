@@ -45,25 +45,38 @@
   </style>
   <script th:inline="javascript">
     (function () {
-      const hasNightInLocal = () => localStorage.getItem('night') !== null
+      // 本片段在 <head> 中执行，早于 common/theme_config 里 DreamConfig 的定义，
+      // 因此不能依赖 DreamConfig，直接由服务端把默认值内联进来，避免取到 undefined
+      const defaultTheme = [[${theme.config.basic_style.default_theme}]];
+      const readLocal = (key) => {
+        try {
+          return localStorage.getItem(key)
+        } catch (e) {
+          return null
+        }
+      }
       const getNightInConfig = () => {
-        if (DreamConfig.default_theme === 'night') {
+        if (defaultTheme === 'night') {
           return true
         }
-        if (DreamConfig.default_theme === 'system') {
-          return matchMedia('(prefers-color-scheme: dark)').matches
+        if (defaultTheme === 'system') {
+          return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
         }
         return false
       }
 
-      let isNight = hasNightInLocal() ? localStorage.getItem('night') : getNightInConfig()
-      if (isNight.toString() === 'true') {
-        document.documentElement.classList.add('night')
-        document.documentElement.setAttribute('night', 'true')
-        document.documentElement.classList.add('color-scheme-dark')
+      const nightInLocal = readLocal('night')
+      const isNight = nightInLocal !== null ? nightInLocal.toString() === 'true' : getNightInConfig()
+      const html = document.documentElement
+      if (isNight) {
+        html.classList.add('night')
+        html.setAttribute('night', 'true')
+        html.classList.add('color-scheme-dark')
+        html.classList.remove('color-scheme-light')
       } else {
-        document.documentElement.classList.add('color-scheme-light')
-        document.documentElement.removeAttribute('night')
+        html.classList.add('color-scheme-light')
+        html.removeAttribute('night')
+        html.classList.remove('color-scheme-dark')
       }
     })()
   </script>
