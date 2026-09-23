@@ -36,6 +36,27 @@ function registerRafLoop(name, node, tick) {
   return loop.stop
 }
 
+/* 刷新时浏览器恢复滚动位置较晚且不一定派发 scroll 事件，需要一份"上次位置"供首帧预判。
+   键名与 templates/common/banner.html 中的读取保持一致，改动时需同步 */
+const SCROLL_MEMORY_PREFIX = 'dream2:scroll-top:'
+
+function readRememberedScrollTop() {
+  try {
+    return parseInt(sessionStorage.getItem(SCROLL_MEMORY_PREFIX + location.pathname) || '0', 10) || 0
+  } catch (e) {
+    /* 隐私模式下 sessionStorage 不可用，忽略即可 */
+    return 0
+  }
+}
+
+function saveRememberedScrollTop(top) {
+  try {
+    sessionStorage.setItem(SCROLL_MEMORY_PREFIX + location.pathname, String(top))
+  } catch (e) {
+    /* 同上 */
+  }
+}
+
 const commonContext = {
   /* 初始化widget */
   initWidget() {
@@ -401,13 +422,28 @@ const commonContext = {
   },
   /* 处理滚动 */
   initScroll() {
-    window.initTop = 0
+    const $actions = $('.actions')
+    const body = document.body
 
     // true：上划，false：下滑
     function scrollDirection(currentTop) {
       const result = currentTop > window.initTop
       window.initTop = currentTop
       return result
+    }
+
+    /* 按滚动距离应用状态：首帧预判与滚动监听共用同一套阈值，避免两处规则不一致 */
+    const applyScrollState = (scrollTop, direction) => {
+      if (scrollTop > 50 && direction) {
+        body.classList.add('move-up')
+      } else {
+        body.classList.remove('move-up')
+      }
+      if (scrollTop > 100) {
+        $actions.addClass('show')
+      } else {
+        $actions.removeClass('show')
+      }
     }
 
     // 滚动事件高频触发，用 rAF 合并为每帧最多执行一次，避免重复查询 DOM
@@ -418,31 +454,37 @@ const commonContext = {
       requestAnimationFrame(() => {
         ticking = false
         const scrollTop = $(document).scrollTop()
-        const direction = scrollDirection(scrollTop)
-        const body = document.body
-        if (scrollTop > 50 && direction) {
-          body.classList.add('move-up')
-        } else {
-          body.classList.remove('move-up')
-        }
-        const $actions = $('.actions')
-        if (scrollTop > 100) {
-          $actions.addClass('show')
-        } else {
-          $actions.removeClass('show')
-        }
+        applyScrollState(scrollTop, scrollDirection(scrollTop))
       })
     }
-    document.addEventListener('scroll', handleScroll, {passive: true})
+
+    /* 刷新时浏览器在首帧之后才恢复滚动位置，且不一定派发 scroll 事件，
+       只靠监听会导致右下角按钮组一直不显示，直到用户手动滚动才滑出来。
+       这里在首帧前按"当前位置优先、上次记忆位置兜底"同步应用一次，
+       既符合滚动距离判断，也不会出现先隐藏再滑入的动画 */
+    const currentTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+    const initialTop = currentTop || readRememberedScrollTop()
+    window.initTop = initialTop
+    applyScrollState(initialTop, initialTop > 0)
+
+    let scrolled = false
+    document.addEventListener('scroll', () => {
+      scrolled = true
+      handleScroll()
+    }, {passive: true})
+
+    // 恢复滚动未派发 scroll 事件时，load 之后按真实位置校准一次；状态未变化则无视觉影响
+    window.addEventListener('load', () => {
+      if (scrolled) return
+      const top = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+      if (top === initialTop) return
+      window.initTop = top
+      applyScrollState(top, top > 0)
+    }, {once: true})
 
     // 记录滚动位置：刷新时浏览器恢复得较晚，banner 需要在首帧前据此判断是否临时隐藏
     window.addEventListener('pagehide', () => {
-      try {
-        sessionStorage.setItem('dream2:scroll-top:' + location.pathname,
-          String(window.scrollY || window.pageYOffset || 0))
-      } catch (e) {
-        /* 隐私模式下 sessionStorage 不可用，忽略即可 */
-      }
+      saveRememberedScrollTop(window.scrollY || window.pageYOffset || 0)
     })
   },
   /* 小屏幕伸缩侧边栏，包含导航或者目录 */
@@ -1269,11 +1311,13 @@ let timeLifeHour = -1
     'initWidget', 'initTocAndNotice', 'initBanner', 'initGallery', 'initMode', 'initNavbar',
     'mobileCloseNavbarMask', 'loveTime', 'webCopyright', 'initTimeCount', 'initCustomCountdown',
     'showBanner',
+    /* 滚动状态（右下角按钮组、导航栏收起）依赖滚动距离，必须在首帧前定好最终形态 */
+    'initScroll',
   ]
 
   /* 首帧之后：只做事件绑定与播放，晚一帧无感，不占用首屏绘制 */
   const AFTER_PAINT = [
-    'searchDialog', 'initDropMenu', 'initLogonMenu', 'initScroll', 'drawerMobile', 'back2Top',
+    'searchDialog', 'initDropMenu', 'initLogonMenu', 'drawerMobile', 'back2Top',
     'maskClose', 'sideMenuMobile', 'initEvent', 'offscreenTip', 'closeFancybox',
     'initSecurityLink', 'initGrayMode', 'playBannerVideo',
   ]
