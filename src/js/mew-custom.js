@@ -15,14 +15,16 @@ class MewElement extends HTMLElement {
  * DreamConfig 是主题脚本里的顶层 const，不是 window 属性，只能用 typeof 判断后直接访问。
  */
 function mewAssetsBase() {
+  let base = ''
   try {
     if (typeof DreamConfig !== 'undefined' && DreamConfig && DreamConfig.theme_base) {
-      return DreamConfig.theme_base
+      base = DreamConfig.theme_base
     }
   } catch (e) {
     /* DreamConfig 尚未定义时走兜底 */
   }
-  return '/themes/theme-dream2-plus/assets'
+  /* 去掉结尾斜杠，避免拼出 //lib/... */
+  return String(base || '/themes/theme-dream2-plus/assets').replace(/\/+$/, '')
 }
 
 /*
