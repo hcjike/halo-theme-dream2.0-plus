@@ -1,7 +1,8 @@
-<head xmlns:th="https://www.thymeleaf.org" th:fragment="head"
+<head xmlns:th="https://www.thymeleaf.org" th:fragment="head (extraHead)"
 th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage != null ? singlePage.status.excerpt : site.seo.description : site.seo.description}">
   <meta charset="utf-8"/>
-  <title th:text="${showTitle + (#strings.isEmpty(site.subtitle) ? '' : '|' + site.subtitle)}"></title>
+  <!-- 页面布局契约：调用方提供了 head 片段时由它自带 <title>，主题不再重复输出 -->
+  <title th:if="${extraHead == null}" th:text="${(showTitle != null ? showTitle : site.title) + (#strings.isEmpty(site.subtitle) ? '' : '|' + site.subtitle)}"></title>
   <script th:if="${theme.config.enhance.enable_sw}" th:src="${(theme.config.enhance.enable_sw == 'uninstall')? #theme.assets('/js/sw.min.js?uninstall=true') + '&mew=1.3.2' : '/sw.min.js?mew=1.3.2' + theme.config.enhance.enable_sw + '&cdn=' + theme.config.enhance.sw_cdn_source.replaceAll('\n', ',')}"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="applicable-device" content="pc,mobile">
@@ -46,4 +47,12 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   [(${theme.config.custom.external_js_head})]
   <script th:if="${!#strings.isEmpty(theme.config.custom.inline_js_head)}" type="text/javascript" th:utext="${theme.config.custom.inline_js_head}">
   </script>
+
+  <!--
+    页面布局契约：调用方（插件页面）传入的 head 片段，补充页面级 meta / 样式 / 脚本。
+    注意 th:replace 的优先级高于 th:if，判空必须放在外层标签上，否则 null 时会去解析片段而报错。
+  -->
+  <th:block th:if="${extraHead != null}">
+    <th:block th:replace="${extraHead}"></th:block>
+  </th:block>
 </head>

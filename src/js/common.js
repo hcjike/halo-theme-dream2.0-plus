@@ -57,6 +57,21 @@ function saveRememberedScrollTop(top) {
   }
 }
 
+/*
+ * pjax 采用整文档替换（head + body），body 里的导航栏、页脚、按钮组都会被重建。
+ * 因此绑在具体元素上的监听会一起消失，必须绑到 document 上用选择器委托；
+ * 绑在 document/window 上的监听只能绑一次，否则每次导航都会叠加。
+ */
+const documentBound = new Set()
+const bindDocumentOnce = (key, handler) => {
+  if (documentBound.has(key)) return
+  documentBound.add(key)
+  handler()
+}
+
+/* 特效脚本每次执行都会起一条内部动画循环，只允许跑一次 */
+let effectsInited = false
+
 const commonContext = {
   /* 初始化widget */
   initWidget() {
@@ -70,7 +85,8 @@ const commonContext = {
 
     const $window = $(window)
 
-    $(window).on('resize', Utils.debounce(checkWidgetPosition, 100))
+    /* 每次导航都会重跑 initWidget，window 不会被替换，用命名空间先解绑避免监听叠加 */
+    $(window).off('resize.widgetLayout').on('resize.widgetLayout', Utils.debounce(checkWidgetPosition, 100))
 
     // 按顺序插入元素到目标容器
     // 先移入 DocumentFragment 再整体挂载：节点顺序不变，但只触发一次重排
@@ -195,6 +211,13 @@ const commonContext = {
   initBanner() {
     const $bannerInfoDesc = $('.banner-info-desc')
     if ($bannerInfoDesc.length === 0) return
+    /*
+     * banner 处于折叠态时（pjax 切到首页的瞬间、或本来就不是首页）不要启动：
+     * 下面要按真实高度冻结 min-height，折叠态量到的是 0，会让打字过程中内容块上下跳。
+     * 首页的展开动画结束后由 pjax 再调用一次。
+     */
+    const bannerEl = document.querySelector('.banner')
+    if (bannerEl && (bannerEl.classList.contains('hidden') || bannerEl.offsetHeight === 0)) return
     const bannerNode = $bannerInfoDesc[0]
     const bannerDesc = $bannerInfoDesc.text()
     // 没有可展示的文字时不启动循环，避免长期空转
@@ -316,12 +339,14 @@ const commonContext = {
       localStorage.setItem('special-efficacy-scheme', isNightValue ? 'dark' : 'light')
       isNight = isNightValue
     }
-    //切换按钮
-    $('#toggle-mode').on('click', () => {
-      //应用配色方案，并切换isNight的状态
-      applyNight(!isNight)
-      //只有点击了切换才需要保存到localStorage
-      localStorage.setItem('night', isNight)
+    //切换按钮：body 会被整块替换，绑到 document 上委托
+    bindDocumentOnce('toggle-mode', () => {
+      $(document).on('click', '#toggle-mode', () => {
+        //应用配色方案，并切换isNight的状态
+        applyNight(!isNight)
+        //只有点击了切换才需要保存到localStorage
+        localStorage.setItem('night', isNight)
+      })
     })
   },
   /* 导航条高亮 */
@@ -358,42 +383,78 @@ const commonContext = {
     // 高亮移动端
     $nav_side_menus.eq(activeIndex).addClass('current')
   },
-  // 移动端关闭抽屉弹窗
-  mobileCloseNavbarMask() {
-    document.querySelector('html.disable-scroll') && document.querySelector('.navbar-mask').click()
+  /*
+   * 关闭导航抽屉 / 遮罩 / 搜索面板，并解除滚动锁定（pjax 切换前调用）。
+   * 不能用「模拟点击遮罩」来关：那会先播一遍 0.35s 的收起动画，
+   * 而切换过程中抽屉节点又被整块替换，视觉上就是「抽屉一闪而过」；
+   * 而且 html 不会被 pjax 替换，disable-scroll 这类状态还会残留到新页面。
+   * 这里直接清类，并临时禁用过渡，让状态一步归位。
+   */
+  closeNavbarPanels() {
+    const html = document.documentElement
+    const $slideout = $('.navbar-slideout')
+    const $mask = $('.navbar-mask')
+    const $searchout = $('.navbar-searchout')
+    const opened = html.classList.contains('disable-scroll')
+      || $slideout.hasClass('active') || $mask.hasClass('active') || $searchout.hasClass('active')
+    /* 本来就是关闭状态就什么都不做，避免无谓的类切换触发重排 */
+    if (!opened) return
+
+    /* 手机端保留抽屉的收起动画（与手动关闭一致）；桌面端仍然一步归位，避免切换瞬间闪一下 */
+    const instant = !(window.Utils && typeof Utils.isMobileByScreenWidth === 'function' && Utils.isMobileByScreenWidth())
+    if (instant) html.classList.add('navbar-no-transition')
+
+    html.classList.remove('disable-scroll')
+    $mask.removeClass('active slideout')
+    $slideout.removeClass('active slideout-toc')
+    $searchout.removeClass('active')
+    $('.navbar-above').removeClass('solid')
+
+    if (instant) {
+      /* 两帧后再恢复过渡，确保关闭动作不会以动画形式呈现 */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          html.classList.remove('navbar-no-transition')
+        })
+      })
+    }
   },
   /* 搜索框弹窗 */
   searchDialog() {
-    const $result = $('.navbar-search .result')
-    $('.navbar-search .input').on('click', function (e) {
-      e.stopPropagation()
-      $result.addClass('active')
-    })
-    $(document).on('click', function () {
-      $result.removeClass('active')
+    bindDocumentOnce('searchDialog', () => {
+      $(document).on('click', '.navbar-search .input', function (e) {
+        e.stopPropagation()
+        $('.navbar-search .result').addClass('active')
+      })
+      $(document).on('click', function () {
+        $('.navbar-search .result').removeClass('active')
+      })
     })
   },
   /* 激活导航栏全局下拉框功能 */
   initDropMenu() {
-    $('.item-dropdown').each(function (index, item) {
-      const menu = $(this).find('.item-dropdown-menu')
-      const trigger = $(item).attr('trigger') || 'click'
-      const placement = $(item).attr('placement') || $(this).height() || 0
-      menu.css('top', placement)
-      if (trigger === 'hover') {
-        $(this).hover(
-          () => $(this).addClass('active'),
-          () => $(this).removeClass('active')
-        )
-      } else {
-        $(this).on('click', function (e) {
-          e.stopPropagation()
-          $(this).toggleClass('active')
-          $(document).one('click', () => $(this).removeClass('active'))
-          e.stopPropagation()
-        })
-        menu.on('click', (e) => e.stopPropagation())
+    bindDocumentOnce('initDropMenu', () => {
+      /* 下拉框 top 依赖元素自身高度，节点会被重建，改为每次交互前计算 */
+      const place = ($item) => {
+        $item.find('.item-dropdown-menu').css('top', $item.attr('placement') || $item.height() || 0)
       }
+      $(document).on('mouseenter', '.item-dropdown', function () {
+        if (($(this).attr('trigger') || 'click') !== 'hover') return
+        place($(this))
+        $(this).addClass('active')
+      })
+      $(document).on('mouseleave', '.item-dropdown', function () {
+        if (($(this).attr('trigger') || 'click') !== 'hover') return
+        $(this).removeClass('active')
+      })
+      $(document).on('click', '.item-dropdown', function (e) {
+        if (($(this).attr('trigger') || 'click') === 'hover') return
+        e.stopPropagation()
+        place($(this))
+        $(this).toggleClass('active')
+        $(document).one('click', () => $(this).removeClass('active'))
+      })
+      $(document).on('click', '.item-dropdown-menu', (e) => e.stopPropagation())
     })
   },
   /*初始化任务列表，禁止点击*/
@@ -404,27 +465,25 @@ const commonContext = {
   },
   /* 激活登录窗口下拉框功能 */
   initLogonMenu() {
-    $('.navbar-logon').each(function (index, item) {
-      const trigger = $(item).attr('trigger') || 'click'
-      if (trigger === 'hover') {
-        $(this).hover(
-          () => $(this).addClass('active'),
-          () => $(this).removeClass('active')
-        )
-      } else {
-        $(this).on('click', function (e) {
-          e.stopPropagation()
-          $(this).toggleClass('active')
-          $(document).one('click', () => $(this).removeClass('active'))
-        })
-      }
+    bindDocumentOnce('initLogonMenu', () => {
+      $(document).on('mouseenter', '.navbar-logon', function () {
+        if (($(this).attr('trigger') || 'click') !== 'hover') return
+        $(this).addClass('active')
+      })
+      $(document).on('mouseleave', '.navbar-logon', function () {
+        if (($(this).attr('trigger') || 'click') !== 'hover') return
+        $(this).removeClass('active')
+      })
+      $(document).on('click', '.navbar-logon', function (e) {
+        if (($(this).attr('trigger') || 'click') === 'hover') return
+        e.stopPropagation()
+        $(this).toggleClass('active')
+        $(document).one('click', () => $(this).removeClass('active'))
+      })
     })
   },
   /* 处理滚动 */
   initScroll() {
-    const $actions = $('.actions')
-    const body = document.body
-
     // true：上划，false：下滑
     function scrollDirection(currentTop) {
       const result = currentTop > window.initTop
@@ -432,8 +491,11 @@ const commonContext = {
       return result
     }
 
-    /* 按滚动距离应用状态：首帧预判与滚动监听共用同一套阈值，避免两处规则不一致 */
+    /* 按滚动距离应用状态：首帧预判与滚动监听共用同一套阈值，避免两处规则不一致。
+       body 与 .actions 会随整文档替换被重建，每次现查，不能缓存节点 */
     const applyScrollState = (scrollTop, direction) => {
+      const body = document.body
+      const $actions = $('.actions')
       if (scrollTop > 50 && direction) {
         body.classList.add('move-up')
       } else {
@@ -467,75 +529,82 @@ const commonContext = {
     window.initTop = initialTop
     applyScrollState(initialTop, initialTop > 0)
 
-    let scrolled = false
-    document.addEventListener('scroll', () => {
-      scrolled = true
-      handleScroll()
-    }, {passive: true})
+    /* document / window 不会被替换，监听只绑一次；每次导航只重算状态 */
+    bindDocumentOnce('initScroll', () => {
+      let scrolled = false
+      document.addEventListener('scroll', () => {
+        scrolled = true
+        handleScroll()
+      }, {passive: true})
 
-    // 恢复滚动未派发 scroll 事件时，load 之后按真实位置校准一次；状态未变化则无视觉影响
-    window.addEventListener('load', () => {
-      if (scrolled) return
-      const top = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
-      if (top === initialTop) return
-      window.initTop = top
-      applyScrollState(top, top > 0)
-    }, {once: true})
+      // 恢复滚动未派发 scroll 事件时，load 之后按真实位置校准一次；状态未变化则无视觉影响
+      window.addEventListener('load', () => {
+        if (scrolled) return
+        const top = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+        if (top === initialTop) return
+        window.initTop = top
+        applyScrollState(top, top > 0)
+      }, {once: true})
 
-    // 记录滚动位置：刷新时浏览器恢复得较晚，banner 需要在首帧前据此判断是否临时隐藏
-    window.addEventListener('pagehide', () => {
-      saveRememberedScrollTop(window.scrollY || window.pageYOffset || 0)
+      // 记录滚动位置：刷新时浏览器恢复得较晚，banner 需要在首帧前据此判断是否临时隐藏
+      window.addEventListener('pagehide', () => {
+        saveRememberedScrollTop(window.scrollY || window.pageYOffset || 0)
+      })
     })
   },
   /* 小屏幕伸缩侧边栏，包含导航或者目录 */
   drawerMobile() {
-    $('.navbar-slideicon').on('click', function (e) {
-      e.stopPropagation()
-      /* 关闭搜索框 */
-      $('.navbar-searchout').removeClass('active')
-      /* 处理开启关闭状态 */
-      const $html = $('html')
-      const $mask = $('.navbar-mask')
-      const $slide_out = $('.navbar-slideout')
-      if ($slide_out.hasClass('active')) {
-        $html.removeClass('disable-scroll')
-        $mask.removeClass('active slideout')
-        $slide_out.removeClass('active')
-      } else {
-        $html.addClass('disable-scroll')
-        $mask.addClass('active slideout')
-        $slide_out.addClass('active')
-      }
-    })
-    $('.action-toc').on('click', function (e) {
-      e.stopPropagation()
-      /* 关闭搜索框 */
-      $('.navbar-searchout').removeClass('active')
-      /* 处理开启关闭状态 */
-      const $html = $('html')
-      const $mask = $('.navbar-mask')
-      const $slide_out = $('.navbar-slideout')
-      if ($slide_out.hasClass('active')) {
-        $html.removeClass('disable-scroll')
-        $mask.removeClass('active slideout')
-        $slide_out.removeClass('active slideout-toc')
-      } else {
-        $html.addClass('disable-scroll')
-        $mask.addClass('active slideout')
-        $slide_out.addClass('active slideout-toc')
-      }
+    bindDocumentOnce('drawerMobile', () => {
+      $(document).on('click', '.navbar-slideicon', function (e) {
+        e.stopPropagation()
+        /* 关闭搜索框 */
+        $('.navbar-searchout').removeClass('active')
+        /* 处理开启关闭状态 */
+        const $html = $('html')
+        const $mask = $('.navbar-mask')
+        const $slide_out = $('.navbar-slideout')
+        if ($slide_out.hasClass('active')) {
+          $html.removeClass('disable-scroll')
+          $mask.removeClass('active slideout')
+          $slide_out.removeClass('active')
+        } else {
+          $html.addClass('disable-scroll')
+          $mask.addClass('active slideout')
+          $slide_out.addClass('active')
+        }
+      })
+      $(document).on('click', '.action-toc', function (e) {
+        e.stopPropagation()
+        /* 关闭搜索框 */
+        $('.navbar-searchout').removeClass('active')
+        /* 处理开启关闭状态 */
+        const $html = $('html')
+        const $mask = $('.navbar-mask')
+        const $slide_out = $('.navbar-slideout')
+        if ($slide_out.hasClass('active')) {
+          $html.removeClass('disable-scroll')
+          $mask.removeClass('active slideout')
+          $slide_out.removeClass('active slideout-toc')
+        } else {
+          $html.addClass('disable-scroll')
+          $mask.addClass('active slideout')
+          $slide_out.addClass('active slideout-toc')
+        }
+      })
     })
   },
   /* 激活全局返回顶部功能 */
   back2Top() {
-    $('#back-to-top').on('click', function () {
-      $('body, html').animate({scrollTop: 0}, 400)
+    bindDocumentOnce('back2Top', () => {
+      $(document).on('click', '#back-to-top', function () {
+        $('body, html').animate({scrollTop: 0}, 400)
+      })
     })
   },
   /* 点击遮罩层关闭 */
   maskClose() {
-    $('.navbar-mask')
-      .on('click', function (e) {
+    bindDocumentOnce('maskClose', () => {
+      $(document).on('click', '.navbar-mask', function (e) {
         e.stopPropagation()
         $('html').removeClass('disable-scroll')
         $('.navbar-mask').removeClass('active slideout')
@@ -543,57 +612,66 @@ const commonContext = {
         $('.navbar-slideout').removeClass('active slideout-toc')
         $('.navbar-above').removeClass('solid')
       })
-    $('.navbar .toc-content')
-      .on('click', function (e) {
+      $(document).on('click', '.navbar .toc-content', function (e) {
         e.stopPropagation()
+        /* 点目录里的链接会立刻走 pjax 导航：此时直接归位、不播收起动画，
+           否则抽屉会在切换过程中「滑一下又消失」 */
+        if (e.target.closest('a[href]')) {
+          commonContext.closeNavbarPanels()
+          return
+        }
         $('html').removeClass('disable-scroll')
         $('.navbar-mask').removeClass('active slideout')
         $('.navbar-slideout').removeClass('active slideout-toc')
       })
+    })
   },
   /* 移动端侧边栏菜单手风琴 */
   sideMenuMobile() {
+    /* 抽屉随整文档替换被重建，展开状态每次都要重新应用 */
     $('.navbar-slideout-menu .current')
       .parents('.panel-body')
       .show()
       .siblings('.panel')
       .addClass('in')
-    $('.navbar-slideout-menu .panel').on('click', function (e) {
-      /* 如果点击目标是链接，不阻止冒泡，让 Pjax 正常处理导航 */
-      if (e.target.closest('a[href]')) return
-      e.stopPropagation()
-      const $this = $(this)
-      const panelBox = $this.parent().parent()
-      /* 清除全部内容 */
-      panelBox.find('.panel').not($this).removeClass('in')
-      panelBox
-        .find('.panel-body')
-        .not($this.siblings('.panel-body'))
-        .stop()
-        .hide('fast')
-      /* 激活当前的内容 */
-      $this.toggleClass('in').siblings('.panel-body').stop().toggle('fast')
+    bindDocumentOnce('sideMenuMobile', () => {
+      $(document).on('click', '.navbar-slideout-menu .panel', function (e) {
+        /* 如果点击目标是链接，不阻止冒泡，让 Pjax 正常处理导航 */
+        if (e.target.closest('a[href]')) return
+        e.stopPropagation()
+        const $this = $(this)
+        const panelBox = $this.parent().parent()
+        /* 清除全部内容 */
+        panelBox.find('.panel').not($this).removeClass('in')
+        panelBox
+          .find('.panel-body')
+          .not($this.siblings('.panel-body'))
+          .stop()
+          .hide('fast')
+        /* 激活当前的内容 */
+        $this.toggleClass('in').siblings('.panel-body').stop().toggle('fast')
+      })
     })
   },
   /* 初始化事件 */
   initEvent() {
-    let $body = $('body')
+    bindDocumentOnce('initEvent', () => {
+      function closeSelect(elem) {
+        let $elem = $(elem)
+        const closeSelect = $elem.attr('data-close')
+        return closeSelect && closeSelect.trim() !== '' ? $elem.closest(closeSelect.trim()) : $elem
+      }
 
-    function closeSelect(elem) {
-      let $elem = $(elem)
-      const closeSelect = $elem.attr('data-close')
-      return closeSelect && closeSelect.trim() !== '' ? $elem.closest(closeSelect.trim()) : $elem
-    }
-
-    $body.on('click', '.click-close', function (e) {
-      e.stopPropagation()
-      closeSelect(this).remove()
-    })
-    $body.on('click', '.click-animation-close', function (e) {
-      e.stopPropagation()
-      let selectElem = closeSelect(this)
-      selectElem.addClass('close-animation')
-      setTimeout(() => selectElem.remove(), 300)
+      $(document).on('click', '.click-close', function (e) {
+        e.stopPropagation()
+        closeSelect(this).remove()
+      })
+      $(document).on('click', '.click-animation-close', function (e) {
+        e.stopPropagation()
+        let selectElem = closeSelect(this)
+        selectElem.addClass('close-animation')
+        setTimeout(() => selectElem.remove(), 300)
+      })
     })
   },
   /* 离屏提示 */
@@ -601,7 +679,7 @@ const commonContext = {
     if (Utils.isMobile() || (!DreamConfig.document_hidden_title && !DreamConfig.document_visible_title)) return
     let originTitle = document.title
     let timer = null
-    document.addEventListener('visibilitychange', function () {
+    bindDocumentOnce('offscreenTip', () => document.addEventListener('visibilitychange', function () {
       if (document.hidden) {
         if (!DreamConfig.document_visible_title || document.title !== DreamConfig.document_visible_title) {
           originTitle = document.title
@@ -616,7 +694,7 @@ const commonContext = {
           }
         }, 2000))
       }
-    })
+    }))
   },
   /** 初始化轮播 **/
   initCarousel() {
@@ -1147,7 +1225,9 @@ const commonContext = {
     if (!DreamConfig.enable_security_link || !DreamConfig.security_link_url || DreamConfig.security_link_url.length === 0) {
       return
     }
-    $(document).on('click', 'a[href]:not([data-url-security]), hyperlink-inline-card[href]:not([data-url-security]), hyperlink-card[href]:not([data-url-security])', (event) => {
+    /* 命名空间绑定：重复初始化时先解绑，避免 document 级监听叠加 */
+    $(document).off('click.securityLink')
+    $(document).on('click.securityLink', 'a[href]:not([data-url-security]), hyperlink-inline-card[href]:not([data-url-security]), hyperlink-card[href]:not([data-url-security])', (event) => {
       var href = $(event.currentTarget).attr('href')
       if (!href || (!href.toLowerCase().startsWith('http://') && !href.toLowerCase().startsWith('https://'))) {
         return
@@ -1219,6 +1299,10 @@ const commonContext = {
   /* 初始化特效，只需要初始化一次，移动端设备不初始化 */
   initEffects() {
     if (Utils.isMobile() && !DreamConfig.mobile_special_effects) return
+    /* 特效脚本每次执行都会新建画布并在内部起一条动画循环，重复执行会叠加循环，
+       所以只跑一次；画布节点由 pjax 整文档替换时搬家保留（见 pjax.js 的 persistEffects） */
+    if (effectsInited) return
+    effectsInited = true
     DreamConfig.cursor_move && Utils.cachedScript(`${DreamConfig.theme_base}/js/cursor/move/${DreamConfig.cursor_move}.min.js?mew=${DreamConfig.theme_version}`)
     DreamConfig.cursor_click && Utils.cachedScript(`${DreamConfig.theme_base}/js/cursor/click/${DreamConfig.cursor_click}.min.js?mew=${DreamConfig.theme_version}`)
     DreamConfig.effects_lantern_mode && Utils.cachedScript(`${DreamConfig.theme_base}/js/effects/lantern.min.js?mew=${DreamConfig.theme_version}`)
@@ -1241,15 +1325,37 @@ const commonContext = {
       el.classList.toggle('hidden', !isHome)
     })
   },
+  /*
+   * banner 视频随窗口宽度切换视频源/封面。
+   * 整文档替换前 pjax 已按当时宽度设好 data-* 对应的 src（模板内联脚本会被裁剪，不能重跑），
+   * 这里只负责宽度变化时的重新选源，监听只绑一次。
+   */
+  initBannerVideo() {
+    bindDocumentOnce('bannerVideo', () => {
+      $(window).off('resize.bannerVideo').on('resize.bannerVideo', Utils.debounce(() => {
+        const video = document.querySelector('.banner video')
+        if (!video) return
+        const isMobile = Utils.isMobileByScreenWidth()
+        if (video.dataset.bannerMobile === String(isMobile)) return
+        const attr = (name) => video.getAttribute(name) || ''
+        const src = isMobile ? (attr('data-src-mobile') || attr('data-src')) : attr('data-src')
+        const poster = isMobile ? (attr('data-poster-mobile') || attr('data-poster')) : attr('data-poster')
+        if (src) video.src = src
+        if (poster) video.poster = poster
+        video.dataset.bannerMobile = String(isMobile)
+      }, 100))
+    })
+  },
   /* 自动播放Banner视频 */
   playBannerVideo() {
-    var bannerElement = document.querySelector('.banner')
-    var videoElement = document.querySelector('.banner video')
-    if (!videoElement || !bannerElement) {
+    if (!document.querySelector('.banner')) {
       return
     }
 
+    /* 视频节点会随整文档替换被重建，播放状态每次现查，不能缓存节点 */
     function playVideo() {
+      var videoElement = document.querySelector('.banner video')
+      if (!videoElement) return
       if (!videoElement.src || videoElement.src === window.location.href || videoElement.getAttribute('src') === null) {
         return
       }
@@ -1268,11 +1374,15 @@ const commonContext = {
       }
     }
 
-    // 确保循环播放正常工作
-    videoElement.addEventListener('ended', function () {
-      videoElement.currentTime = 0 // 重置播放位置
-      playVideo() // 重新播放
-    }, false)
+    // 确保循环播放正常工作（新视频节点重新绑定）
+    var videoElement = document.querySelector('.banner video')
+    if (videoElement && !videoElement.dataset.dreamVideoBound) {
+      videoElement.dataset.dreamVideoBound = 'true'
+      videoElement.addEventListener('ended', function () {
+        videoElement.currentTime = 0 // 重置播放位置
+        playVideo() // 重新播放
+      }, false)
+    }
 
     // 兼容IE11的事件监听
     function addOneTimeEventListener(element, event, callback) {
@@ -1293,10 +1403,12 @@ const commonContext = {
       }
     }
 
-    // 添加点击/触摸事件监听
-    addOneTimeEventListener(document, 'click', playVideo)
-    // 为移动设备添加触摸事件支持
-    addOneTimeEventListener(document, 'touchend', playVideo)
+    // 添加点击/触摸事件监听（document 不会被替换，只绑一次）
+    bindDocumentOnce('playBannerVideo', () => {
+      addOneTimeEventListener(document, 'click', playVideo)
+      // 为移动设备添加触摸事件支持
+      addOneTimeEventListener(document, 'touchend', playVideo)
+    })
     // 尝试自动播放
     playVideo()
   },
@@ -1309,7 +1421,7 @@ let timeLifeHour = -1
   /* 首帧前同步执行：会改动 DOM 结构、文本或可见性，推迟会出现"先渲染再被替换"的跳动 */
   const IMMEDIATE = [
     'initWidget', 'initTocAndNotice', 'initBanner', 'initGallery', 'initMode', 'initNavbar',
-    'mobileCloseNavbarMask', 'loveTime', 'webCopyright', 'initTimeCount', 'initCustomCountdown',
+    'closeNavbarPanels', 'loveTime', 'webCopyright', 'initTimeCount', 'initCustomCountdown',
     'showBanner',
     /* 滚动状态（右下角按钮组、导航栏收起）依赖滚动距离，必须在首帧前定好最终形态 */
     'initScroll',
@@ -1319,7 +1431,7 @@ let timeLifeHour = -1
   const AFTER_PAINT = [
     'searchDialog', 'initDropMenu', 'initLogonMenu', 'drawerMobile', 'back2Top',
     'maskClose', 'sideMenuMobile', 'initEvent', 'offscreenTip', 'closeFancybox',
-    'initSecurityLink', 'initGrayMode', 'playBannerVideo',
+    'initSecurityLink', 'initGrayMode', 'playBannerVideo', 'initBannerVideo',
   ]
 
   /* DOM 就绪后：依赖完整 DOM 或外部库 */
@@ -1343,6 +1455,16 @@ let timeLifeHour = -1
       console.error(`[common] ${name} 初始化失败`, e)
     }
   })
+
+  /*
+   * pjax 整文档替换后的重新初始化：head/body 全部换成新节点。
+   * 元素级监听随新 DOM 重新绑定，document/window 级监听由 bindDocumentOnce 去重。
+   */
+  commonContext.reinitAfterPjax = () => {
+    run(IMMEDIATE)
+    run(AFTER_PAINT)
+    run(ON_READY)
+  }
 
   // 事件可能已经触发（异步脚本、pjax 替换等），这里统一兜底
   const onReady = (cb) => {

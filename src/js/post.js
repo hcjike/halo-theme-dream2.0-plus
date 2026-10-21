@@ -111,16 +111,18 @@ const postContext = {
   },
   /* 代码块复制 */
   initClipboard() {
-    if (window.clipboard) {
-      return
+    if (!window.ClipboardJS) return
+    /* ClipboardJS 按元素绑定，整文档替换后按钮是新节点，必须销毁旧实例重新绑定，
+       否则只有首次加载的那个页面上的复制按钮有效 */
+    if (window.clipboard && typeof window.clipboard.destroy === 'function') {
+      window.clipboard.destroy()
     }
-    // 初始化代码块复制插件，一个界面仅需初始化一次
     window.clipboard = new ClipboardJS('.btn-clipboard')
-    clipboard.on('error', function (e) {
+    window.clipboard.on('error', function (e) {
       e.clearSelection()
       Qmsg.error(DreamConfig.global_browser_not_supported)
     })
-    clipboard.on('success', function () {
+    window.clipboard.on('success', function () {
       Qmsg.success(DreamConfig.global_copy_success)
     })
   },
@@ -151,9 +153,10 @@ const postContext = {
   /* 初始化事件 */
   initEvent() {
     if (postContextInitial) return
-    let $body = $('body')
+    /* pjax 整文档替换会换掉 <body>，委托必须挂在 document 上，否则导航后这些点击全部失效 */
+    let $root = $(document)
     // 代码块展开和关闭点击事件
-    $body.on('click', 'figure>figcaption .ri-arrow-down-s-line', function () {
+    $root.on('click', 'figure>figcaption .ri-arrow-down-s-line', function () {
       let $this = $(this)
       let dataCode = $this.attr('data-code')
       if (!/^#[a-zA-Z0-9_-]+$/.test(dataCode)) {
@@ -168,11 +171,11 @@ const postContext = {
       }
     })
     // 代码内容块展开和折叠点击事件
-    $body.on('click', 'figure > pre > .expand-done', function () {
+    $root.on('click', 'figure > pre > .expand-done', function () {
       Utils.foldBlock($(this).parent().parent())
     })
     // 图片的展开和折叠事件
-    $body.on('click', '.gallery-item .expand-done', function (e) {
+    $root.on('click', '.gallery-item .expand-done', function (e) {
       e.stopPropagation()
       Utils.foldBlock($(this).parent())
     })
