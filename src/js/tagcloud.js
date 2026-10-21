@@ -16,6 +16,11 @@ window.tagcloud = (function (win, doc) { // ns
 
     self.config = TagCloud._getConfig(options)
     self.box = self.config.element   //组件元素
+
+    /* 同一容器只建一个实例：pjax 换页后脚本会被重新执行，再叠加 pjax 钩子调用，
+       否则多个 rAF 循环会抢着改同一个元素的 style */
+    if (self.box.__tagcloudInstance) return
+    self.box.__tagcloudInstance = self
     self.fontsize = self.config.fontsize //平均字体大小
     self.radius = self.config.radius //滚动半径
     self.depth = 2 * self.radius   //滚动深度
@@ -92,6 +97,9 @@ window.tagcloud = (function (win, doc) { // ns
     self.frameInterval = 1000 / 60; // 60fps对应的时间间隔(毫秒)
 
     (function animate(currentTime) {
+      /* 容器已被 pjax 换页移除：停止循环，避免残留 rAF 一直空转 */
+      if (!self.box.isConnected) return
+
       if (self.isUpdating) {
         requestAnimationFrame(animate)
         return
@@ -332,7 +340,6 @@ window.tagcloud = (function (win, doc) { // ns
 
 })(window, document)
 
-// 在 DOM 加载完成后执行
 function initTagCloud() {
   tagcloud({
     selector: '.tagcloud .card-content',
@@ -344,4 +351,14 @@ function initTagCloud() {
     keep: false
   })
 }
-document.addEventListener('DOMContentLoaded', initTagCloud)
+
+/*
+ * pjax 整文档替换后 DOMContentLoaded 不会再触发，脚本也可能在它之后才执行，
+ * 所以两种时机都要覆盖；同时暴露 tagcloudPjax 供 pjax:success 调用。
+ */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initTagCloud)
+} else {
+  initTagCloud()
+}
+window.tagcloudPjax = initTagCloud

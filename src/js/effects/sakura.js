@@ -149,10 +149,11 @@
     })
   }
 
-  window.onresize = function () {
+  /* 用 addEventListener 而非 window.onresize 赋值，避免覆盖其他脚本挂的 resize 回调 */
+  window.addEventListener('resize', function () {
     canvas.height = window.innerHeight
     canvas.width = window.innerWidth
-  }
+  })
   img.onload = function () {
     startSakura()
   }

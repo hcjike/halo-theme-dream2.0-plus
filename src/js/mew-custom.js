@@ -10,7 +10,41 @@ class MewElement extends HTMLElement {
   }
 }
 
+/*
+ * 主题资源根路径（形如 /themes/<目录名>/assets，不要写死目录名，主题可改名安装）。
+ * DreamConfig 是主题脚本里的顶层 const，不是 window 属性，只能用 typeof 判断后直接访问。
+ */
+function mewAssetsBase() {
+  let base = ''
+  try {
+    if (typeof DreamConfig !== 'undefined' && DreamConfig && DreamConfig.theme_base) {
+      base = DreamConfig.theme_base
+    }
+  } catch (e) {
+    /* DreamConfig 尚未定义时走兜底 */
+  }
+  /* 去掉结尾斜杠，避免拼出 //lib/... */
+  return String(base || '/themes/theme-dream2-plus/assets').replace(/\/+$/, '')
+}
+
+/*
+ * 文章内 <mew-music> 依赖 APlayer 的样式表。
+ * 这个样式不在模板里，首次是由组件自己往 head 里追加的；
+ * 而 pjax 是整文档替换，新页面的 head 里没有它，后续文章里的播放器就会变成无样式的裸 HTML。
+ * 所以每个实例创建时按需确认一次（同 href 只保留一份，不重复插入）。
+ */
+function ensureMewAPlayerStyle() {
+  if (document.querySelector('link[href*="APlayer.min.css"]')) return
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = `${mewAssetsBase()}/lib/aplayer@1.10.1/APlayer.min.css`
+  document.head.appendChild(link)
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  /* 已经注册过就跳过：脚本万一被重复执行，重复 define 会抛 NotSupportedError 并中断后续注册 */
+  if (customElements.get('mew-hide')) return
+
   customElements.define(
     'mew-hide',
     class MewHide extends MewElement {
@@ -81,14 +115,15 @@ document.addEventListener('DOMContentLoaded', () => {
           order: this.getAttribute('order') || 'list',
           storageName: this.getAttribute('storageName') || 'aplayer-setting',
         }
+        /* 每次实例化都按需补齐样式（pjax 换页后 head 里不会有它） */
+        ensureMewAPlayerStyle()
+
         if (!('APlayer' in window)) {
           if (!MewMusic.prototype.load) {
             MewMusic.prototype.load = true
             MewMusic.prototype.await = []
             new Promise((resolve) => {
-              const $head = $('head')
-              $head.append('<link rel="stylesheet" href="/themes/theme-dream2-plus/assets/lib/aplayer@1.10.1/APlayer.min.css">')
-              Utils.cachedScript('/themes/theme-dream2-plus/assets/lib/aplayer@1.10.1/APlayer.min.js')
+              Utils.cachedScript(`${mewAssetsBase()}/lib/aplayer@1.10.1/APlayer.min.js`)
                 .done(() => resolve())
                 .fail(() => resolve())
             }).then(() => {
@@ -137,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
               item.lrc = item.lrc || ''
               item.name = item.name || DreamConfig.mew_music_default_name
               item.artist = item.artist || DreamConfig.mew_music_default_artist
-              item.cover = item.cover || '/themes/theme-dream2-plus/assets/img/music.webp'
+              item.cover = item.cover || `${mewAssetsBase()}/img/music.webp`
             })
             this.options.audio = musicList
           } else {
@@ -455,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
             MewPhotos.prototype.load = true
             MewPhotos.prototype.await = []
             new Promise((resolve) => {
-              Utils.cachedScript('/themes/theme-dream2-plus/assets/lib/justifiedGallery@3.8.1/jquery.justifiedGallery.min.js')
+              Utils.cachedScript(`${mewAssetsBase()}/lib/justifiedGallery@3.8.1/jquery.justifiedGallery.min.js`)
                 .done(() => resolve())
                 .fail(() => resolve())
             }).then(() => {
@@ -502,4 +537,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   )
+})
+
+/*
+ * pjax 换页后按需补齐：只有当前页面里真的存在 <mew-music> 时才处理，
+ * 避免没有音乐组件的页面每次导航都多做一次查询与插入。
+ * （head 是整块替换的，实例若已 upgrade 过不会再走构造函数，这里兜底）
+ */
+document.addEventListener('pjax:success', function () {
+  if (document.querySelector('mew-music')) ensureMewAPlayerStyle()
 })

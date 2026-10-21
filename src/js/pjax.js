@@ -17,8 +17,15 @@ const jsLoadCompletes = new Set(Array.from(document.querySelectorAll('script[src
  */
 const executedInlineScripts = new Set(Array.from(document.querySelectorAll('script:not([src])'), item => item.textContent))
 
-/* 主题在非 debug 模式下会接管 console.log，这里用原生输出，保证资源处理过程可见 */
-const log = (...args) => (window.logger || console.log)(...args)
+/*
+ * 调试日志：只在主题设置开启「调试模式」时输出（DreamConfig.enable_debug）。
+ * 用 window.logger 拿原生 console.log，避免被主题的日志接管逻辑吞掉。
+ */
+const isDebug = () => typeof DreamConfig !== 'undefined' && !!DreamConfig.enable_debug
+const log = (...args) => {
+  if (!isDebug()) return
+  ;(window.logger || console.log)(...args)
+}
 
 /*
  * 整文档替换前的脚本裁剪。
@@ -347,9 +354,9 @@ const pjax = new Pjax({
 })
 
 // pjax:send - 请求发送时
-document.addEventListener('pjax:send', function (event) {
-  console.log('------------------------')
-  console.log('pjax:send')
+document.addEventListener('pjax:send', function () {
+  log('------------------------')
+  log('pjax:send')
   //动画模式
   if (DreamConfig.pjax_animation_style === 'scale') {
     document.documentElement.classList.add('pjax-loading')
@@ -369,7 +376,7 @@ document.addEventListener('pjax:send', function (event) {
 })
 
 // pjax:success - 内容替换成功后
-document.addEventListener('pjax:success', function (event) {
+document.addEventListener('pjax:success', function () {
   log('pjax:success')
 
   /* 音乐模块已在新文档中就位，落账；顺手清掉历史上脱离文档的残留实例 */
@@ -410,20 +417,21 @@ document.addEventListener('pjax:success', function (event) {
    */
   syncMusicPlayback()
 
-  console.log('全部处理完成')
+  log('全部处理完成')
   window.DProgress && DProgress.done()
 })
 
 // pjax:error - 请求出错时
 document.addEventListener('pjax:error', function (event) {
-  console.log(`pjax:error error ${event.detail}`)
+  /* 错误用 console.error：不受调试开关影响，出问题时始终可见 */
+  console.error(`[pjax] 请求失败：${event.detail}`)
   /* 没切成就把搬走的音乐模块放回原位，避免播放器脱离文档继续出声、下次导航又建一个 */
   restoreMusicWidget()
 })
 
 // pjax:complete - 请求完成后（无论成功或失败）
-document.addEventListener('pjax:complete', function (event) {
-  console.log('pjax:complete')
+document.addEventListener('pjax:complete', function () {
+  log('pjax:complete')
 
   //动画模式
   if (DreamConfig.pjax_animation_style === 'scale') {

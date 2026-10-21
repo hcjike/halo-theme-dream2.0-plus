@@ -49,11 +49,17 @@ function snowCanvas() {
   this.canvas = snowcanvas
   this.ctx = snowcanvas.getContext('2d')
 
-  /* 窗口大小改变的处理 */
-  window.onresize = function() {
+  /*
+   * 窗口大小改变的处理。
+   * 用 addEventListener 而不是 window.onresize =：后者会覆盖其他脚本（含第三方）挂的 resize 回调；
+   * 画布只在初始化时创建一次（initEffects 有单次守卫），监听不会叠加；
+   * pjax 换页时画布由 persistEffects 搬到新 body，这里仍然有效。
+   */
+  window.addEventListener('resize', function () {
+    if (!snowcanvas.isConnected) return
     snowcanvas.width = document.body.offsetWidth
     snowcanvas.height = window.innerHeight
-  }
+  })
 
 }
 

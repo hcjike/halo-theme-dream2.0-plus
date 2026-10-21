@@ -124,6 +124,8 @@ class CursorSpecialEffects {
     style.width = this.renderCanvas.width = this.computerCanvas.width = this.globalWidth
     style.height = this.renderCanvas.height = this.computerCanvas.height = this.globalHeight
 
+    /* effects_ 前缀：pjax 换页时由 persistEffects 把画布搬到新 body，烟花特效不丢失 */
+    this.renderCanvas.id = 'effects_firework'
     document.body.append(this.renderCanvas)
 
     window.addEventListener('mousedown', this.handleMouseDown.bind(this))
