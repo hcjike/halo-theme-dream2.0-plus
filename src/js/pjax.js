@@ -181,6 +181,49 @@ const persistMusicWidget = (doc) => {
   newWidget.replaceWith(oldWidget)
 }
 
+/*
+ * 侧边栏音乐在「布局契约页面」（.container.hide-sidebar，左右两列被 display: none）里看不见，
+ * 声音却还在放，用户没法暂停。这里只做最小干预：
+ *   - 播放器不可见且正在播放 → 暂停，并记下「这次是我暂停的」；
+ *   - 回到可见页面时，只有上一次是自动暂停的才恢复播放；
+ *   - 其余情况（用户自己暂停、本来就没在放）一律不动。
+ * 移动端把 widget 搬进导航抽屉时，元素只是移出视口（rect 不为 0），仍算可见，不会触发暂停。
+ */
+let musicPausedByHidden = false
+
+const syncMusicPlayback = () => {
+  const meting = document.querySelector('meting-js')
+  const aplayer = meting && meting.aplayer
+  if (!aplayer || !aplayer.audio) {
+    /* 实例已重建/销毁，旧的暂停标记没有意义，清掉避免回来时莫名其妙开始播放 */
+    musicPausedByHidden = false
+    return
+  }
+
+  /* 只按几何尺寸判断：侧栏被 display: none 时 rect 全为 0；
+     移动端装进导航抽屉时元素只是被 transform 移出视口，尺寸仍在，仍算可见 */
+  const rect = meting.getBoundingClientRect()
+  const invisible = rect.width === 0 || rect.height === 0
+
+  if (invisible) {
+    if (!aplayer.audio.paused) {
+      musicPausedByHidden = true
+      aplayer.pause()
+    }
+    return
+  }
+
+  if (musicPausedByHidden) {
+    musicPausedByHidden = false
+    try {
+      const played = aplayer.play()
+      if (played && typeof played.catch === 'function') played.catch(function () {})
+    } catch (e) {
+      /* 浏览器可能因缺少用户手势拒绝自动恢复，忽略即可 */
+    }
+  }
+}
+
 /* 导航失败时把搬走的音乐模块放回原位，否则播放器会脱离文档继续出声、下次导航又建一个 */
 const restoreMusicWidget = () => {
   const move = pendingMusicMove
@@ -361,6 +404,12 @@ document.addEventListener('pjax:success', function (event) {
   /* 初始化文章界面 */
   window.postPjax && window.postPjax()
 
+  /*
+   * 等 initWidget 把 widget 归位后再判断播放器是否可见：
+   * 契约页面（侧栏 display: none）自动暂停，回到普通页面时只恢复这次自动暂停的播放。
+   */
+  syncMusicPlayback()
+
   console.log('全部处理完成')
   window.DProgress && DProgress.done()
 })
@@ -395,8 +444,16 @@ document.addEventListener('pjax:complete', function (event) {
     })
   })
 
-  /* 等 pjax 过渡结束、页面布局稳定后再插入 mermaid 渲染出的 SVG，避免过渡期间产生额外重排
-     （当前 pjax-loading 只有 opacity 过渡，并没有缩放，350ms 是历史遗留的缓冲，非强约束）；
+  /*
+   * pjax 后唯一的 mermaid 渲染入口：initMermaid 属于 ON_IDLE 组，
+   * 而 reinitAfterPjax 只跑 IMMEDIATE / AFTER_PAINT / ON_READY，不会带上它，所以这段不能删。
+   * 页面里没有待渲染的 mermaid 图时直接跳过，普通页面就不用白跑 6 秒轮询。
+   */
+  const pendingMermaid = Array.from(document.querySelectorAll('text-diagram[data-type=mermaid]'))
+    .some(function (el) { return !el.querySelector('svg') })
+  if (!pendingMermaid) return
+
+  /* 等 pjax 过渡结束、页面布局稳定后再插入 mermaid 渲染出的 SVG，避免过渡期间产生额外重排；
      initMermaid 在 mermaid 未就绪时会直接静默返回，所以这里轮询等待脚本就绪，最多重试 30 次（6s） */
   let mermaidRetry = 30
   const tryInitMermaid = () => {
