@@ -106,6 +106,60 @@ document.addEventListener('animationend', function (event) {
 })
 
 /*
+ * 卜算子（busuanzi）访客统计。
+ * 它是站点级脚本（只执行一次），内部按 id 找节点填充计数：
+ *   - 内置服务：节点 id 是 busuanzi_value_*；
+ *   - 自定义服务：节点 id 是 busuanzi_site_uv / busuanzi_site_pv（见 footer/busuanzi.html）。
+ * 整文档替换后新 body 里这些节点是空的，脚本又不会重跑，于是统计"消失"。
+ *
+ * 处理方式：不重新加载脚本（加载一次就会多记一次访问），
+ * 而是把这些统计容器整块搬到新文档里同 id 的位置 ——
+ * 旧实例在切换时会自己请求一次，写进的就是这些"活着"的节点，数值自然更新；
+ * 换页前再缓存一份文本，作为请求没回来时的兜底。
+ */
+const busuanziValues = {}
+
+const captureBusuanzi = (doc) => {
+  /* 移除新文档里的统计脚本：留着会被 pjax 执行，叠加一次访问计数 */
+  doc.querySelectorAll('script[src*="busuanzi"], script[pjax][src]').forEach(function (el) {
+    el.remove()
+  })
+}
+
+/* 换页前把当前页面的统计数字存下来 */
+const collectBusuanziValues = () => {
+  document.querySelectorAll('[id^="busuanzi_"]').forEach(function (el) {
+    if (el.id.indexOf('container') !== -1) return
+    busuanziValues[el.id] = el.textContent
+  })
+}
+
+/* 把旧的统计容器搬到新文档的同一位置：已加载的数值与脚本持有的节点引用都保留 */
+const persistBusuanzi = (doc) => {
+  doc.querySelectorAll('[id^="busuanzi_container_"]').forEach(function (newEl) {
+    const oldEl = document.getElementById(newEl.id)
+    if (!oldEl) return
+    newEl.replaceWith(document.adoptNode(oldEl))
+  })
+}
+
+const fillBusuanziValues = () => {
+  Object.keys(busuanziValues).forEach(function (id) {
+    const el = document.getElementById(id)
+    if (!el) return
+    /* 新文档里服务端渲染的初始值是 "0"，也视为"还没拿到数据" */
+    const text = el.textContent.trim()
+    if (!text || text === '0') el.textContent = busuanziValues[id]
+  })
+}
+
+const refreshBusuanzi = () => {
+  /* 只回填，不加载脚本：脚本每执行一次就会记一次访问 */
+  if (!document.querySelector('[id^="busuanzi_"]')) return
+  fillBusuanziValues()
+}
+
+/*
  * 侧边栏音乐播放器（<meting-js> Web Component）。
  * Meting 的生命周期是：节点移除时 disconnectedCallback 里 destroy 播放器，重新插入时 connectedCallback
  * 里再 _init + _parse 建一个新的 APlayer；整文档替换会让它「销毁 + 重建」，
@@ -336,6 +390,9 @@ const pjax = new Pjax({
   hooks: {
     // 拦截解析后的新页面文档：裁掉站点级脚本，其余资源与脚本由 pjax 自己加载执行
     document: (doc) => {
+      /* 统计脚本：移除新文档里那份，并把旧的统计容器搬过去（避免重复计数、保留已加载数值） */
+      captureBusuanzi(doc)
+      persistBusuanzi(doc)
       const pruned = pruneSiteScripts(doc)
       persistEffects(doc)
       /* 内容区插入即播放入场动画 */
@@ -357,6 +414,8 @@ const pjax = new Pjax({
 document.addEventListener('pjax:send', function () {
   log('------------------------')
   log('pjax:send')
+  /* 换页前存下统计数字，新页面脚本拉取失败时用它兜底 */
+  collectBusuanziValues()
   //动画模式
   if (DreamConfig.pjax_animation_style === 'scale') {
     document.documentElement.classList.add('pjax-loading')
@@ -416,6 +475,9 @@ document.addEventListener('pjax:success', function () {
    * 契约页面（侧栏 display: none）自动暂停，回到普通页面时只恢复这次自动暂停的播放。
    */
   syncMusicPlayback()
+
+  /* 卜算子统计：新 body 里的计数节点需要重新拉一次数据（有节点才执行） */
+  refreshBusuanzi()
 
   log('全部处理完成')
   window.DProgress && DProgress.done()
