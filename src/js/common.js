@@ -1491,8 +1491,14 @@ let timeLifeHour = -1
     }
   }
 
-  // 漏写分组名时给出提示，避免新增方法静默不执行
-  const missed = Object.keys(commonContext).filter((name) => !GROUPS.some((g) => g.includes(name)))
+  /*
+   * 漏写分组名时给出提示，避免新增方法静默不执行。
+   * reinitAfterPjax 是 pjax 后的聚合入口（本身会依次跑前三组），不属于任何初始化分组，
+   * 不排除的话每次加载都会误报一条警告。
+   */
+  const NON_GROUP_METHODS = ['reinitAfterPjax']
+  const missed = Object.keys(commonContext)
+    .filter((name) => !NON_GROUP_METHODS.includes(name) && !GROUPS.some((g) => g.includes(name)))
   if (missed.length) console.warn('[common] 未纳入执行分组的方法：', missed)
 
   // 1. 首帧前摘掉加载态：必须最早执行且不加动画，否则会命中 html:not(.loaded) 的兜底动画
