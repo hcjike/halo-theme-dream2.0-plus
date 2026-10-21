@@ -174,7 +174,8 @@ $(function () {
       t
     }
     let u = document.createElement('div')
-    u.setAttribute('id', 'clickCanvas'),
+    /* effects_ 前缀：pjax 换页时由 persistEffects 把容器搬到新 body，点击特效不丢失 */
+    u.setAttribute('id', 'effects_click'),
     u.style.cssText = 'position:fixed;left:0;top:0;z-index:1000;pointer-events:none;',
     document.body.appendChild(u)
     for (var l, h, d = 'E LN10 LN2 LOG2E LOG10E PI SQRT1_2 SQRT2 abs acos asin atan ceil cos exp floor log round sin sqrt tan atan2 pow max min'.split(' '), f = '__hasSketch', p = Math, g = 'canvas', m = 'webgl', y = 'dom', v = document, w = window, x = [], E = {
@@ -266,7 +267,7 @@ $(function () {
     },
     C
   }()
-  if (document.getElementById('clickCanvas')) {
+  if (document.getElementById('effects_click')) {
     function e(t, e, n) {
       this.init(t, e, n)
     }
@@ -306,7 +307,7 @@ $(function () {
       o = [],
       r = [],
       a = t.create({
-        container: document.getElementById('clickCanvas')
+        container: document.getElementById('effects_click')
       })
     a.spawn = function (t, a) {
       o.length >= n && r.push(o.shift()),

@@ -117,21 +117,22 @@
   // 初始化画布大小
   resizeCanvas()
 
-  // 窗口大小调整事件
-  window.onresize = resizeCanvas
+  /*
+   * 窗口尺寸与鼠标事件：用 addEventListener，不用 window.onresize/onmousemove 赋值，
+   * 避免覆盖其他脚本（含第三方）挂的回调。特效只初始化一次，监听不会叠加。
+   */
+  window.addEventListener('resize', resizeCanvas)
 
-  // 鼠标移动事件
-  window.onmousemove = function (event) {
-    event = event || window.event
+  window.addEventListener('mousemove', function (event) {
     mouseParticle.x = event.clientX
     mouseParticle.y = event.clientY
-  }
+  })
 
   // 鼠标离开事件
-  window.onmouseout = function () {
+  window.addEventListener('mouseout', function () {
     mouseParticle.x = null
     mouseParticle.y = null
-  }
+  })
 
   // 创建粒子数组
   var particles = []

@@ -19,6 +19,8 @@ function emojiCursor(options) {
     canvas.style.top = '0px'
     canvas.style.left = '0px'
     canvas.style.pointerEvents = 'none'
+    /* effects_ 前缀：pjax 换页时由 persistEffects 把画布搬到新 body，动画循环不中断 */
+    canvas.id = 'effects_cursor'
 
     if (hasWrapperEl) {
       canvas.style.position = 'absolute'

@@ -11,6 +11,9 @@ class MewElement extends HTMLElement {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  /* 已经注册过就跳过：脚本万一被重复执行，重复 define 会抛 NotSupportedError 并中断后续注册 */
+  if (customElements.get('mew-hide')) return
+
   customElements.define(
     'mew-hide',
     class MewHide extends MewElement {
