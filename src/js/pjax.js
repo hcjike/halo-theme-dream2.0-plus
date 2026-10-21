@@ -100,28 +100,66 @@ document.addEventListener('animationend', function (event) {
 
 /*
  * 侧边栏音乐播放器（<meting-js> Web Component）。
- * Meting 的行为是：节点从文档移除时 disconnectedCallback 里 destroy 播放器，重新插入时 connectedCallback
- * 里又会新建一个 APlayer。整文档替换会让它「销毁 + 重建」，异步创建时还可能旧实例继续出声、新实例再建一个，
- * 于是出现多个播放器同时播放。
+ * Meting 的生命周期是：节点移除时 disconnectedCallback 里 destroy 播放器，重新插入时 connectedCallback
+ * 里再 _init + _parse 建一个新的 APlayer；整文档替换会让它「销毁 + 重建」，
+ * 而 _parse 里的网络请求是异步的，在途时断开还会留下一个脱离文档、却仍在出声的实例——
+ * 这就是「偶尔出现多个播放器 / 两份声音」的来源。
  *
- * 处理：把旧 widget 节点整体搬到新文档的同一位置，并在搬之前让 Meting 实例不再重建——
- *   - lock = true：断开连接时不销毁；
- *   - 覆盖 _init/_parse：重新连接时不再创建第二个 APlayer；
- *   - 去掉节点内的 <script>：它们已经执行过，跟着 body 走会让 pjax 再次执行（customElements.define 会抛错）。
- * <link> 保留，播放器样式继续生效。
+ * 处理：
+ *   - 不管播放器有没有创建出来，一律接管：lock = true（断开不销毁）+ 覆盖 _init/_parse（重连不重建）；
+ *     在途的创建流程不受影响，它会把播放器挂到搬过去的同一个节点上；
+ *   - 删掉节点内的 <script>：它们已执行过，跟着 body 走会被 pjax 再执行一次（customElements.define 抛错）；
+ *   - 样式表补一份到新 head：节点搬运期间会短暂脱离文档，避免掉样式；
+ *   - 记录搬运目标：导航失败时放回原位，避免出现「看不见但还在播」的幽灵实例。
  */
+const knownMeting = new Set()
+let pendingMusicMove = null
+
+const takeOverMeting = (meting) => {
+  meting.lock = true
+  meting._init = function () {}
+  meting._parse = function () {}
+  knownMeting.add(meting)
+}
+
+/*
+ * 清掉「已不在当前文档、却还在出声」的实例：
+ * 搬运目标被丢弃（导航被打断/失败）时，节点会被 DOMParser 文档收养，
+ * 此时 isConnected 仍为 true，必须用 ownerDocument 判断，否则会漏杀。
+ */
+const cleanupGhostMeting = () => {
+  knownMeting.forEach(function (meting) {
+    if (meting.ownerDocument === document && meting.isConnected) return
+    knownMeting.delete(meting)
+    try {
+      if (meting.aplayer) meting.aplayer.destroy()
+    } catch (e) {
+      /* 实例已销毁，或播放器还在异步创建中，忽略 */
+    }
+  })
+}
+
 const persistMusicWidget = (doc) => {
   const oldWidget = document.querySelector('.widget.music')
   const newWidget = doc.querySelector('.widget.music')
-  if (!oldWidget || !newWidget) return
 
-  oldWidget.querySelectorAll('meting-js').forEach(function (meting) {
-    /* 播放器还没创建出来（异步请求中）时不折腾，交给浏览器按默认逻辑处理 */
-    if (!meting.aplayer) return
-    meting.lock = true
-    meting._init = function () {}
-    meting._parse = function () {}
-  })
+  /*
+   * 新页面没有音乐模块：旧节点会随旧 body 一起丢弃。
+   * 此时必须解除接管（lock = false），让它断开时按默认逻辑销毁，
+   * 否则会出现「页面上看不到播放器、音乐却还在响」，下次进有播放器的页面就变成两个。
+   */
+  if (!oldWidget || !newWidget) {
+    if (oldWidget && !newWidget) {
+      oldWidget.querySelectorAll('meting-js').forEach(function (meting) {
+        meting.lock = false
+        knownMeting.delete(meting)
+      })
+    }
+    cleanupGhostMeting()
+    return
+  }
+
+  oldWidget.querySelectorAll('meting-js').forEach(takeOverMeting)
   oldWidget.querySelectorAll('script').forEach(function (el) {
     el.remove()
   })
@@ -138,11 +176,28 @@ const persistMusicWidget = (doc) => {
     })
     if (!exists) doc.head.appendChild(link.cloneNode(true))
   })
+
+  pendingMusicMove = { node: oldWidget, parent: oldWidget.parentNode, next: oldWidget.nextSibling }
   newWidget.replaceWith(oldWidget)
 }
 
-/* 本次导航的目标路径（hooks.request 里记录），banner 是否隐藏取决于它 */
-let pendingPathname = '/'
+/* 导航失败时把搬走的音乐模块放回原位，否则播放器会脱离文档继续出声、下次导航又建一个 */
+const restoreMusicWidget = () => {
+  const move = pendingMusicMove
+  pendingMusicMove = null
+  if (!move) return
+  /* 节点被收养进 DOMParser 文档时 isConnected 仍为 true，必须看 ownerDocument */
+  if (move.node.ownerDocument === document) return
+  if (!move.parent || !move.parent.isConnected) {
+    cleanupGhostMeting()
+    return
+  }
+  try {
+    move.parent.insertBefore(move.node, move.next)
+  } catch (e) {
+    cleanupGhostMeting()
+  }
+}
 
 /*
  * banner 的初始化原本是 banner.html 里的内联脚本（含顶层 const，重复执行会因重复声明直接失败），
@@ -153,8 +208,12 @@ let pendingPathname = '/'
 const prepareBanner = (doc) => {
   const banner = doc.querySelector('.banner')
   if (!banner) return
-  /* 直接以最终态插入（首页展开、其余页折叠）：切换期间过渡是关闭的，全程无动画 */
-  banner.classList.toggle('hidden', pendingPathname !== '/')
+  /*
+   * 直接以最终态插入（首页展开、其余页折叠）：切换期间过渡是关闭的，全程无动画。
+   * 目标路径取 location.pathname —— pjax 在调用 document hook 之前已经 pushState 到新地址，
+   * 比依赖 request hook 里自己记的状态更可靠（那个状态一旦漏更新，banner 就会先显示再瞬间消失）。
+   */
+  banner.classList.toggle('hidden', location.pathname !== '/')
 
   const video = banner.querySelector('video')
   if (video) {
@@ -225,14 +284,6 @@ const pjax = new Pjax({
   timeout: 8000,
   scripts: false,
   hooks: {
-    /* 记录目标路径：banner 的隐藏状态依赖它 */
-    request: (request) => {
-      try {
-        pendingPathname = new URL(request.url, location.href).pathname
-      } catch (e) {
-        pendingPathname = location.pathname
-      }
-    },
     // 拦截解析后的新页面文档：裁掉站点级脚本，其余资源与脚本由 pjax 自己加载执行
     document: (doc) => {
       const pruned = pruneSiteScripts(doc)
@@ -252,14 +303,10 @@ const pjax = new Pjax({
   },
 })
 
-/* 切换代次：快速连续导航时，只有最后一次 complete 才解除抽屉守卫类 */
-let swapGeneration = 0
-
 // pjax:send - 请求发送时
 document.addEventListener('pjax:send', function (event) {
   console.log('------------------------')
   console.log('pjax:send')
-  swapGeneration++
   //动画模式
   if (DreamConfig.pjax_animation_style === 'scale') {
     document.documentElement.classList.add('pjax-loading')
@@ -281,6 +328,22 @@ document.addEventListener('pjax:send', function (event) {
 // pjax:success - 内容替换成功后
 document.addEventListener('pjax:success', function (event) {
   log('pjax:success')
+
+  /* 音乐模块已在新文档中就位，落账；顺手清掉历史上脱离文档的残留实例 */
+  pendingMusicMove = null
+  cleanupGhostMeting()
+
+  /*
+   * 非首页：直接把 banner 节点移出文档。
+   * 只靠 hidden 类，一旦有别处的样式覆盖 display/height，仍会留下一整块空白；
+   * banner 在非首页本来就没有任何用处，移除后 section 紧挨 navbar，顶部间距也是最紧凑的。
+   * 首页不动：新文档自带 banner，视频源/描述已由 prepareBanner 准备好。
+   */
+  if (location.pathname !== '/') {
+    document.querySelectorAll('.banner').forEach(function (el) {
+      el.remove()
+    })
+  }
 
   /*
    * head/body 已是新页面：样式、meta、页面脚本（含 .column-main 里的内联脚本、
@@ -305,6 +368,8 @@ document.addEventListener('pjax:success', function (event) {
 // pjax:error - 请求出错时
 document.addEventListener('pjax:error', function (event) {
   console.log(`pjax:error error ${event.detail}`)
+  /* 没切成就把搬走的音乐模块放回原位，避免播放器脱离文档继续出声、下次导航又建一个 */
+  restoreMusicWidget()
 })
 
 // pjax:complete - 请求完成后（无论成功或失败）
@@ -320,15 +385,13 @@ document.addEventListener('pjax:complete', function (event) {
   }
 
   /* banner 的初始状态（hidden / 视频源）已在切换前设好，等首帧渲染完成再恢复过渡；
-     同时解除抽屉/遮罩的切换禁用（两帧之后，避免收尾时又播一次动画）。
-     只在最后一次导航解除，防止连续点击时提前放开守卫。 */
-  const generation = swapGeneration
+     同时解除抽屉/遮罩的切换禁用（两帧之后，避免收尾时又播一次动画）。 */
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
       document.documentElement.classList.remove('banner-no-transition')
-      if (generation === swapGeneration) {
-        document.documentElement.classList.remove('pjax-swapping')
-      }
+      /* 必须无条件解除：一旦残留，抽屉会被永久钉成不可见。
+         快速连点时下一次导航会自己再加一次，不存在露出问题。 */
+      document.documentElement.classList.remove('pjax-swapping')
     })
   })
 

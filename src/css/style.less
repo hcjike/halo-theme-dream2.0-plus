@@ -133,6 +133,13 @@ html {
   min-width: 300px;
   text-rendering: optimizeLegibility;
   text-size-adjust: 100%;
+  /*
+   * 滚动条槽位常驻：自定义滚动条占 8px（::-webkit-scrollbar），
+   * 页面从「高」（如首页带 banner）切到「矮」（内容不足一屏）时滚动条消失，
+   * 可用宽度会突然多出 8px，整页内容跟着左右位移；pjax 切换与抽屉打开（overflow: hidden）时最明显。
+   * 保留槽位后宽度恒定，滚动条出现/消失不再影响布局。移动端滚动条是覆盖式的，该属性无副作用。
+   */
+  scrollbar-gutter: stable;
 
   &.loaded {
 
@@ -182,6 +189,7 @@ html {
   &.disable-scroll {
     overflow: hidden
   }
+
 
   /*
    * pjax 切换期间临时禁用抽屉/遮罩/搜索面板的过渡：
@@ -294,7 +302,8 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   scroll-behavior: smooth;
   overflow-x: hidden;
-  overflow-y: overlay;
+  /* overlay 是非标准值（Chrome 96 起已别名到 auto），写 auto 语义一致，避免以后行为漂移 */
+  overflow-y: auto;
 
   &::-webkit-scrollbar-thumb {
     background: var(--theme);
@@ -2551,6 +2560,10 @@ details[open] > summary::before {
   }
 
   &.hidden {
+    /* 直接不参与布局：只靠 height:0 / opacity:0 时，
+       一旦有更高优先级的 height（.full、断点规则）或过渡被禁用，就会留下一整块空白。
+       用 !important 兜住插件/自定义样式对 .banner 的 display 覆盖 */
+    display: none !important;
     height: 0;
     opacity: 0;
     margin-bottom: 0;
@@ -2563,9 +2576,14 @@ html.banner-no-transition .banner {
   transition: none !important;
 }
 
-/* 头部固定时，若banner缺失（相邻）或路由非/时banner被隐藏，收紧section顶部内边距 */
-header.navbar.fixed + section.section,
-header.navbar.fixed ~ .banner.hidden + section.section {
+/*
+ * banner 缺失（section 紧邻 navbar）或 banner 被隐藏时，收紧 section 顶部内边距。
+ * 不要限定 .fixed：header_fixed 默认关闭，限定后这两条在非固定头部下全部失效，
+ * banner 明明已经 display:none，section 却还留着 6rem 的 padding-top，看上去就是「banner 没了但空间还在」。
+ */
+header.navbar + section.section,
+header.navbar ~ .banner.hidden + section.section,
+.banner.hidden + section.section {
   padding-top: 2rem;
 }
 
@@ -4980,8 +4998,10 @@ header.navbar.fixed ~ .banner.hidden + section.section {
     }
   }
 
-  header.navbar.fixed + section.section,
-  header.navbar.fixed ~ .banner.hidden + section.section {
+  /* 同桌面：不限定 .fixed，否则非固定头部时 banner 隐藏后仍留着大块 padding */
+  header.navbar + section.section,
+  header.navbar ~ .banner.hidden + section.section,
+  .banner.hidden + section.section {
     padding-top: 1rem;
   }
 
