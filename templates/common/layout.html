@@ -5,8 +5,14 @@
       enableComment = ${baseEnableComment == true && site.comment.enable},
       logonUserName = ${#authentication.name != 'anonymousUser' ? #authentication.name : ''}">
 
-  <th:block th:with="stats = ${siteStatsFinder.getStats()}">
-    <th:block th:replace="~{common/head :: head}"/>
+  <!--
+    页面布局契约（Halo 2.26+）：插件页面经 templates/layout.html 传入 head 片段，
+    这里把它交给 common/head 渲染到 <head> 内；契约页面同时隐藏侧边栏（主要内容由插件接管）。
+  -->
+  <th:block th:with="stats = ${siteStatsFinder.getStats()},
+      isPageLayoutContract = ${pageLayoutContract != null and pageLayoutContract},
+      contractHead = ${isPageLayoutContract ? extraHead : null}">
+    <th:block th:replace="~{common/head :: head (extraHead = ${contractHead})}"/>
     <body>
     <th:block th:replace="~{common/theme_config}"/>
     <th:block th:replace="~{common/navbar}"/>
@@ -15,7 +21,7 @@
     </th:block>
     <section class="section">
       <div th:class="${theme.config.basic_style.sidebar_column != 'all' ? 'container two-column dream2-container-content-main' : 'container dream2-container-content-main' }"
-           th:classappend="${hideSidebar ? 'hide-sidebar' : ''}">
+           th:classappend="${((hideSidebar != null and hideSidebar) or isPageLayoutContract) ? 'hide-sidebar' : ''}">
         <div class="columns">
           <div class="column column-main pjax">
             <th:block th:replace="${content}"/>

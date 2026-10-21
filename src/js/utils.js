@@ -232,7 +232,8 @@ const Utils = {
    */
   initLikeEvent(buttonSelect, type, likeNumFunc) {
     let name = encrypt('agree-' + type)
-    $('body').on('click', buttonSelect, function (e) {
+    /* pjax 整文档替换会换掉 <body>，委托必须挂在 document 上，否则导航后点赞全部失效 */
+    $(document).on('click', buttonSelect, function (e) {
       e.stopPropagation()
       let $this = $(this)
       let id = $this.attr('data-id')

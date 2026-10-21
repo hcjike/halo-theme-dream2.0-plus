@@ -3,16 +3,17 @@ const journalContext = {
   /* 初始化事件 */
   initEvent() {
     if (journalContextInitial) return
-    let $body = $('body')
+    /* pjax 整文档替换会换掉 <body>，委托必须挂在 document 上，否则导航后这些点击全部失效 */
+    let $root = $(document)
     // 展开和关闭评论区事件
-    $body.on('click', '.journal .comment', function () {
+    $root.on('click', '.journal .comment', function () {
       $(this).parent().parent().siblings('.journal-comment').stop().slideToggle(200)
     })
     // 折叠日志区域
-    $body.on('click', '.journal-content>.expand-done', function () {
+    $root.on('click', '.journal-content>.expand-done', function () {
       Utils.foldBlock($(this).parent())
     })
-    $body.on('click', '.journal-operation-item>.share', function () {
+    $root.on('click', '.journal-operation-item>.share', function () {
       let $journal = $(this).parents('.journal')
       let title = DreamConfig.journals_share_title + $journal.find('.journal-date>em').text()
       let desc = $journal.children('.journal-content').children('.main-content').text()

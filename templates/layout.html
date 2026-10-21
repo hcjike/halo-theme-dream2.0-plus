@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<!--
+  页面布局契约（Halo 2.26+）
+  插件前台页面可通过 ~{layout :: html(head = ~{::head}, content = ~{::content})} 复用主题布局。
+  head 为空时由布局输出站点标题；content 为页面正文片段。
+  主题自身页面继续使用 common/layout :: layout(...)，两者共用同一份布局实现。
+-->
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+<th:block th:fragment="html (head, content)">
+  <!--
+    公共布局保持原有片段签名，调用方传入的 head 片段经上下文变量 extraHead 传递；
+    pageLayoutContract 用于让公共布局识别契约页面（隐藏侧边栏、补处理 head 资源等）
+  -->
+  <th:block th:with="extraHead = ${head}, pageLayoutContract = true">
+    <!-- 契约页面由插件接管正文，固定隐藏侧边栏 -->
+    <th:block th:replace="~{common/layout :: layout (showTitle = null, canonical = null, content = ${content}, isPost = false, hideSidebar = true)}"></th:block>
+  </th:block>
+</th:block>
+</body>
+</html>

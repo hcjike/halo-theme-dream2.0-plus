@@ -71,6 +71,30 @@ ai-summary-widget {
   transition: opacity 0.2s ease-out;
 }
 
+/*
+ * pjax 载入后的正文入场动画：用 clip-path 从上往下揭示，
+ * 相当于「内容从 0 高度向下撑开」，但不影响文档流（不会像 height 动画那样把下面的内容顶来顶去）；
+ * 叠一层淡入让揭示更柔和，避免裁剪边缘出现硬切。
+ * 标记由 pjax.js 在节点插入前加在 .column-main 上，
+ * 动画只播一次、不带 fill-mode，结束后裁剪与透明度都回到自身样式。
+ */
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.content-enter {
+  animation: content-enter 0.52s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: clip-path, opacity;
+}
+
 .tips {
   margin-bottom: -0.6rem;
   background-color: rgb(221 234 255 / 90%) !important;
@@ -157,6 +181,34 @@ html {
 
   &.disable-scroll {
     overflow: hidden
+  }
+
+  /*
+   * pjax 切换期间临时禁用抽屉/遮罩/搜索面板的过渡：
+   * 否则「关抽屉」会先播一遍展开收起动画，而节点又在切换中被替换，看起来就是一晃而过。
+   */
+  &.navbar-no-transition {
+    .navbar-slideout,
+    .navbar-mask,
+    .navbar-searchout,
+    .navbar-search .result {
+      transition: none !important;
+    }
+  }
+
+  /*
+   * pjax 切换窗口内（send → complete）直接把抽屉/遮罩钉成不可见：
+   * 即使切换瞬间有残留类或过渡被重新求值，也不会闪出「抽屉展开又收起」的动画。
+   * 窗口结束后移除该类，抽屉回到原本的 CSS 行为（默认隐藏，带 .active 才展开）。
+   */
+  &.pjax-swapping {
+    .navbar-slideout,
+    .navbar-mask,
+    .navbar-searchout {
+      visibility: hidden !important;
+      opacity: 0 !important;
+      transition: none !important;
+    }
   }
 
   &:not(.disable-scroll) {
@@ -538,18 +590,22 @@ table td, table th {
 
 .section {
   .container {
+    /*
+     * 页面布局契约（插件前台页面）：左右侧栏都不显示，正文占满可用宽度。
+     * 侧栏只是被隐藏、DOM 仍然存在，移动端 initWidget 依旧能把 widget 搬进导航抽屉。
+     */
     &.hide-sidebar {
-      width: 100vw !important;
+      width: 100% !important;
 
-      .column {
-        &-main {
-          flex: none;
-          width: 100% !important
-        }
+      .column-left,
+      .column-right {
+        display: none !important;
+      }
 
-        &-sidebar {
-          display: none;
-        }
+      .column-main {
+        flex: 1 1 auto;
+        width: 100% !important;
+        max-width: none;
       }
     }
   }
