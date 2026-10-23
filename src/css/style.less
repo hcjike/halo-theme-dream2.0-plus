@@ -3946,7 +3946,12 @@ header.navbar ~ .banner.hidden + section.section,
   word-break: break-word;
   color: var(--main);
   font-size: 1.1rem;
-  font-weight: 300;
+  /*
+   * 用默认字重 400：之前写死 300，正文里所有继承 font-weight 的元素（p、li、span、td…）
+   * 一起变细，配上自定义字体就显得发虚。
+   * 标题（h1-h6、.title）、strong 等有自己的 font-weight，不受这里影响。
+   */
+  font-weight: 400;
 
   &.article {
     padding-bottom: 30px;

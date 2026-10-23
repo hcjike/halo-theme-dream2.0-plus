@@ -3,8 +3,9 @@
 // 全局CSS变量
 html {
   --theme: #50bfff;
-  --main: #424242;
-  --title: #333;
+  /* 正文/标题：白底上再加深一档，长时间阅读对比更清楚（原 #424242 / #333） */
+  --main: #1f1f1f;
+  --title: #1a1a1a;
   --background: rgba(255, 255, 255, 0.94);
   --background-hover: #fff;
   --style-a: #fff;
@@ -15,12 +16,13 @@ html {
   --light-x: #d6d6d6;
   --light-y: #1f1f1f;
   --light-z: #ffffff;
-  --dark-a: #4a4a4a;
-  --dark-b: #888;
-  --dark-c: #333;
-  --dark-d: #9a9a9a;
-  --dark-e: #7a7a7a;
-  --dark-z: #5a5a5a;
+  /* 次级/辅助文字：整体加深，避免浅灰在白底上发虚（原 #888 / #9a9a9a 等） */
+  --dark-a: #3d3d3d;
+  --dark-b: #5c5c5c;
+  --dark-c: #262626;
+  --dark-d: #6b6b6b;
+  --dark-e: #595959;
+  --dark-z: #3d3d3d;
   --color-a: #409eff;
   --bg-a: rgb(242 246 252 / 80%);
   --bg-b: #f2f6fc;
@@ -44,8 +46,9 @@ html {
 
   &.night {
     --theme: #5d93db;
-    --main: #ccc;
-    --title: #d0d0d0;
+    /* 暗色正文/标题：比原始值略亮，但不到纯白，避免暗底上过曝（原 #ccc / #d0d0d0） */
+    --main: #d6d6d6;
+    --title: #e2e2e2;
     --background: rgba(40, 44, 52, .6);
     --background-hover: rgba(40, 44, 52, 0.8);
     --style-a: #080c28;
@@ -56,12 +59,13 @@ html {
     --light-x: #6e6e6e;
     --light-y: #fafafa;
     --light-z: #c2c2c2;
-    --dark-a: #888;
-    --dark-b: #777;
-    --dark-c: #cacaca;
-    --dark-d: #aaa;
-    --dark-e: #c0c0c0;
-    --dark-z: #aaaaaa;
+    /* 暗色辅助文字：比原始值略亮，长时间阅读不刺眼（原 #777 / #aaa） */
+    --dark-a: #9a9a9a;
+    --dark-b: #909090;
+    --dark-c: #d0d0d0;
+    --dark-d: #b2b2b2;
+    --dark-e: #c4c4c4;
+    --dark-z: #b4b4b4;
     --color-a: #cbba7d;
     --bg-a: rgb(65 66 67 / 80%);
     --bg-b: #303030;

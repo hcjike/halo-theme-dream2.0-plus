@@ -1,21 +1,19 @@
 const pjaxAnimationValidStyles = ['multi-cube', 'wave-pulse', 'orbit-system']
 
 /*
- * 页面内容区选择器：正文 + 侧边栏 widget 都在这里面（common/layout.html 的 .dream2-container-content-main）。
- * 这里的脚本每次导航都要重新执行——小工具（如 aplayer）、正文增强（公式、评论、代码高亮）都是这个区域里的。
+ * 内容列：每次导航只替换这一块（最早版本的刷新范围）。
+ * 导航栏、banner、侧栏 widget、页脚、head 全部沿用首屏节点，
+ * 站点级脚本和常驻实例（音乐播放器、特效画布、访客统计）不会被断开重建。
  */
-const CONTENT_SELECTOR = '.dream2-container-content-main, .column-main'
-
-/* 初始文档里的脚本视为已执行 */
-const jsLoadCompletes = new Set(Array.from(document.querySelectorAll('script[src]'), item => item.getAttribute('src')))
+const CONTENT_SELECTOR = '.column-main'
 
 /*
- * 已执行过的行内脚本内容。
- * 必须跨导航持久：整文档替换后，当前文档里的站点级内联脚本（theme_config、banner 等）已经消失，
- * 只看当前文档会把它们当成"新脚本"再执行一遍，顶层 const/let 直接报
- * "Identifier 'DreamConfig'/'video' has already been declared"。
+ * 布局容器（正文 + 两侧栏的外框，见 common/layout.html）。
+ * 侧栏是否隐藏完全由服务端渲染在它身上的 class 决定（.container.hide-sidebar，
+ * 布局契约页面恒带 hide-sidebar）。容器本身不参与替换，
+ * 所以每次导航必须把新页面的 class 抄过来，否则从普通页面进契约页面时侧栏不会隐藏。
  */
-const executedInlineScripts = new Set(Array.from(document.querySelectorAll('script:not([src])'), item => item.textContent))
+const CONTAINER_SELECTOR = '.dream2-container-content-main'
 
 /*
  * 调试日志：只在主题设置开启「调试模式」时输出（DreamConfig.enable_debug）。
@@ -27,62 +25,253 @@ const log = (...args) => {
   ;(window.logger || console.log)(...args)
 }
 
+/* ======================= 页面级资源同步 ======================= */
+
 /*
- * 整文档替换前的脚本裁剪。
- * pjax 会把 head/body 整体换成新页面，并把保留下来的 <script> 全部执行一遍，
- * 所以「站点级、已经跑过」的脚本必须先裁掉，否则会重复创建实例、重复绑事件：
- *   - 外部脚本按 src 判重；
- *   - 行内脚本按内容判重（内容跑过 = 站点级常驻脚本，例如 theme_config）。
- * 内容区（CONTENT_SELECTOR）里的是页面脚本：每次导航都必须执行，一律保留、不参与判重。
+ * 只替换正文列时，新页面 head/body 里的资源不会自己进文档，必须手动补：
+ *   - <link rel="stylesheet">、<script src> 这类外链；
+ *   - <style>、<script> 里的直接内容。
+ * 判定方式是跟「当前文档已有的资源」做差集（外链比 URL，内联比内容），
+ * 而不是靠 data-pjax 之类的白名单——插件页面的资源未必带标记，也不一定放在 /plugins 下。
  */
-const pruneSiteScripts = (doc) => {
-  const inContent = (el) => !!el.closest(CONTENT_SELECTOR)
-  let pruned = 0
 
-  /* 以当前文档为准重新登记一次：pjax.js 位于 body 脚本中段，
-     初始化时后面那些 <script> 还没解析进来（fancybox、不蒜子、自定义 js 等） */
-  document.querySelectorAll('script[src]').forEach(function (script) {
-    const src = script.getAttribute('src')
-    if (src) jsLoadCompletes.add(src)
+/* 已加载过的外链资源 */
+const loadedStyles = new Set()
+const loadedScripts = new Set()
+
+/* 已经插进文档的内联样式内容：同样的样式插两份会叠加优先级 */
+const appliedInlineStyles = new Set()
+
+/* 首屏就存在的内联脚本 = 站点级脚本，已经执行过，导航时不再重复执行 */
+const executedSiteScripts = new Set()
+
+/*
+ * 首屏资源快照：必须等到第一次导航时再拍。
+ * pjax.js 位于 body 脚本中段，后面还有 inline_body_html、公告弹窗（notice/*.html）等内联脚本，
+ * 此刻拍快照会漏掉它们，导航时就会被当成"新页面的脚本"重复执行——
+ * 那些脚本带顶层 const（如 notice_read_key），第二次执行直接报重复声明、整段失效。
+ */
+let documentAssetsRegistered = false
+const registerDocumentAssets = () => {
+  if (documentAssetsRegistered) return
+  documentAssetsRegistered = true
+  document.querySelectorAll('link[href]').forEach(function (el) {
+    loadedStyles.add(el.getAttribute('href'))
+  })
+  document.querySelectorAll('script[src]').forEach(function (el) {
+    loadedScripts.add(el.getAttribute('src'))
+  })
+  document.querySelectorAll('style').forEach(function (el) {
+    appliedInlineStyles.add(el.textContent)
+  })
+  document.querySelectorAll('script:not([src])').forEach(function (el) {
+    executedSiteScripts.add(el.textContent)
+  })
+}
+
+/* 正文列由 pjax 整体替换，里面的资源它自己会处理，不能再补一遍 */
+const inContentArea = (el) => !!el.closest(CONTENT_SELECTOR)
+
+/* 需要补进 head 的样式外链：stylesheet 或 preload as=style */
+const isStyleLink = (el) => {
+  const rel = (el.getAttribute('rel') || '').toLowerCase().split(/\s+/)
+  return rel.indexOf('stylesheet') !== -1 || (el.getAttribute('as') || '').toLowerCase() === 'style'
+}
+
+/* 与 HTML 规范一致的 JS MIME 判定；其余（application/json、text/template 等）只插入不执行 */
+const JS_MIME = /^((application|text)\/(x-)?(ecma|java)script|text\/(javascript1\.[0-5]|(j|live)script))$/
+const isExecutableScript = (el) => {
+  const type = (el.getAttribute('type') || '').trim().toLowerCase()
+  if (!type) return true
+  return type === 'module' || JS_MIME.test(type)
+}
+
+/* 从新页面文档里摘出当前文档还没有的资源；正文章节内的跳过（随节点一起替换、由 pjax 执行） */
+const collectPageAssets = (doc) => {
+  const styles = []
+  const inlineStyles = []
+  const scripts = []
+
+  doc.querySelectorAll('link[href]').forEach(function (el) {
+    if (inContentArea(el) || !isStyleLink(el)) return
+    const href = el.getAttribute('href')
+    if (!href || loadedStyles.has(href)) return
+    styles.push(el)
   })
 
-  doc.querySelectorAll('script[src]').forEach(function (script) {
-    if (inContent(script)) return
-    const src = script.getAttribute('src')
-    if (!src) return
-    if (jsLoadCompletes.has(src)) {
-      script.remove()
-      pruned++
+  doc.querySelectorAll('style').forEach(function (el) {
+    if (inContentArea(el)) return
+    const code = el.textContent
+    if (!code || !code.trim() || appliedInlineStyles.has(code)) return
+    inlineStyles.push(el)
+  })
+
+  doc.querySelectorAll('script').forEach(function (el) {
+    if (inContentArea(el)) return
+    if (el.hasAttribute('src')) {
+      const src = el.getAttribute('src')
+      if (!src || loadedScripts.has(src)) return
+      scripts.push(el)
       return
     }
-    jsLoadCompletes.add(src)
+    const code = el.textContent
+    /* 站点级内联脚本（首屏已经执行过）不再重复执行，页面独有的每次导航都要跑 */
+    if (!code || !code.trim() || executedSiteScripts.has(code)) return
+    scripts.push(el)
   })
 
-  doc.querySelectorAll('script:not([src])').forEach(function (script) {
-    if (inContent(script)) return
-    const code = script.textContent
-    if (!code || !code.trim()) return
-    if (executedInlineScripts.has(code)) {
-      script.remove()
-      pruned++
-      return
-    }
-    /* 保留即意味着它会被 pjax 执行，登记下来，下次导航直接裁掉 */
-    executedInlineScripts.add(code)
-  })
+  return {styles, inlineStyles, scripts}
+}
 
-  return pruned
+/* 样式外链：替换前就插进 head，等正文到位时基本已经加载完 */
+const addPageStyles = (links) => {
+  links.forEach(function (link) {
+    const href = link.getAttribute('href')
+    loadedStyles.add(href)
+    const el = link.cloneNode(true)
+    el.addEventListener('load', function () {
+      window.DProgress && DProgress.inc()
+    })
+    document.head.appendChild(el)
+    log('[pjax] 加载页面样式 ' + href)
+  })
 }
 
 /*
- * 特效画布/容器（#effects_sakura 等）由特效脚本挂在 body 下，脚本内部有常驻动画循环、只初始化一次。
- * 整文档替换前先把它们搬到新 body，避免导航后特效消失。
+ * 页面级脚本：在切换之前先用 preload 把请求发出去。
+ * 执行仍然等到 pjax:success（那时新内容已就位，串行执行才不会互相踩），
+ * 但下载可以和切换并行——否则像首页轮播的 swiper-bundle 要等内容插进来才开始下载，
+ * 轮播区会先空一块（`.swiper:not(.swiper-ready) .swiper-wrapper { opacity: 0 }`）等它。
  */
-const persistEffects = (doc) => {
-  if (!doc.body) return
-  document.body.querySelectorAll(':scope > [id^="effects_"]').forEach(function (el) {
-    doc.body.appendChild(el)
+const preloadPageScripts = (nodes) => {
+  nodes.forEach(function (node) {
+    const src = node.getAttribute('src')
+    if (!src) return
+    const link = document.createElement('link')
+    link.rel = 'preload'
+    link.as = 'script'
+    link.href = src
+    /* 跨域脚本要带同样的 crossorigin 才会命中预加载的那份响应 */
+    const crossOrigin = node.getAttribute('crossorigin')
+    if (crossOrigin !== null) link.setAttribute('crossorigin', crossOrigin)
+    document.head.appendChild(link)
+    log('[pjax] 预加载页面脚本 ' + src)
   })
+}
+
+/* 内联样式：切换完成立即生效，避免新内容无样式的一帧 */
+const addInlineStyles = (nodes) => {
+  nodes.forEach(function (node) {
+    const code = node.textContent
+    appliedInlineStyles.add(code)
+    document.head.appendChild(node.cloneNode(true))
+    log('[pjax] 应用页面内联样式 ' + code.trim().slice(0, 40).replace(/\s+/g, ' '))
+  })
+}
+
+/*
+ * 用新建的 <script> 执行新页面里的脚本：
+ *   - 内联内容插入即同步执行；
+ *   - 外链等 load 完成。
+ * 显式关掉 async 才能保证文档顺序（动态插入的脚本默认 async，会乱序执行）。
+ */
+const runScriptNode = (node) => new Promise(function (resolve) {
+  const src = node.getAttribute('src')
+  const executable = node.hasAttribute('src') || isExecutableScript(node)
+  const el = document.createElement('script')
+  node.getAttributeNames().forEach(function (name) {
+    el.setAttribute(name, node.getAttribute(name) || '')
+  })
+  el.async = false
+  el.textContent = node.textContent
+
+  let resolved = false
+  const next = () => {
+    if (resolved) return
+    resolved = true
+    resolve()
+  }
+
+  if (!src) {
+    document.head.appendChild(el)
+    /* 非 JS 的内联内容（JSON、模板）留在 head，供页面脚本读取；可执行的执行完即可移除，避免堆积 */
+    if (executable) el.remove()
+    next()
+    return
+  }
+
+  loadedScripts.add(src)
+  el.addEventListener('load', next)
+  el.addEventListener('error', function () {
+    log('[pjax] 页面脚本加载失败 ' + src)
+    next()
+  })
+  document.head.appendChild(el)
+  log('[pjax] 加载页面脚本 ' + src)
+  /* async 脚本本来就不保证顺序，不必等它 */
+  if (node.hasAttribute('async')) next()
+})
+
+/* 按文档顺序串行补齐脚本：插件页面的初始化脚本常常依赖它自己先加载的库 */
+const runPageScripts = async (nodes) => {
+  for (const node of nodes) {
+    await runScriptNode(node)
+  }
+}
+
+/* ======================= 布局 / head 同步 ======================= */
+
+/* 每次导航从新页面文档里摘出来的页面级信息：document 钩子填，切换完成后落地 */
+let pendingContainerClass = null
+let pendingTitle = null
+let pendingMetas = []
+let pendingCanonical = null
+let pendingInlineStyles = []
+let pendingScripts = []
+
+/*
+ * 导航序号：pjax:success 里有 await（等页面脚本下载），期间用户完全可能又点了别的链接。
+ * 等回来时如果序号变了，说明内容已经被下一次导航替换，这次剩下的初始化必须丢掉，
+ * 否则会对着新页面重复初始化（重复建 Swiper、重复包图片）。
+ */
+let navigationToken = 0
+
+const containerClassOf = (doc) => {
+  const el = doc.querySelector(CONTAINER_SELECTOR)
+  return el ? el.getAttribute('class') || '' : null
+}
+
+/*
+ * 布局契约：把新页面的容器 class 套到当前容器上。
+ * hide-sidebar / two-column 都写在这个 class 里，抄过来即可，
+ * 侧栏节点不动（CSS 只是 display: none），移动端抽屉里的 widget 也不受影响。
+ */
+const syncContainerClass = () => {
+  const className = pendingContainerClass
+  pendingContainerClass = null
+  if (className === null) return
+  document.querySelectorAll(CONTAINER_SELECTOR).forEach(function (el) {
+    if ((el.getAttribute('class') || '') === className) return
+    el.setAttribute('class', className)
+    log('[pjax] 同步布局容器 class：' + className)
+  })
+}
+
+/* title / 页面级 meta / canonical：只换这几项，head 里站点级的样式与脚本保持首屏那份 */
+const syncPageHead = () => {
+  if (pendingTitle) document.title = pendingTitle
+  pendingTitle = null
+
+  if (pendingMetas.length === 0 && !pendingCanonical) return
+  document.head.querySelectorAll('meta[name], meta[property], link[rel="canonical"]').forEach(function (el) {
+    el.remove()
+  })
+  pendingMetas.forEach(function (meta) {
+    document.head.appendChild(meta)
+  })
+  if (pendingCanonical) document.head.appendChild(pendingCanonical)
+  pendingMetas = []
+  pendingCanonical = null
 }
 
 /*
@@ -93,7 +282,7 @@ const persistEffects = (doc) => {
  * 侧栏不加：左右两列一起揭示会显得晃，正文单独入场更干净。
  */
 const markContentEnter = (doc) => {
-  doc.querySelectorAll('.column-main').forEach(function (el) {
+  doc.querySelectorAll(CONTENT_SELECTOR).forEach(function (el) {
     el.classList.add('content-enter')
   })
 }
@@ -106,144 +295,7 @@ document.addEventListener('animationend', function (event) {
 })
 
 /*
- * 卜算子（busuanzi）访客统计。
- * 它是站点级脚本（只执行一次），内部按 id 找节点填充计数：
- *   - 内置服务：节点 id 是 busuanzi_value_*；
- *   - 自定义服务：节点 id 是 busuanzi_site_uv / busuanzi_site_pv（见 footer/busuanzi.html）。
- * 整文档替换后新 body 里这些节点是空的，脚本又不会重跑，于是统计"消失"。
- *
- * 处理方式：不重新加载脚本（加载一次就会多记一次访问），
- * 而是把这些统计容器整块搬到新文档里同 id 的位置 ——
- * 旧实例在切换时会自己请求一次，写进的就是这些"活着"的节点，数值自然更新；
- * 换页前再缓存一份文本，作为请求没回来时的兜底。
- */
-const busuanziValues = {}
-
-const captureBusuanzi = (doc) => {
-  /* 移除新文档里的统计脚本：留着会被 pjax 执行，叠加一次访问计数 */
-  doc.querySelectorAll('script[src*="busuanzi"], script[pjax][src]').forEach(function (el) {
-    el.remove()
-  })
-}
-
-/* 换页前把当前页面的统计数字存下来 */
-const collectBusuanziValues = () => {
-  document.querySelectorAll('[id^="busuanzi_"]').forEach(function (el) {
-    if (el.id.indexOf('container') !== -1) return
-    busuanziValues[el.id] = el.textContent
-  })
-}
-
-/* 把旧的统计容器搬到新文档的同一位置：已加载的数值与脚本持有的节点引用都保留 */
-const persistBusuanzi = (doc) => {
-  doc.querySelectorAll('[id^="busuanzi_container_"]').forEach(function (newEl) {
-    const oldEl = document.getElementById(newEl.id)
-    if (!oldEl) return
-    newEl.replaceWith(document.adoptNode(oldEl))
-  })
-}
-
-const fillBusuanziValues = () => {
-  Object.keys(busuanziValues).forEach(function (id) {
-    const el = document.getElementById(id)
-    if (!el) return
-    /* 新文档里服务端渲染的初始值是 "0"，也视为"还没拿到数据" */
-    const text = el.textContent.trim()
-    if (!text || text === '0') el.textContent = busuanziValues[id]
-  })
-}
-
-const refreshBusuanzi = () => {
-  /* 只回填，不加载脚本：脚本每执行一次就会记一次访问 */
-  if (!document.querySelector('[id^="busuanzi_"]')) return
-  fillBusuanziValues()
-}
-
-/*
- * 侧边栏音乐播放器（<meting-js> Web Component）。
- * Meting 的生命周期是：节点移除时 disconnectedCallback 里 destroy 播放器，重新插入时 connectedCallback
- * 里再 _init + _parse 建一个新的 APlayer；整文档替换会让它「销毁 + 重建」，
- * 而 _parse 里的网络请求是异步的，在途时断开还会留下一个脱离文档、却仍在出声的实例——
- * 这就是「偶尔出现多个播放器 / 两份声音」的来源。
- *
- * 处理：
- *   - 不管播放器有没有创建出来，一律接管：lock = true（断开不销毁）+ 覆盖 _init/_parse（重连不重建）；
- *     在途的创建流程不受影响，它会把播放器挂到搬过去的同一个节点上；
- *   - 删掉节点内的 <script>：它们已执行过，跟着 body 走会被 pjax 再执行一次（customElements.define 抛错）；
- *   - 样式表补一份到新 head：节点搬运期间会短暂脱离文档，避免掉样式；
- *   - 记录搬运目标：导航失败时放回原位，避免出现「看不见但还在播」的幽灵实例。
- */
-const knownMeting = new Set()
-let pendingMusicMove = null
-
-const takeOverMeting = (meting) => {
-  meting.lock = true
-  meting._init = function () {}
-  meting._parse = function () {}
-  knownMeting.add(meting)
-}
-
-/*
- * 清掉「已不在当前文档、却还在出声」的实例：
- * 搬运目标被丢弃（导航被打断/失败）时，节点会被 DOMParser 文档收养，
- * 此时 isConnected 仍为 true，必须用 ownerDocument 判断，否则会漏杀。
- */
-const cleanupGhostMeting = () => {
-  knownMeting.forEach(function (meting) {
-    if (meting.ownerDocument === document && meting.isConnected) return
-    knownMeting.delete(meting)
-    try {
-      if (meting.aplayer) meting.aplayer.destroy()
-    } catch (e) {
-      /* 实例已销毁，或播放器还在异步创建中，忽略 */
-    }
-  })
-}
-
-const persistMusicWidget = (doc) => {
-  const oldWidget = document.querySelector('.widget.music')
-  const newWidget = doc.querySelector('.widget.music')
-
-  /*
-   * 新页面没有音乐模块：旧节点会随旧 body 一起丢弃。
-   * 此时必须解除接管（lock = false），让它断开时按默认逻辑销毁，
-   * 否则会出现「页面上看不到播放器、音乐却还在响」，下次进有播放器的页面就变成两个。
-   */
-  if (!oldWidget || !newWidget) {
-    if (oldWidget && !newWidget) {
-      oldWidget.querySelectorAll('meting-js').forEach(function (meting) {
-        meting.lock = false
-        knownMeting.delete(meting)
-      })
-    }
-    cleanupGhostMeting()
-    return
-  }
-
-  oldWidget.querySelectorAll('meting-js').forEach(takeOverMeting)
-  oldWidget.querySelectorAll('script').forEach(function (el) {
-    el.remove()
-  })
-  /*
-   * APlayer 的样式表在 widget 内部：节点整块搬运时会短暂脱离文档，样式会失效；
-   * 而且新页面的 head 里本来就没有它，switchHead 重建 head 时旧 head 的这份也带不过来。
-   * 所以每次切换都确保新 head 里有一份（同 href 只留一个），widget 内部的原 link 保留不删。
-   */
-  oldWidget.querySelectorAll('link[rel="stylesheet"]').forEach(function (link) {
-    const href = link.getAttribute('href')
-    if (!doc.head || !href) return
-    const exists = Array.prototype.some.call(doc.head.querySelectorAll('link[href]'), function (el) {
-      return el.getAttribute('href') === href
-    })
-    if (!exists) doc.head.appendChild(link.cloneNode(true))
-  })
-
-  pendingMusicMove = { node: oldWidget, parent: oldWidget.parentNode, next: oldWidget.nextSibling }
-  newWidget.replaceWith(oldWidget)
-}
-
-/*
- * 侧边栏音乐在「布局契约页面」（.container.hide-sidebar，左右两列被 display: none）里看不见，
+ * 侧边栏音乐播放器在「布局契约页面」（.container.hide-sidebar，左右两列被 display: none）里看不见，
  * 声音却还在放，用户没法暂停。这里只做最小干预：
  *   - 播放器不可见且正在播放 → 暂停，并记下「这次是我暂停的」；
  *   - 回到可见页面时，只有上一次是自动暂停的才恢复播放；
@@ -285,127 +337,73 @@ const syncMusicPlayback = () => {
   }
 }
 
-/* 导航失败时把搬走的音乐模块放回原位，否则播放器会脱离文档继续出声、下次导航又建一个 */
-const restoreMusicWidget = () => {
-  const move = pendingMusicMove
-  pendingMusicMove = null
-  if (!move) return
-  /* 节点被收养进 DOMParser 文档时 isConnected 仍为 true，必须看 ownerDocument */
-  if (move.node.ownerDocument === document) return
-  if (!move.parent || !move.parent.isConnected) {
-    cleanupGhostMeting()
-    return
-  }
+/* 单个初始化失败不影响后续：一处报错不能把后面的内容初始化全掐掉 */
+const runInit = (name) => {
+  const init = commonContext[name]
+  if (typeof init !== 'function') return
   try {
-    move.parent.insertBefore(move.node, move.next)
+    init()
   } catch (e) {
-    cleanupGhostMeting()
+    console.error(`[pjax] ${name} 初始化失败`, e)
   }
-}
-
-/*
- * banner 的初始化原本是 banner.html 里的内联脚本（含顶层 const，重复执行会因重复声明直接失败），
- * 整文档替换时它们会被当作站点级脚本裁掉，于是视频没有 src、该隐藏的页面也不带 hidden。
- * 这里在文档切换前把等价状态直接算好：隐藏与否、视频源/封面、描述的可见性；
- * 切换后由 common.js 的 initBanner 接手打字动画、initBannerVideo 处理窗口宽度变化。
- */
-const prepareBanner = (doc) => {
-  const banner = doc.querySelector('.banner')
-  if (!banner) return
-  /*
-   * 直接以最终态插入（首页展开、其余页折叠）：切换期间过渡是关闭的，全程无动画。
-   * 目标路径取 location.pathname —— pjax 在调用 document hook 之前已经 pushState 到新地址，
-   * 比依赖 request hook 里自己记的状态更可靠（那个状态一旦漏更新，banner 就会先显示再瞬间消失）。
-   */
-  banner.classList.toggle('hidden', location.pathname !== '/')
-
-  const video = banner.querySelector('video')
-  if (video) {
-    const attr = (name) => video.getAttribute(name) || ''
-    const src = attr('data-src')
-    const srcM = attr('data-src-mobile')
-    const poster = attr('data-poster')
-    const posterM = attr('data-poster-mobile')
-    const isMobile = window.Utils && typeof Utils.isMobileByScreenWidth === 'function'
-      ? Utils.isMobileByScreenWidth()
-      : false
-    const nextSrc = isMobile ? (srcM || src) : src
-    const nextPoster = isMobile ? (posterM || poster) : poster
-    /* 用 setAttribute 而不是 src 属性：此时节点还挂在 DOMParser 生成的文档上，
-       直接赋 src 会按 about:blank 解析成错误的绝对地址，插入后才会按真实 base 解析 */
-    if (nextSrc) video.setAttribute('src', nextSrc)
-    if (nextPoster) video.setAttribute('poster', nextPoster)
-    video.dataset.bannerMobile = String(isMobile)
-  }
-
-  const desc = banner.querySelector('.banner-info-desc')
-  if (desc) {
-    /* 未填写描述时整块隐藏，否则只剩一个一直闪烁的打字光标 */
-    if (!desc.textContent.trim()) {
-      desc.style.display = 'none'
-    } else {
-      /* 首帧前先藏起来，交给 initBanner 清空后逐字打印，避免先闪出完整文案 */
-      desc.style.visibility = 'hidden'
-    }
-  }
-}
-
-/*
- * head 整块换成新页面的内容（meta、title、样式、CSS 变量全部跟随服务端渲染）。
- * 只替换子节点、保留 <head> 元素本身，避免有代码缓存了 document.head 引用后失效；
- * href 相同的 <link> 复用原节点，避免每次导航都重建整批样式表链接造成闪烁。
- */
-const switchHead = (oldHead, newHead) => {
-  const reusable = new Map()
-  oldHead.querySelectorAll('link[href]').forEach(function (link) {
-    reusable.set(link.getAttribute('href'), link)
-  })
-  const nodes = Array.from(newHead.childNodes).map(function (node) {
-    if (node.nodeType === 1 && node.tagName === 'LINK') {
-      const reused = reusable.get(node.getAttribute('href'))
-      if (reused) {
-        reusable.delete(node.getAttribute('href'))
-        return reused
-      }
-    }
-    return document.adoptNode(node)
-  })
-  oldHead.replaceChildren(...nodes)
 }
 
 // 初始化 Pjax 实例
 const pjax = new Pjax({
-  /* 整文档替换：head、body 全部换成服务端渲染的新页面，新增资源随文档一起到位 */
-  selectors: ['head', 'body'],
-  switches: {
-    head: switchHead,
-  },
+  /*
+   * 只替换正文列：站点级节点（head、nav、banner、侧栏、footer）都不重建，
+   * 换页代价最小。随页面变化的内容单独同步（见 hooks）：
+   * 容器 class（布局契约的侧栏隐藏）、title/meta、页面级资源。
+   */
+  selectors: [CONTENT_SELECTOR],
   defaultTrigger: {
     exclude: 'a[target="_blank"], a[data-not-pjax]',
   },
   scrollTo: 0,
   scrollRestoration: true,
   timeout: 8000,
+  /* 站点级脚本随首屏常驻、不会重跑；新页面的脚本由 runPageScripts 自己管 */
   scripts: false,
   hooks: {
-    // 拦截解析后的新页面文档：裁掉站点级脚本，其余资源与脚本由 pjax 自己加载执行
+    // 拦截解析后的新页面文档：摘出需要在当前文档落地的页面级信息与资源
     document: (doc) => {
-      /* 统计脚本：移除新文档里那份，并把旧的统计容器搬过去（避免重复计数、保留已加载数值） */
-      captureBusuanzi(doc)
-      persistBusuanzi(doc)
-      const pruned = pruneSiteScripts(doc)
-      persistEffects(doc)
+      /* 首次导航时才给首屏资源拍快照（见 registerDocumentAssets 的说明） */
+      registerDocumentAssets()
+      navigationToken++
+      pendingContainerClass = containerClassOf(doc)
+      pendingTitle = doc.title
+      pendingMetas = Array.from(doc.head.querySelectorAll('meta[name], meta[property]'), function (el) {
+        return el.cloneNode(true)
+      })
+      const canonical = doc.head.querySelector('link[rel="canonical"]')
+      pendingCanonical = canonical ? canonical.cloneNode(true) : null
+
+      const assets = collectPageAssets(doc)
+      /* 样式直接插入 head 就开始下载；脚本先 preload，执行留到切换完成后 */
+      addPageStyles(assets.styles)
+      preloadPageScripts(assets.scripts)
+      pendingInlineStyles = assets.inlineStyles
+      pendingScripts = assets.scripts
+
       /* 内容区插入即播放入场动画 */
       markContentEnter(doc)
-      /* 音乐播放器整块搬过去，避免被销毁后重建出多个实例 */
-      persistMusicWidget(doc)
-      prepareBanner(doc)
-      /* 整块替换期间禁用 banner 过渡，避免出现"先显示再折叠"的动画 */
-      document.documentElement.classList.add('banner-no-transition')
-      log('[pjax] 新页面资源: css=' + doc.querySelectorAll('link[rel~="stylesheet"][href]').length
-        + ', js=' + doc.querySelectorAll('script[src]').length
-        + ', 内联脚本=' + doc.querySelectorAll('script:not([src])').length
-        + ', 跳过站点级脚本=' + pruned)
+      log('[pjax] 新页面资源: css=' + assets.styles.length
+        + ', 内联样式=' + pendingInlineStyles.length
+        + ', 脚本=' + pendingScripts.length)
+    },
+    // 节点替换完成、页面脚本执行之前：先落地布局、banner 显隐与 head，避免第一帧闪一下
+    switchesResult: (result) => {
+      syncContainerClass()
+      /*
+       * banner 在正文列之外，节点不重建，但显隐要跟着当前路径走。
+       * 必须在这一步（替换后、绘制前）定好：放到 pjax:success 里会等脚本执行完，
+       * 中间那份旧状态会先画出来，看上去就是"内容换了 banner 才收起来"。
+       */
+      runInit('showBanner')
+      syncPageHead()
+      addInlineStyles(pendingInlineStyles)
+      pendingInlineStyles = []
+      return result
     },
   },
 })
@@ -414,8 +412,6 @@ const pjax = new Pjax({
 document.addEventListener('pjax:send', function () {
   log('------------------------')
   log('pjax:send')
-  /* 换页前存下统计数字，新页面脚本拉取失败时用它兜底 */
-  collectBusuanziValues()
   //动画模式
   if (DreamConfig.pjax_animation_style === 'scale') {
     document.documentElement.classList.add('pjax-loading')
@@ -424,6 +420,15 @@ document.addEventListener('pjax:send', function () {
     if (el) el.classList.add('active')
   }
   window.DProgress && DProgress.start() && DProgress.inc()
+  /*
+   * 清掉跨页面残留的浮层（例如海报分享，模板里标了 .pjax-close）：
+   * 这些节点挂在 body 上，不会随正文替换消失，不清就会盖在新页面上。
+   */
+  document.querySelectorAll('.pjax-close').forEach(function (el) {
+    el.remove()
+  })
+  /* 上一次可能还开着图片预览：在导航开始时就关掉，不等新内容到位 */
+  runInit('closeFancybox')
   /*
    * 桌面端：整个切换窗口内把抽屉/遮罩钉成不可见，避免切换瞬间闪出展开/收起动画。
    * 手机端不加这个守卫——抽屉要保留正常的收起动画。
@@ -435,49 +440,56 @@ document.addEventListener('pjax:send', function () {
 })
 
 // pjax:success - 内容替换成功后
-document.addEventListener('pjax:success', function () {
+document.addEventListener('pjax:success', async function () {
   log('pjax:success')
 
-  /* 音乐模块已在新文档中就位，落账；顺手清掉历史上脱离文档的残留实例 */
-  pendingMusicMove = null
-  cleanupGhostMeting()
-
   /*
-   * 非首页：直接把 banner 节点移出文档。
-   * 只靠 hidden 类，一旦有别处的样式覆盖 display/height，仍会留下一整块空白；
-   * banner 在非首页本来就没有任何用处，移除后 section 紧挨 navbar，顶部间距也是最紧凑的。
-   * 首页不动：新文档自带 banner，视频源/描述已由 prepareBanner 准备好。
+   * 只有正文列是新节点，所以只重跑作用在内容区上的初始化；
+   * 侧栏 widget、导航栏、banner 节点都没重建，重跑它们的初始化只会重复绑事件。
+   *
+   * 这一段不依赖任何页面级脚本，先跑：否则新内容要等下面几支脚本下载完才有目录、
+   * 图片预览、导航高亮，首屏观感会被网络拖慢。
    */
-  if (location.pathname !== '/') {
-    document.querySelectorAll('.banner').forEach(function (el) {
-      el.remove()
-    })
+  /* 重新激活图片预览功能（后面 postPjax 的图片折叠依赖它包出来的结构，顺序不能换） */
+  runInit('initGallery')
+  /* 重新生成目录并修正公告显隐 */
+  runInit('initTocAndNotice')
+  /* 导航高亮 */
+  runInit('initNavbar')
+  /* 抽屉菜单的展开面板要跟着新的高亮项走（抽屉节点不重建，高亮项变了） */
+  runInit('sideMenuMobile')
+  /* 首屏不在首页时 banner 是折叠的，打字动画没启动过，回到首页补一次（函数内部只启动一次） */
+  runInit('initBanner')
+  /* 初始化任务列表，禁止点击 */
+  runInit('iniTaskItemDisabled')
+  /*
+   * 容器 class 已经跟随新页面更新过：契约页面（侧栏 display: none）自动暂停音乐，
+   * 回到普通页面时只恢复这次自动暂停的播放。
+   */
+  syncMusicPlayback()
+
+  /* 新页面的脚本按文档顺序补齐；下面这些初始化都依赖它们（Swiper/justifiedGallery/post.min.js 等） */
+  const token = navigationToken
+  const scripts = pendingScripts
+  pendingScripts = []
+  if (scripts.length > 0) await runPageScripts(scripts)
+  /* 等脚本期间用户又点走了：内容已经换掉，剩下的初始化交给新的那一次，别对着新页面重复初始化 */
+  if (token !== navigationToken) {
+    log('[pjax] 导航已切换，跳过本次剩余初始化')
+    return
   }
 
-  /*
-   * head/body 已是新页面：样式、meta、页面脚本（含 .column-main 里的内联脚本、
-   * data-* 配置脚本、ES Module）都由 pjax 按文档顺序加载并执行完，这里只重跑主题初始化。
-   * reinitAfterPjax 依次跑首帧 / 事件绑定 / DOM 就绪三组；document 级监听已去重，
-   * 元素级监听随新 DOM 重新绑定。
-   */
-  commonContext.reinitAfterPjax && commonContext.reinitAfterPjax()
+  /* 初始化轮播 */
+  runInit('initCarousel')
+  /* 相册页布局 */
+  runInit('initPhotosGallery')
 
   /* 内容区脚本暴露的初始化钩子 */
   window.tagcloudPjax && window.tagcloudPjax()
-  window.recentCommentsPjax && window.recentCommentsPjax()
   /* 初始化日志界面 */
   window.journalPjax && window.journalPjax()
   /* 初始化文章界面 */
   window.postPjax && window.postPjax()
-
-  /*
-   * 等 initWidget 把 widget 归位后再判断播放器是否可见：
-   * 契约页面（侧栏 display: none）自动暂停，回到普通页面时只恢复这次自动暂停的播放。
-   */
-  syncMusicPlayback()
-
-  /* 卜算子统计：新 body 里的计数节点需要重新拉一次数据（有节点才执行） */
-  refreshBusuanzi()
 
   log('全部处理完成')
   window.DProgress && DProgress.done()
@@ -487,8 +499,6 @@ document.addEventListener('pjax:success', function () {
 document.addEventListener('pjax:error', function (event) {
   /* 错误用 console.error：不受调试开关影响，出问题时始终可见 */
   console.error(`[pjax] 请求失败：${event.detail}`)
-  /* 没切成就把搬走的音乐模块放回原位，避免播放器脱离文档继续出声、下次导航又建一个 */
-  restoreMusicWidget()
 })
 
 // pjax:complete - 请求完成后（无论成功或失败）
@@ -503,11 +513,9 @@ document.addEventListener('pjax:complete', function () {
     if (el) el.classList.remove('active')
   }
 
-  /* banner 的初始状态（hidden / 视频源）已在切换前设好，等首帧渲染完成再恢复过渡；
-     同时解除抽屉/遮罩的切换禁用（两帧之后，避免收尾时又播一次动画）。 */
+  /* 等首帧渲染完成再解除抽屉/遮罩的切换禁用（两帧之后，避免收尾时又播一次动画） */
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      document.documentElement.classList.remove('banner-no-transition')
       /* 必须无条件解除：一旦残留，抽屉会被永久钉成不可见。
          快速连点时下一次导航会自己再加一次，不存在露出问题。 */
       document.documentElement.classList.remove('pjax-swapping')
@@ -516,7 +524,7 @@ document.addEventListener('pjax:complete', function () {
 
   /*
    * pjax 后唯一的 mermaid 渲染入口：initMermaid 属于 ON_IDLE 组，
-   * 而 reinitAfterPjax 只跑 IMMEDIATE / AFTER_PAINT / ON_READY，不会带上它，所以这段不能删。
+   * 这里不会经过组合初始化，所以这段不能删。
    * 页面里没有待渲染的 mermaid 图时直接跳过，普通页面就不用白跑 6 秒轮询。
    */
   const pendingMermaid = Array.from(document.querySelectorAll('text-diagram[data-type=mermaid]'))
