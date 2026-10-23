@@ -24,6 +24,14 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <link rel="preload stylesheet" as="style" th:href="@{/assets/css/style.min.css(mew=${theme.spec.version})}">
   <link th:if="${theme.config.basic_style.theme_style == 'celebration'}" rel="preload stylesheet" as="style" th:href="@{/assets/css/celebration.min.css(mew=${theme.spec.version})}">
 
+  <!--
+    轮播脚本提前把请求发出去：它原本写在 body 末尾（common/scripts.html），
+    首页首屏的轮播要等它下载完、initCarousel 跑完才真正显示（就绪前 .swiper-wrapper 是 opacity: 0）。
+    这里只发请求不执行，执行顺序仍是 body 里那个 <script>，不会打乱依赖。
+  -->
+  <link th:if="${isFirstIndex == true && !#lists.isEmpty(theme.config.basic_style.carousel_options)}"
+        rel="preload" as="script" th:href="@{/assets/lib/swiper@11.2.6/swiper-bundle.min.js}">
+
   <th:block th:if="${isPost}">
     <link data-pjax rel="preload stylesheet" as="style" th:href="@{/assets/css/post.min.css(mew=${theme.spec.version})}"/>
     <link th:if="${enableShare}" data-pjax rel="preload stylesheet" as="style" th:href="@{/assets/css/dshare.min.css(mew=${theme.spec.version})}"/>

@@ -1,7 +1,11 @@
 <div xmlns:th="https://www.thymeleaf.org"
      th:fragment="banner"
-     th:class="'banner' + (${theme.config.basic_style.banner_hide_mask} ? ' hide-mask' : '')"
+     th:class="'banner' + (${theme.config.basic_style.banner_hide_mask} ? ' hide-mask' : '') + (${isFirstIndex == true} ? '' : ' hidden')"
      th:classappend="${theme.config.basic_style.banner_full_screen} ? (${theme.config.basic_info.header_fixed} ? 'header-fixed-full' : 'full') : ''">
+    <!--
+      非首页在服务端就带上 hidden：整页加载（未开启 pjax）时 banner 从一开始就不占位，
+      不会出现"先显示一下再被脚本收起"的闪动；首页则直接渲染为可见，也不需要事后展开。
+    -->
     <script>
       (function () {
         var html = document.documentElement
@@ -9,9 +13,11 @@
         if (!banner) return
         // 初始加载时禁用 transition，避免首帧渲染产生折叠/展开动画
         html.classList.add('banner-no-transition')
-        if (location.pathname !== '/') {
-          banner.classList.add('hidden')
-        }
+        /*
+         * 服务端按 isFirstIndex 预判了首屏状态，这里再用真实路径校正一次（两个方向都校正），
+         * 保证在首帧之前就是最终态；运行时机就是 banner 解析到这里，早于任何绘制与 common.js。
+         */
+        banner.classList.toggle('hidden', location.pathname !== '/')
         // 等待首帧渲染完成后恢复 transition
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {

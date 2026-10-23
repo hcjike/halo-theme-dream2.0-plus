@@ -58,9 +58,9 @@ function saveRememberedScrollTop(top) {
 }
 
 /*
- * pjax 采用整文档替换（head + body），body 里的导航栏、页脚、按钮组都会被重建。
- * 因此绑在具体元素上的监听会一起消失，必须绑到 document 上用选择器委托；
- * 绑在 document/window 上的监听只能绑一次，否则每次导航都会叠加。
+ * pjax 只替换正文列（.column-main），导航栏、侧栏、页脚等站点级节点始终是首屏那一份。
+ * 所以：绑在 document/window 上的监听只能绑一次，否则每次导航都会叠加；
+ * 作用在正文里的监听仍然建议用 document 委托，避免被替换后的新节点漏绑。
  */
 const documentBound = new Set()
 const bindDocumentOnce = (key, handler) => {
@@ -71,6 +71,12 @@ const bindDocumentOnce = (key, handler) => {
 
 /* 特效脚本每次执行都会起一条内部动画循环，只允许跑一次 */
 let effectsInited = false
+
+/* banner 描述的打字循环只启动一次：banner 节点不随 pjax 重建，重跑会把打了一半的文案当完整文案重打 */
+let bannerDescInited = false
+
+/* 当前轮播实例：换页时节点被替换，重建前要先销毁旧实例，避免监听/观察器叠加 */
+let carouselInstance = null
 
 const commonContext = {
   /* 初始化widget */
@@ -85,7 +91,7 @@ const commonContext = {
 
     const $window = $(window)
 
-    /* 每次导航都会重跑 initWidget，window 不会被替换，用命名空间先解绑避免监听叠加 */
+    /* window 不会被替换，用命名空间先解绑，避免重复初始化时监听叠加 */
     $(window).off('resize.widgetLayout').on('resize.widgetLayout', Utils.debounce(checkWidgetPosition, 100))
 
     // 按顺序插入元素到目标容器
@@ -212,12 +218,14 @@ const commonContext = {
     const $bannerInfoDesc = $('.banner-info-desc')
     if ($bannerInfoDesc.length === 0) return
     /*
-     * banner 处于折叠态时（pjax 切到首页的瞬间、或本来就不是首页）不要启动：
+     * banner 处于折叠态时（本来就不是首页）不要启动：
      * 下面要按真实高度冻结 min-height，折叠态量到的是 0，会让打字过程中内容块上下跳。
-     * 首页的展开动画结束后由 pjax 再调用一次。
+     * 首屏不在首页时由 pjax 在回到首页后再调用一次。
      */
     const bannerEl = document.querySelector('.banner')
     if (bannerEl && (bannerEl.classList.contains('hidden') || bannerEl.offsetHeight === 0)) return
+    /* 只启动一次：重跑会把已经打了一半的文案当成完整文案，从头再打一遍 */
+    if (bannerDescInited) return
     const bannerNode = $bannerInfoDesc[0]
     const bannerDesc = $bannerInfoDesc.text()
     // 没有可展示的文字时不启动循环，避免长期空转
@@ -234,6 +242,15 @@ const commonContext = {
     let lastTime = 0
 
     registerRafLoop('banner-desc', bannerNode, (ts) => {
+      /*
+       * banner 折叠时（pjax 切到非首页）不做任何写入：
+       * 节点不会随导航重建，循环会一直跑，折叠期间改文本纯属浪费，还可能触发无谓的样式重算。
+       * 只看 class 不读 offsetHeight，避免每帧强制重排；把计时清零，恢复显示时重新起算。
+       */
+      if (bannerEl && bannerEl.classList.contains('hidden')) {
+        lastTime = 0
+        return
+      }
       // 初始化时间
       if (lastTime === 0) {
         lastTime = ts
@@ -260,6 +277,7 @@ const commonContext = {
         lastTime = ts - (elapsed % currentInterval)
       }
     })
+    bannerDescInited = true
   },
   /* 激活图片预览功能 */
   initGallery() {
@@ -628,12 +646,16 @@ const commonContext = {
   },
   /* 移动端侧边栏菜单手风琴 */
   sideMenuMobile() {
-    /* 抽屉随整文档替换被重建，展开状态每次都要重新应用 */
-    $('.navbar-slideout-menu .current')
-      .parents('.panel-body')
-      .show()
-      .siblings('.panel')
-      .addClass('in')
+    /*
+     * 抽屉节点不随 pjax 重建，但导航后高亮项会变：
+     * 只展开高亮项所在的面板，上一次打开的那块必须收起，否则会同时开着两个。
+     */
+    $('.navbar-slideout-menu .panel-body').each(function () {
+      const $body = $(this)
+      const active = $body.find('.current').length > 0
+      $body.toggle(active)
+      $body.siblings('.panel').toggleClass('in', active)
+    })
     bindDocumentOnce('sideMenuMobile', () => {
       $(document).on('click', '.navbar-slideout-menu .panel', function (e) {
         /* 如果点击目标是链接，不阻止冒泡，让 Pjax 正常处理导航 */
@@ -699,8 +721,22 @@ const commonContext = {
   /** 初始化轮播 **/
   initCarousel() {
     const $swiper = $('.swiper')
+    /* 非首页没有轮播：直接跳过，避免 Swiper 找不到元素时报错中断后续初始化 */
+    if ($swiper.length === 0) return
+    /*
+     * 换页会换掉整个轮播节点，旧实例挂在 window 上的 resize 监听和元素上的 IntersectionObserver
+     * 不会自己消失，来回首页几次就会叠加几个；先销毁再重建。
+     */
+    if (carouselInstance) {
+      try {
+        carouselInstance.destroy(true, true)
+      } catch (e) {
+        /* 旧实例已失效时忽略 */
+      }
+      carouselInstance = null
+    }
     try {
-      window.Swiper && new Swiper('.swiper', {
+      if (window.Swiper) carouselInstance = new Swiper('.swiper', {
         loop: true,
         parallax: true,
         effect: 'slide',
@@ -1300,7 +1336,7 @@ const commonContext = {
   initEffects() {
     if (Utils.isMobile() && !DreamConfig.mobile_special_effects) return
     /* 特效脚本每次执行都会新建画布并在内部起一条动画循环，重复执行会叠加循环，
-       所以只跑一次；画布节点由 pjax 整文档替换时搬家保留（见 pjax.js 的 persistEffects） */
+       所以只跑一次；pjax 换页只替换正文列，画布挂在 body 上不会被替换 */
     if (effectsInited) return
     effectsInited = true
     DreamConfig.cursor_move && Utils.cachedScript(`${DreamConfig.theme_base}/js/cursor/move/${DreamConfig.cursor_move}.min.js?mew=${DreamConfig.theme_version}`)
@@ -1326,33 +1362,15 @@ const commonContext = {
     })
   },
   /*
-   * banner 视频随窗口宽度切换视频源/封面。
-   * 整文档替换前 pjax 已按当时宽度设好 data-* 对应的 src（模板内联脚本会被裁剪，不能重跑），
-   * 这里只负责宽度变化时的重新选源，监听只绑一次。
+   * 自动播放Banner视频。
+   * banner 由模板内联脚本负责按窗口宽度选源（它自己的 resize 监听一直有效），
+   * 这里只管自动播放与循环，播放状态每次现查，不缓存节点。
    */
-  initBannerVideo() {
-    bindDocumentOnce('bannerVideo', () => {
-      $(window).off('resize.bannerVideo').on('resize.bannerVideo', Utils.debounce(() => {
-        const video = document.querySelector('.banner video')
-        if (!video) return
-        const isMobile = Utils.isMobileByScreenWidth()
-        if (video.dataset.bannerMobile === String(isMobile)) return
-        const attr = (name) => video.getAttribute(name) || ''
-        const src = isMobile ? (attr('data-src-mobile') || attr('data-src')) : attr('data-src')
-        const poster = isMobile ? (attr('data-poster-mobile') || attr('data-poster')) : attr('data-poster')
-        if (src) video.src = src
-        if (poster) video.poster = poster
-        video.dataset.bannerMobile = String(isMobile)
-      }, 100))
-    })
-  },
-  /* 自动播放Banner视频 */
   playBannerVideo() {
     if (!document.querySelector('.banner')) {
       return
     }
 
-    /* 视频节点会随整文档替换被重建，播放状态每次现查，不能缓存节点 */
     function playVideo() {
       var videoElement = document.querySelector('.banner video')
       if (!videoElement) return
@@ -1431,7 +1449,7 @@ let timeLifeHour = -1
   const AFTER_PAINT = [
     'searchDialog', 'initDropMenu', 'initLogonMenu', 'drawerMobile', 'back2Top',
     'maskClose', 'sideMenuMobile', 'initEvent', 'offscreenTip', 'closeFancybox',
-    'initSecurityLink', 'initGrayMode', 'playBannerVideo', 'initBannerVideo',
+    'initSecurityLink', 'initGrayMode', 'playBannerVideo',
   ]
 
   /* DOM 就绪后：依赖完整 DOM 或外部库 */
@@ -1455,16 +1473,6 @@ let timeLifeHour = -1
       console.error(`[common] ${name} 初始化失败`, e)
     }
   })
-
-  /*
-   * pjax 整文档替换后的重新初始化：head/body 全部换成新节点。
-   * 元素级监听随新 DOM 重新绑定，document/window 级监听由 bindDocumentOnce 去重。
-   */
-  commonContext.reinitAfterPjax = () => {
-    run(IMMEDIATE)
-    run(AFTER_PAINT)
-    run(ON_READY)
-  }
 
   // 事件可能已经触发（异步脚本、pjax 替换等），这里统一兜底
   const onReady = (cb) => {
@@ -1493,12 +1501,10 @@ let timeLifeHour = -1
 
   /*
    * 漏写分组名时给出提示，避免新增方法静默不执行。
-   * reinitAfterPjax 是 pjax 后的聚合入口（本身会依次跑前三组），不属于任何初始化分组，
-   * 不排除的话每次加载都会误报一条警告。
+   * pjax 换页只替换正文列、只重跑内容区相关初始化（见 pjax.js），其余方法都只在首屏执行，同样必须归组。
    */
-  const NON_GROUP_METHODS = ['reinitAfterPjax']
   const missed = Object.keys(commonContext)
-    .filter((name) => !NON_GROUP_METHODS.includes(name) && !GROUPS.some((g) => g.includes(name)))
+    .filter((name) => !GROUPS.some((g) => g.includes(name)))
   if (missed.length) console.warn('[common] 未纳入执行分组的方法：', missed)
 
   // 1. 首帧前摘掉加载态：必须最早执行且不加动画，否则会命中 html:not(.loaded) 的兜底动画
