@@ -389,8 +389,7 @@ const pjax = new Pjax({
       markContentEnter(doc)
       log('[pjax] 新页面资源: css=' + assets.styles.length
         + ', 内联样式=' + pendingInlineStyles.length
-        + ', 脚本=' + pendingScripts.length
-        + ', 容器class=' + pendingContainerClass)
+        + ', 脚本=' + pendingScripts.length)
     },
     // 节点替换完成、页面脚本执行之前：先落地布局、banner 显隐与 head，避免第一帧闪一下
     switchesResult: (result) => {
