@@ -2400,14 +2400,13 @@ details[open] > summary::before {
   width: 100%;
   height: 54vh;
   position: relative;
-  margin-bottom: -4rem;
   background-position: center;
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
 
   /* 全屏 banner：扣掉固定标题栏的高度，避免首屏内容被标题栏压住 */
   &.header-fixed-full {
@@ -2515,7 +2514,6 @@ details[open] > summary::before {
     display: none !important;
     height: 0;
     opacity: 0;
-    margin-bottom: 0;
     pointer-events: none;
   }
 }
@@ -2526,12 +2524,13 @@ html.banner-no-transition .banner {
 }
 
 /*
- * banner 缺失（section 紧邻 navbar）或 banner 被隐藏时，收紧 section 顶部内边距。
- * banner 是 display:none 的，不能还留着 6rem 的 padding-top，否则看上去就是「banner 没了但空间还在」。
+ * 有 banner（显示或隐藏）或 section 紧邻 navbar 时，section 顶部留白收窄到 2rem。
+ * 以前是 banner 用 margin-bottom: -4rem 把 section 往上拉，再由 6rem 的 padding-top 抵消，
+ * 净留白同样是 2rem；负外边距只是让 section 的盒子压住 banner 底部 4rem（section 无背景，看不出来），
+ * 却把「留白」拆成了两处，banner 显隐时容易算错。这里直接写实际留白。
  */
 header.navbar + section.section,
-header.navbar ~ .banner.hidden + section.section,
-.banner.hidden + section.section {
+.banner + section.section {
   padding-top: 2rem;
 }
 
@@ -4951,10 +4950,9 @@ header.navbar ~ .banner.hidden + section.section,
     }
   }
 
-  /* 同桌面：banner 隐藏后收紧 section 顶部内边距 */
+  /* 同桌面：有 banner 或 section 紧邻 navbar 时，顶部留白 1rem（原 5rem - 4rem） */
   header.navbar + section.section,
-  header.navbar ~ .banner.hidden + section.section,
-  .banner.hidden + section.section {
+  .banner + section.section {
     padding-top: 1rem;
   }
 
