@@ -53,14 +53,6 @@ ai-summary-widget {
   background: var(--light-z) !important;
 }
 
-.navbar-above {
-
-  &.animation {
-    transform: translateY(-100%);
-  }
-
-}
-
 .column-main, .load-block {
   opacity: 0;
   transition: opacity 0.2s ease-out;
@@ -143,14 +135,6 @@ html {
 
   &.loaded {
 
-    .navbar-above {
-      z-index: 100;
-
-      &.animation {
-        transform: translateY(0);
-      }
-    }
-
     .column-main {
       opacity: 1;
     }
@@ -166,14 +150,6 @@ html {
 
   /* 兜底：JS 未能及时添加 .loaded（弱网、脚本报错或被拦截）时，1s 后强制显示，避免长时间白屏 */
   &:not(.loaded) {
-
-    .navbar-above {
-      z-index: 100;
-
-      &.animation {
-        animation: navbar-force-show 0.3s 1s forwards;
-      }
-    }
 
     .column-main, .load-block, .column-side {
       animation: force-show 0.3s 1s forwards;
@@ -221,14 +197,6 @@ html {
 
   &:not(.disable-scroll) {
 
-    body.move-up .navbar-above {
-      opacity: 1;
-
-      &.animation {
-        transform: translate3d(0, -100%, 0);
-      }
-    }
-
     .actions.show {
       right: 16px;
     }
@@ -267,7 +235,7 @@ html {
   }
 }
 
-/* .loaded 兜底动画，保证 JS 失效时内容与导航栏最终可见 */
+/* .loaded 兜底动画，保证 JS 失效时内容最终可见 */
 @keyframes force-show {
   0% {
     opacity: 0;
@@ -275,16 +243,6 @@ html {
 
   100% {
     opacity: 1;
-  }
-}
-
-@keyframes navbar-force-show {
-  0% {
-    transform: translateY(-100%);
-  }
-
-  100% {
-    transform: translateY(0);
   }
 }
 
@@ -697,9 +655,9 @@ table td, table th {
 }
 
 .title {
-  color: var(--dark-c);
+  color: var(--title);
   font-size: 1.5rem;
-  font-weight: 400;
+  font-weight: 450;
   line-height: 1.25;
 
   .top {
@@ -982,12 +940,6 @@ table td, table th {
        这里只保留显隐/配色相关的过渡 */
     transition: transform 0.5s ease, opacity 0.5s ease, background-color 0.5s ease, box-shadow 0.5s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.1);
-
-    &.animation {
-      position: fixed;
-      top: 0;
-      z-index: 6;
-    }
 
     .container {
       display: flex;
@@ -2448,19 +2400,15 @@ details[open] > summary::before {
   width: 100%;
   height: 54vh;
   position: relative;
-  margin-bottom: -4rem;
   background-position: center;
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
 
-  &.full {
-    height: 100vh;
-  }
-
+  /* 全屏 banner：扣掉固定标题栏的高度，避免首屏内容被标题栏压住 */
   &.header-fixed-full {
     height: calc(100vh - 3.5rem);
   }
@@ -2561,12 +2509,11 @@ details[open] > summary::before {
 
   &.hidden {
     /* 直接不参与布局：只靠 height:0 / opacity:0 时，
-       一旦有更高优先级的 height（.full、断点规则）或过渡被禁用，就会留下一整块空白。
+       一旦有更高优先级的 height（.header-fixed-full、断点规则）或过渡被禁用，就会留下一整块空白。
        用 !important 兜住插件/自定义样式对 .banner 的 display 覆盖 */
     display: none !important;
     height: 0;
     opacity: 0;
-    margin-bottom: 0;
     pointer-events: none;
   }
 }
@@ -2577,13 +2524,13 @@ html.banner-no-transition .banner {
 }
 
 /*
- * banner 缺失（section 紧邻 navbar）或 banner 被隐藏时，收紧 section 顶部内边距。
- * 不要限定 .fixed：header_fixed 默认关闭，限定后这两条在非固定头部下全部失效，
- * banner 明明已经 display:none，section 却还留着 6rem 的 padding-top，看上去就是「banner 没了但空间还在」。
+ * 有 banner（显示或隐藏）或 section 紧邻 navbar 时，section 顶部留白收窄到 2rem。
+ * 以前是 banner 用 margin-bottom: -4rem 把 section 往上拉，再由 6rem 的 padding-top 抵消，
+ * 净留白同样是 2rem；负外边距只是让 section 的盒子压住 banner 底部 4rem（section 无背景，看不出来），
+ * 却把「留白」拆成了两处，banner 显隐时容易算错。这里直接写实际留白。
  */
 header.navbar + section.section,
-header.navbar ~ .banner.hidden + section.section,
-.banner.hidden + section.section {
+.banner + section.section {
   padding-top: 2rem;
 }
 
@@ -5003,10 +4950,9 @@ header.navbar ~ .banner.hidden + section.section,
     }
   }
 
-  /* 同桌面：不限定 .fixed，否则非固定头部时 banner 隐藏后仍留着大块 padding */
+  /* 同桌面：有 banner 或 section 紧邻 navbar 时，顶部留白 1rem（原 5rem - 4rem） */
   header.navbar + section.section,
-  header.navbar ~ .banner.hidden + section.section,
-  .banner.hidden + section.section {
+  .banner + section.section {
     padding-top: 1rem;
   }
 
@@ -5101,14 +5047,13 @@ header.navbar ~ .banner.hidden + section.section,
     }
   }
 
-  body.move-up {
-    .container {
-      .column-left.top-sticky, .column-right.top-sticky {
-        top: 1rem;
+  .container {
+    .column-left.top-sticky, .column-right.top-sticky {
+      top: 1rem;
 
-        &.fixed {
-          top: 4rem !important;
-        }
+      /* 固定标题栏始终可见，粘性侧栏要避开它 */
+      &.fixed {
+        top: 4rem !important;
       }
     }
   }
