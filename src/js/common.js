@@ -502,23 +502,10 @@ const commonContext = {
   },
   /* 处理滚动 */
   initScroll() {
-    // true：上划，false：下滑
-    function scrollDirection(currentTop) {
-      const result = currentTop > window.initTop
-      window.initTop = currentTop
-      return result
-    }
-
     /* 按滚动距离应用状态：首帧预判与滚动监听共用同一套阈值，避免两处规则不一致。
-       body 与 .actions 会随整文档替换被重建，每次现查，不能缓存节点 */
-    const applyScrollState = (scrollTop, direction) => {
-      const body = document.body
+       标题栏固定常显，不需要按滚动方向收起，这里只剩右下角按钮组的显隐 */
+    const applyScrollState = (scrollTop) => {
       const $actions = $('.actions')
-      if (scrollTop > 50 && direction) {
-        body.classList.add('move-up')
-      } else {
-        body.classList.remove('move-up')
-      }
       if (scrollTop > 100) {
         $actions.addClass('show')
       } else {
@@ -533,8 +520,7 @@ const commonContext = {
       ticking = true
       requestAnimationFrame(() => {
         ticking = false
-        const scrollTop = $(document).scrollTop()
-        applyScrollState(scrollTop, scrollDirection(scrollTop))
+        applyScrollState($(document).scrollTop())
       })
     }
 
@@ -544,8 +530,7 @@ const commonContext = {
        既符合滚动距离判断，也不会出现先隐藏再滑入的动画 */
     const currentTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
     const initialTop = currentTop || readRememberedScrollTop()
-    window.initTop = initialTop
-    applyScrollState(initialTop, initialTop > 0)
+    applyScrollState(initialTop)
 
     /* document / window 不会被替换，监听只绑一次；每次导航只重算状态 */
     bindDocumentOnce('initScroll', () => {
@@ -560,11 +545,10 @@ const commonContext = {
         if (scrolled) return
         const top = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
         if (top === initialTop) return
-        window.initTop = top
-        applyScrollState(top, top > 0)
+        applyScrollState(top)
       }, {once: true})
 
-      // 记录滚动位置：刷新时浏览器恢复得较晚，banner 需要在首帧前据此判断是否临时隐藏
+      // 记录滚动位置：刷新时浏览器恢复得较晚，首帧前用这份记忆值兜底判断按钮组显隐
       window.addEventListener('pagehide', () => {
         saveRememberedScrollTop(window.scrollY || window.pageYOffset || 0)
       })

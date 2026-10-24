@@ -231,13 +231,6 @@ spec:
             - label: 总是发送完整URL(即使HTTPS→HTTP)
               value: 'unsafe-url'
         - $formkit: switch
-          name: header_fixed
-          label: 固定标题栏
-          onValue: true
-          offValue: false
-          value: false
-          help: 开启后标题栏不会随着页面滚动而隐藏，始终显示标题栏。
-        - $formkit: switch
           onValue: true
           offValue: false
           name: menu_center

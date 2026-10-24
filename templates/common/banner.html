@@ -1,7 +1,7 @@
 <div xmlns:th="https://www.thymeleaf.org"
      th:fragment="banner"
      th:class="'banner' + (${theme.config.basic_style.banner_hide_mask} ? ' hide-mask' : '') + (${isFirstIndex == true} ? '' : ' hidden')"
-     th:classappend="${theme.config.basic_style.banner_full_screen} ? (${theme.config.basic_info.header_fixed} ? 'header-fixed-full' : 'full') : ''">
+     th:classappend="${theme.config.basic_style.banner_full_screen} ? 'header-fixed-full' : ''">
     <!--
       非首页在服务端就带上 hidden：整页加载（未开启 pjax）时 banner 从一开始就不占位，
       不会出现"先显示一下再被脚本收起"的闪动；首页则直接渲染为可见，也不需要事后展开。
