@@ -26,6 +26,17 @@
       --theme: [(${theme.config.basic_style.night_theme_color})];
     }
 
+    /*
+     * 背景图下载完成前 body::before 是透明的，会直接露出画布白底（夜间尤其明显：先白一下，随后背景才出现）。
+     * 这里用 body::after 垫一层主题底色（z-index 更低，图片就绪后自然被盖住），
+     * 让空窗期只看到与主题一致的纯色，而不是白屏。
+     * 不加淡入动画：动画会把「底色 → 图片」的切换过程拉长，反而更显眼。
+     * 仅在启用背景图时输出，纯色 / clean 风格不受影响。
+     */
+    body:after {
+      [(${(theme.config.basic_style.enable_image_bg && theme.config.basic_style.theme_style != 'clean') ? 'content: ""; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: -10; pointer-events: none; background-color: var(--style-a);' : ''})]
+    }
+
     body:before {
       [(${(theme.config.basic_style.enable_image_bg && theme.config.basic_style.theme_style != 'clean' && !#strings.isEmpty(theme.config.basic_style.background_pc)) ? 'background: url("' + theme.config.basic_style.background_pc + '") center 0 no-repeat;' : ''})]
     }
@@ -65,8 +76,11 @@
         return false
       }
 
+      // 与 common.js 的 hasNightInLocal 保持一致：只有 'true'/'false' 才算有效记录，
+      // 否则（历史脏值、被清空等）回退到主题配置，避免首屏与切换逻辑结论相反
       const nightInLocal = readLocal('night')
-      const isNight = nightInLocal !== null ? nightInLocal.toString() === 'true' : getNightInConfig()
+      const hasNightInLocal = nightInLocal === 'true' || nightInLocal === 'false'
+      const isNight = hasNightInLocal ? nightInLocal === 'true' : getNightInConfig()
       const html = document.documentElement
       if (isNight) {
         html.classList.add('night')
