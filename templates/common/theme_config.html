@@ -144,7 +144,7 @@
     }
     DreamConfig["shiki_enable"] = [[${pluginFinder.available('shiki')}]];
     DreamConfig["gray_mode_time_list"] = gray_mode_time_list;
-    DreamConfig["pjax_state"] = [[${theme.config.enhance.enable_pjax}]];
+    DreamConfig["pjax_state"] = [[${theme.config.enhance.enable_pjax == 'swup' or theme.config.enhance.enable_pjax == 'pjax' or theme.config.enhance.enable_pjax == true}]];
     DreamConfig["pjax_animation_style"] = [[${theme.config.enhance.pjax_config.animation_style}]];
     /** 配置分享方式 */
     DreamConfig["post_share_sites"] = [[${theme.config.post.custom_post_share}]];

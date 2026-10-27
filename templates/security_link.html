@@ -22,7 +22,7 @@
     <script th:if="${theme.config.enhance.disable_debug}" th:src="@{/assets/js/ban-debug.min.js(mew=${theme.spec.version})}"></script>
     <th:block th:replace="~{common/config}"/>
     <th:block th:replace="~{common/theme_config}"/>
-    <link rel="preload stylesheet" as="style" th:href="@{/assets/lib/remixicon@4.9.1/remixicon.min.css}">
+    <link rel="preload stylesheet" as="style" th:href="@{/assets/css/remixicon.min.css(mew=${theme.spec.version})}">
     <link th:if="${theme.config.enhance.cursor_style != 'none'}" rel="stylesheet" th:href="@{/assets/css/cursor.min.css(mew=${theme.spec.version})}">
     <style type="text/css">
         html {

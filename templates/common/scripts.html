@@ -19,8 +19,15 @@
     <script th:src="@{/assets/js/mew-custom.min.js(mew=${theme.spec.version})}"></script>
 
     <script th:if="${theme.config.basic_style.load_progress != 'none'}" th:src="@{/assets/js/dprogress.min.js(mew=${theme.spec.version})}"></script>
-    <th:block th:if="${theme.config.enhance.enable_pjax}">
-        <script th:src="@{/assets/lib/pjax@2.4.0/pjax.min.js}"></script>
+    <!--
+      无刷新导航：由后台「无刷新加载」选项决定，off / pjax / swup 三选一。
+      两者只能挂一个，否则会各自绑定一套导航。
+      （旧配置里该字段是布尔值，true 按 Swup 处理，保持升级后的行为不变。）
+    -->
+    <th:block th:if="${theme.config.enhance.enable_pjax == 'swup' or theme.config.enhance.enable_pjax == true}">
+        <script th:src="@{/assets/js/swup.min.js(mew=${theme.spec.version})}"></script>
+    </th:block>
+    <th:block th:if="${theme.config.enhance.enable_pjax == 'pjax'}">
         <script th:src="@{/assets/js/pjax.min.js(mew=${theme.spec.version})}"></script>
     </th:block>
 

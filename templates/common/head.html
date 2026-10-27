@@ -3,7 +3,8 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta charset="utf-8"/>
   <!-- 页面布局契约：调用方提供了 head 片段时由它自带 <title>，主题不再重复输出 -->
   <title th:if="${extraHead == null}" th:text="${(showTitle != null ? showTitle : site.title) + (#strings.isEmpty(site.subtitle) ? '' : '|' + site.subtitle)}"></title>
-  <script th:if="${theme.config.enhance.enable_sw}" th:src="${(theme.config.enhance.enable_sw == 'uninstall')? #theme.assets('/js/sw.min.js?uninstall=true') + '&mew=1.3.2' : '/sw.min.js?mew=1.3.2' + theme.config.enhance.enable_sw + '&cdn=' + theme.config.enhance.sw_cdn_source.replaceAll('\n', ',')}"></script>
+  <!-- Service Worker：mew 传主题版本，SW 用它做缓存版本号，主题升级即自动清旧缓存；CDN 源去掉 CRLF 再拼参数 -->
+  <script th:if="${theme.config.enhance.enable_sw}" th:src="${(theme.config.enhance.enable_sw == 'uninstall') ? #theme.assets('/js/sw.min.js?uninstall=true') + '&mew=' + theme.spec.version : '/sw.min.js?mew=' + theme.spec.version + theme.config.enhance.enable_sw + '&cdn=' + (theme.config.enhance.sw_cdn_source == null ? '' : theme.config.enhance.sw_cdn_source.replaceAll('\r', '').replaceAll('\n', ','))}"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="applicable-device" content="pc,mobile">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +21,7 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   </th:block>
 
   <link rel="preload stylesheet" as="style" th:href="@{/assets/css/theme.min.css(mew=${theme.spec.version})}">
-  <link rel="preload stylesheet" as="style" th:href="@{/assets/lib/remixicon@4.9.1/remixicon.min.css}">
+  <link rel="preload stylesheet" as="style" th:href="@{/assets/css/remixicon.min.css(mew=${theme.spec.version})}">
   <link rel="preload stylesheet" as="style" th:href="@{/assets/css/style.min.css(mew=${theme.spec.version})}">
   <link th:if="${theme.config.basic_style.theme_style == 'celebration'}" rel="preload stylesheet" as="style" th:href="@{/assets/css/celebration.min.css(mew=${theme.spec.version})}">
 

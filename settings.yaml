@@ -1697,27 +1697,32 @@ spec:
           label: "Service Worker 并发 CDN 源"
           placeholder: 请输入 CDN 地址（一行一个）
           height: 100px
-          help: '填入可用的 NPM 公共开源 CDN 地址（一行一个），通过 “{CDN 地址}/{项目名}@{版本号}/${文件路径}” 可访问到文件，如：https://unpkg.com/halo-theme-dream2.0-plus@latest/templates/assets/js/utils.min.js'
+          help: '填入可用的 NPM 公共开源 CDN 地址（一行一个），通过 “{CDN 地址}/{项目名}@{版本号}/{文件路径}” 可访问到文件。jsDelivr 系地址要带 /npm，如 https://fastly.jsdelivr.net/npm；源越多每个资源发起的请求越多，建议 2~3 个。'
           value: |-
+            https://cdn.jsdmirror.com/npm
+            https://fastly.jsdelivr.net/npm
             https://unpkg.com
-            https://cdn.onmicrosoft.cn
-            https://npm.elemecdn.com
-        - $formkit: switch
-          onValue: true
-          offValue: false
+        - $formkit: select
           name: enable_pjax
-          label: Pjax 加载
-          value: false
-          help: '使用Pjax加载可极大提升页面跳转的速度，但可能和部分插件不兼容。'
+          label: 无刷新加载
+          value: 'off'
+          help: '只替换正文列，跳转更快、音乐不中断。Swup 为推荐实现，Pjax 为旧实现；与部分依赖整页加载的插件可能不兼容。'
+          options:
+            - label: 关闭（整页跳转）
+              value: 'off'
+            - label: Pjax（旧实现）
+              value: 'pjax'
+            - label: Swup（推荐）
+              value: 'swup'
         - $formkit: group
           name: pjax_config
-          label: 'Pjax 配置'
+          label: '无刷新加载配置'
           value:
             animation_style: 'scale'
           children:
             - $formkit: select
               name: animation_style
-              label: Pjax 加载动画风格
+              label: 加载动画风格
               options:
                 - value: 'none'
                   label: 无动画
@@ -1732,7 +1737,7 @@ spec:
             - $formkit: range
               name: animation_bg_alpha
               id: animation_bg_alpha
-              label: Pjax 加载动画背景不透明度
+              label: 加载动画背景不透明度
               help: '$get(animation_bg_alpha).value + "% 不透明度，仅对【旋转多维方块动画】、【波浪脉冲动画】和【轨道行星系统动画】有效。"'
               min: 10
               max: 100

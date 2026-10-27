@@ -1,3 +1,10 @@
+/*
+ * 直接从 npm 依赖引入（@sliphua/pjax，版本见 package.json），由 webpack 打进 pjax.min.js，
+ * 不再依赖 templates/assets/lib/pjax@2.4.0 下的那份 UMD 文件，
+ * 也不需要额外加载一个 <script>。
+ */
+import Pjax from '@sliphua/pjax'
+
 const pjaxAnimationValidStyles = ['multi-cube', 'wave-pulse', 'orbit-system']
 
 /*

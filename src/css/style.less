@@ -67,7 +67,7 @@ ai-summary-widget {
  * pjax 载入后的正文入场动画：用 clip-path 从上往下揭示，
  * 相当于「内容从 0 高度向下撑开」，但不影响文档流（不会像 height 动画那样把下面的内容顶来顶去）；
  * 叠一层淡入让揭示更柔和，避免裁剪边缘出现硬切。
- * 标记由 pjax.js 在节点插入前加在 .column-main 上，
+ * 标记由无刷新导航（pjax.js / swup.js）在内容替换时加在 .column-main 上，
  * 动画只播一次、不带 fill-mode，结束后裁剪与透明度都回到自身样式。
  */
 @keyframes content-enter {

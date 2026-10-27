@@ -11,31 +11,46 @@
       })
       window.caches && caches.keys && caches.keys().then(function (keys) {
         keys.forEach(function (key) {
+          /* 只删本主题的缓存，别把同域下其它应用/插件的 Cache Storage 一起清掉 */
+          if (key.indexOf('Dream2-plus-') !== 0) return
           console.log('delete cache', key)
           caches.delete(key)
         })
       })
+    } else if (!('serviceWorker' in navigator)) {
+      console.warn('[SW] 当前浏览器或非 HTTPS 环境不支持 Service Worker，已跳过')
     } else {
       navigator.serviceWorker.register(document.currentScript.src)
         .catch(function (error) {
-          console.log('cache failed with ' + error) // registration failed
+          /* 最常见的原因是反向代理没配好：/sw.min.js 返回 404，注册直接失败 */
+          console.warn('[SW] 注册失败，请检查 /sw.min.js 是否已按文档代理', error)
         })
     }
   } else {
-    //可以进行版本修改，删除缓存
-    const version = '1.0.0'
+    // 取得请求参数（SW 脚本自身的 URL 上带着配置）
+    const envParams = new URLSearchParams(location.href.split('?')[1])
+    /*
+     * 缓存版本直接取脚本 URL 上的 mew（主题版本号），由模板注入，不需要手改。
+     * 主题一升级 mew 就变，旧的整份缓存会在 activate 时被清掉，避免长期吃陈旧资源。
+     */
+    const version = envParams.get('mew') || '1'
     // 取得缓存名称
     const cacheName = `Dream2-plus-${version}`
-    // 取得请求参数
-    const envParams = new URLSearchParams(location.href.split('?')[1])
     // 是否开启多cdn源并发请求
     const isCdnConcurrentRequest = envParams.get('concurrent')
     // 是否开启全站缓存
     const isGlobalCache = envParams.get('cache')
     // 主题路径
     const themePath = location.origin + '/themes/theme-dream2-plus'
-    // cdn源站点，一行一个
-    const cdnSource = envParams.get('cdn').split(',').filter(item => item.length > 0 && item.indexOf('http') === 0)
+    /*
+     * cdn源站点，一行一个。
+     * 这里要对每一项做 trim：文本域在 Windows 上可能带 \r，不处理的话第 2 条之后的地址
+     * 都会以 \r 开头而被过滤掉，表现就是"配了多个源却只走第一个"。
+     */
+    const cdnSource = (envParams.get('cdn') || '')
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item.indexOf('http') === 0)
 
     // 禁止被处理（优先级别最高）
     // 后端 api 不进行缓存
@@ -149,6 +164,8 @@
         caches.keys().then(function (cacheNames) {
           return Promise.all(
             cacheNames.map(function (cacheName) {
+              /* 只处理本主题的缓存：同域下别的应用/插件有自己的 Cache Storage，不能顺手删掉 */
+              if (cacheName.indexOf('Dream2-plus-') !== 0) return
               if (mainCache.indexOf(cacheName) === -1) {//没有找到该版本号下面的缓存
                 // When it doesn't match any condition, delete it.
                 console.info('version changed, clean the cache, SW: deleting ' + cacheName)
@@ -174,8 +191,12 @@
       }
       const isCdnAndCache = isExitInUrlList(cdnAndCacheList, event.request.url)
       const isOnlyCacheList = isExitInUrlList(onlyCacheList, event.request.url)
-      // cdn并发请求未开启 或 请求没有被任何路由命中
-      if (!isCdnConcurrentRequest || !(isCdnAndCache || isOnlyCacheList)) {
+      /*
+       * 主题资源 / CDN 资源 / 上传文件都带版本号或内容固定，命中缓存就直接返回。
+       * 这里不再要求同时开启「并发 CDN」：之前只有 concurrent 才走缓存，
+       * 只开「全站离线」时这些静态资源仍然每次都走网络，所以开启后几乎感觉不到提速。
+       */
+      if (!(isCdnAndCache || isOnlyCacheList)) {
         // 不需要全站离线
         if (!isGlobalCache) {
           return false
@@ -236,6 +257,12 @@
                         }
                       }
                     }
+                    /*
+                     * 所有 CDN 都失败、也没有可用的历史缓存时，回落到直接请求原地址。
+                     * 不回落的后果是 respondWith(undefined) 直接抛错，资源表现为加载失败
+                     * （一个 CDN 抽风就可能让整页样式/脚本挂掉）。
+                     */
+                    return fetch(event.request)
                   })
               })
           })
