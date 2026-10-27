@@ -1,0 +1,9 @@
+/*! Remix Icon v4.9.1 | https://remixicon.com | Remix Icon License 1.0 */
+/*
+ * 直接从 npm 依赖内联（node_modules/remixicon/fonts/remixicon.css），
+ * 不再在 templates/assets/lib 下维护一份字体与样式的副本，升级只改 package.json。
+ *
+ * 字体文件由 gulp 的 css 任务复制到 templates/assets/css/，
+ * 与内联后 css 里的 url('remixicon.woff2?...') 相对路径正好对上。
+ */
+@import (inline) '../../node_modules/remixicon/fonts/remixicon.css';

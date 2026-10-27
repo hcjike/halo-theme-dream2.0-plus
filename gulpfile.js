@@ -67,7 +67,11 @@ task('version', (done) => {
   done()
 })
 
-task('css', () => {
+// 图标字体从依赖里复制，和 src/css/remixicon.less 内联出来的 url() 同目录
+const remixiconFonts = () =>
+  src('node_modules/remixicon/fonts/*.{woff2,woff,ttf,eot}').pipe(dest(cssPath))
+
+const buildCss = () => {
   const ignoreFiles = [].map((file) => `./src/css/${file}.less`)
 
   let gw = src('./src/css/**/*.less', {
@@ -89,7 +93,9 @@ task('css', () => {
       suffix: '.min',
     })
   ).pipe(dest(cssPath))
-})
+}
+
+task('css', series(buildCss, remixiconFonts))
 
 task('js', () => {
   const readFile = (prefix, dir, ignoreFiles) => {
