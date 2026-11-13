@@ -1,14 +1,9 @@
 <th:block xmlns:th="https://www.thymeleaf.org">
   <style th:inline="css"
-    th:with="fontSrc = ${theme.config.basic_style.web_font != 'default' ? theme.config.basic_style.custom_font : ''},
+    th:with="at = '@',
+    fontSrc = ${theme.config.basic_style.web_font != 'default' ? theme.config.basic_style.custom_font : ''},
     fontFormat = ${fontSrc.endsWith('.ttf') ? 'truetype' : fontSrc.endsWith('.eot') ? 'embedded-opentype' : fontSrc.replaceAll('^.*\.([\w]+)$', '$1')}">
-    [(${#strings.isEmpty(fontSrc) ? '' : '
-    @font-face {
-        font-family: "Dream Font";
-        font-display: swap;
-        font-weight: 400;
-        src: url("' + fontSrc + '")' + (#strings.isEmpty(fontFormat)? '' : ' format("' + fontFormat + '")') + ';
-    }'})]
+    [(${#strings.isEmpty(fontSrc) ? '' : at + 'font-face { font-family: "Dream Font"; font-display: swap; font-weight: 400; src: url("' + fontSrc + '")' + (#strings.isEmpty(fontFormat)? '' : ' format("' + fontFormat + '")') + '; }'})]
 
     html {
       --theme: [(${theme.config.basic_style.theme_color})];
